@@ -49,7 +49,13 @@ app.use(errorHandler({dumpExceptions: true, showStack: true}));
 app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type:'application/vnd.api+json'}));
-app.use(session({ secret: 'd1str1ctO1Mus1c1sGr3@t' }));
+app.use(session({
+  secret: 'd1str1ctO1Mus1c1sGr3@t',
+  name: 'DistrictMusic',
+  resave: true,
+  saveUninitialized: true,
+  expire: 86400
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride());

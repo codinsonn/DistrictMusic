@@ -12,11 +12,9 @@ var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 // Models
 var UserModel = require(__base + "app/models/user");
 
-module.exports = (token, refreshToken, profile, done) => {
+module.exports = (req, token, refreshToken, profile, done) => {
 
   //process.nextTick(() => {
-
-    //console.log('Profile', profile);
 
     UserModel.findOne({ 'general.email': profile.emails[0].value.toLowerCase() }, (err, user) => {
 
@@ -29,7 +27,9 @@ module.exports = (token, refreshToken, profile, done) => {
 
       if (user) {
 
-        console.log('- Found user: - \n', user);
+        //console.log('- Found user: - \n', user);
+        req.session.profile = user;
+        //console.log('User in session', req.session.profile);
 
         // if a user is found, log them in
         return done(null, user);
@@ -91,8 +91,8 @@ module.exports = (token, refreshToken, profile, done) => {
         console.log('set enabled:', user.meta.enabled);
 
         // Set the user on the session
-        /*req.session.profile = user;
-        console.log('Session user:', req.session.profile);*/
+        req.session.profile = user;
+        console.log('Session user:', req.session.profile);
 
         console.log('- Created new user: ', user.general.email, ' -');
 
