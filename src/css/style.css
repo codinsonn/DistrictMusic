@@ -1,0 +1,102 @@
+@import 'reset';
+@import 'defaultClasses';
+
+:root {
+  --dark: #1a1a1a;
+}
+
+body {
+  font-size: 62.5%;
+}
+
+/* --- Login Modal ---------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(33, 33, 33, .4);
+  z-index: 10;
+}
+
+.login-modal {
+  position: fixed;
+  display: block;
+  width: 300px;
+  height: 320px;
+  left: calc(50vw - 150px);
+  top: calc(50vh - 160px);
+  background-color: white;
+  border-radius: 5px;
+  z-index: 20;
+}
+
+.login-modal--logo {
+  position: absolute;
+  display: block;
+  width: 160px;
+  height: 160px;
+  left: calc(50% - 80px);
+  top: -11px;
+  background-image: url(../assets/img/districtMusicLogo.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.google-signin,
+.login-modal--btn-cancel {
+  position: absolute;
+  display: inline-block;
+  width: 200px;
+  height: 42px;
+  left: calc(50% - 100px);
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px rgb(125, 125, 125, .5);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 42px;
+  height: 42px;
+}
+
+.buttonText {
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 42px);
+  color: rgb(33, 33, 33);
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Roboto, sans-serif;
+}
+
+.login-modal--btn-cancel {
+  bottom: 20px;
+  background-color: rgb(240, 240, 240);
+}
+
+.login-modal--btn-cancel .icon {
+  background: url(../assets/img/cancelButtonIcon.jpg) transparent 5px 50% no-repeat;
+  background-color: #fb624a;
+}
+
+.google-signin {
+  bottom: 75px;
+  background-color: rgb(240, 240, 240);
+}
+
+.google-signin :hover,
+.login-modal--btn-cancel :hover {
+  cursor: pointer;
+}
+
+.google-signin .icon {
+  background: url(https://google-developers.appspot.com/identity/sign-in/g-normal.png) transparent 5px 50% no-repeat;
+  background-color: white;
+}

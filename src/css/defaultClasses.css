@@ -1,0 +1,37 @@
+.hidden {
+  display: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.between {
+  justify-content: space-between;
+}
+
+.around {
+  justify-content: space-around;
+}
+
+.column {
+  flex-flow: column;
+}
+
+.full {
+  width: 100%;
+}
+
+.half {
+  width: 50%;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
