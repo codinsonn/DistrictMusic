@@ -18,3 +18,17 @@ module.exports.check = function(req, res, next) {
   }
 
 };
+
+module.exports.returnUser = function(req, user) {
+
+  console.log('returning user');
+
+  if (!req.session.hasOwnProperty("profile")) {
+    return req.session.profile;
+  } else {
+    req.session.profile = user;
+    console.log('User Session:', req.session.user);
+    return req.session.user;
+  }
+
+};

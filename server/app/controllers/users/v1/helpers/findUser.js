@@ -36,6 +36,8 @@ var defaultPopulate = [];
 
 module.exports = function(id, defaultInclude, filter, populate, email, profile) {
 
+    console.log('Test');
+
     if (defaultInclude) { // Set default include values if available
         filter = _.cloneWith(includeByDefault);
     } else if (filter) { // Set filter to filter varialbe

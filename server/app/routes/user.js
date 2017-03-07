@@ -8,31 +8,22 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var PassportHelper = require(__base + "app/helpers/passport");
 var baseUrlUser = "user/";
 
+var UserModel = require(__base + "app/models/user");
+
 module.exports = (app) => {
 
   passport.serializeUser((user, done) => {
     done(null, user);
   });
-  passport.deserializeUser((obj, done) => {
-    //User.findById(id, (err, user) => {
-        done(err, user);
-    //});
+  passport.deserializeUser((user, done) => {
+    done(null, user);
   });
 
   passport.use(new GoogleStrategy({
     clientID: authConfig.googleAuth.clientID,
     clientSecret: authConfig.googleAuth.clientSecret,
     callbackURL: authConfig.googleAuth.callbackURL
-  }, (token, refreshToken, profile, done) => PassportHelper.auth(token, refreshToken, profile, done)));
-
-  /*passport.use(new GoogleStrategy({
-    clientID: authConfig.googleAuth.clientID,
-    clientSecret: authConfig.googleAuth.clientSecret,
-    callbackURL: authConfig.googleAuth.callbackURL,
-    passReqToCallback: true
-  }, (token, refreshToken, profile, done) => {
-    console.log('token', token);
-  }));*/
+  }, (token, refreshToken, profile, done) => PassportHelper.auth(token, refreshToken, profile, done)));/**/
 
   /** --- Login User -----------------------------------------------------------------------------
    * @api {get} /auth/user/google Log user in

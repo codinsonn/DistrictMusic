@@ -14,7 +14,7 @@ var UserModel = require(__base + "app/models/user");
 
 module.exports = (token, refreshToken, profile, done) => {
 
-  process.nextTick(() => {
+  //process.nextTick(() => {
 
     //console.log('Profile', profile);
 
@@ -32,7 +32,7 @@ module.exports = (token, refreshToken, profile, done) => {
         console.log('- Found user: - \n', user);
 
         // if a user is found, log them in
-        return done(null, UserHelper.findUser(response._id.toString(), false, null, true, true));
+        return done(null, user);
 
       } else {
 
@@ -107,6 +107,6 @@ module.exports = (token, refreshToken, profile, done) => {
 
     });
 
-  });
+  //});
 
 }
