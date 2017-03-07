@@ -29056,7 +29056,7 @@ init();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__songs__ = __webpack_require__(113);
 /* unused harmony reexport songs */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__users__ = __webpack_require__(114);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__users__["a"]; });
+/* unused harmony reexport users */
 
 
 
@@ -29126,7 +29126,7 @@ var base = 'http://localhost:3020';
 
 var authenticateUser = function authenticateUser(data) {
 
-  console.log('Loggin in user:', data);
+  console.log('Attempting to log in user:', data);
 
   return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/auth/user/google').then(__WEBPACK_IMPORTED_MODULE_1__util___["a" /* checkStatus */]);
 };
@@ -29150,7 +29150,7 @@ var authenticateUser = function authenticateUser(data) {
 
 };*/
 
-/* harmony default export */ __webpack_exports__["a"] = {
+/* unused harmony default export */ var _unused_webpack_default_export = {
   authenticateUser: authenticateUser
 };
 
@@ -29208,7 +29208,7 @@ var LoginModal = function (_Component) {
         client_id: '988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com',
         cookiepolicy: 'single_host_origin'
       });
-      //this.attachSignin(document.querySelector(`.google-signin`));
+      _this2.attachSignin(document.querySelector('.google-signin'));
     });
   };
 
@@ -29224,7 +29224,6 @@ var LoginModal = function (_Component) {
   };
 
   LoginModal.prototype.onSignIn = function onSignIn(googleUser) {
-    var _this4 = this;
 
     // Useful data for your client-side scripts:
     var profile = googleUser.getBasicProfile();
@@ -29243,20 +29242,23 @@ var LoginModal = function (_Component) {
     postData.email = profile.getEmail();
     postData.googleToken = idToken;
 
+    var base = 'http://localhost:3020';
+    window.location = base + '/auth/user/google'; /**/
+
     // Send email and token to api
-    __WEBPACK_IMPORTED_MODULE_1__api___["a" /* users */].authenticateUser(postData).then(function (res) {
-
-      console.log('Auth response:', res);
-      _this4.props.setLoginModal(false);
-    }, function (failData) {
-
-      console.log('Auth failed:', failData);
-      _this4.props.setLoginModal(false);
-    });
+    /*users.authenticateUser(postData)
+      .then(res => {
+         console.log(`Auth response:`, res);
+        this.props.setLoginModal(false);
+       }, failData => {
+         console.log(`Auth failed:`, failData);
+        this.props.setLoginModal(false);
+       })
+    ;/**/
   };
 
   LoginModal.prototype.render = function render() {
-    var _this5 = this;
+    var _this4 = this;
 
     var visible = this.props.visible;
 
@@ -29265,16 +29267,16 @@ var LoginModal = function (_Component) {
       'div',
       { className: visible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 96
+          lineNumber: 99
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lightbox', onClick: function onClick() {
-            return _this5.props.setLoginModal(false);
+            return _this4.props.setLoginModal(false);
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 97
+            lineNumber: 100
           }
         },
         '\xA0'
@@ -29283,14 +29285,14 @@ var LoginModal = function (_Component) {
         'article',
         { className: 'login-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 98
+            lineNumber: 101
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'login-modal--logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 99
+              lineNumber: 102
             }
           },
           '\xA0'
@@ -29299,14 +29301,14 @@ var LoginModal = function (_Component) {
           'div',
           { className: 'google-signin', __source: {
               fileName: _jsxFileName,
-              lineNumber: 100
+              lineNumber: 103
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 101
+                lineNumber: 104
               }
             },
             '\xA0'
@@ -29315,34 +29317,26 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 102
+                lineNumber: 105
               }
             },
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              'a',
-              { href: '/auth/user/google', __source: {
-                  fileName: _jsxFileName,
-                  lineNumber: 102
-                }
-              },
-              'Sign in with Google+'
-            )
+            'Sign in with Google+'
           )
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'login-modal--btn-cancel', onClick: function onClick() {
-              return _this5.props.setLoginModal(false);
+              return _this4.props.setLoginModal(false);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 104
+              lineNumber: 107
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 105
+                lineNumber: 108
               }
             },
             '\xA0'
@@ -29351,7 +29345,7 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 106
+                lineNumber: 109
               }
             },
             'Cancel or just listen'
@@ -29371,6 +29365,8 @@ LoginModal.propTypes = {
   visible: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   setLoginModal: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].func
 };
+
+// <span className='buttonText'><a href="/auth/user/google">Sign in with Google+</a></span>
 
 /***/ }),
 /* 116 */
@@ -44834,4 +44830,4 @@ module.exports = __webpack_require__(110);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.a692eb3f13070512156a.js.map
+//# sourceMappingURL=main.2378318549ead0fcc9cd.js.map

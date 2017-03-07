@@ -16,59 +16,83 @@ module.exports = (token, refreshToken, profile, done) => {
 
   process.nextTick(() => {
 
-    console.log('Test');
+    //console.log('Profile', profile);
 
-    UserModel.findOne({ 'general.email': profile._json.email.toLowerCase() }, (err, user) => {
+    UserModel.findOne({ 'general.email': profile.emails[0].value.toLowerCase() }, (err, user) => {
 
-      if (err)
+      if (err){
 
+        console.log('Error occured while searching user:', err);
         return done(err);
 
+      }
+
       if (user) {
+
+        console.log('- Found user: - \n', user);
+
         // if a user is found, log them in
-        return UserHelper.findUser(response._id.toString(), false, null, true, true);
-        //return done(null, user)
+        return done(null, UserHelper.findUser(response._id.toString(), false, null, true, true));
+
       } else {
+
+        console.log('- Creating new user -');
 
         // Create new user if none was found (authorized anyway if domain matches Distric01)
         var user = new UserModel();
 
+        console.log('Created new UserModel');
+
         // Set email
-        user.general.email = profile._json.email.toLowerCase();
+        user.general.email = profile.emails[0].value.toLowerCase();
+        console.log('set email:', user.general.email);
         // Set fullName
-        user.general.fullName = profile._json.name;
+        user.general.fullName = profile.displayName;
+        console.log('set fullname:', user.general.fullName);
         // Set firstName
-        user.general.firstName = profile._json.given_name;
+        user.general.firstName = profile.name.givenName;
+        console.log('set firstName:', user.general.firstName);
         // Set firstLast
-        user.general.lastName = profile._json.family_name;
+        user.general.lastName = profile.name.familyName;
+        console.log('set lastname:', user.general.lastName);
         // Set profile image
-        user.general.profileImage = profile._json.picture;
+        user.general.profileImage = profile.photos[0].value;
+        console.log('set profileImage:', user.general.profileImage);
 
         // Set veto permissions
         user.permissions.vetosLeft = 1;
+        console.log('set vetos:', user.permissions.vetosLeft);
         // Set super vote permissions
         user.permissions.superVotesLeft = 2;
+        console.log('set supers:', user.permissions.superVotesLeft);
 
         // Set as speaker if email matches speaker
-        if(profile._json.email === 'speaker@district01.com'){
+        if(user.general.email === 'speaker@district01.com'){
           user.permissions.isSpeaker = true;
         }else{
           user.permissions.isSpeaker = false;
         }
+        console.log('set speaker bool:', user.permissions.isSpeaker);
 
         // Add google id
         user.meta.googleId = profile.id;
+        console.log('set googleId:', user.meta.googleId);
         // Add google token
         user.meta.googleAuthToken = token;
+        console.log('set googleAuthToken:', user.meta.googleAuthToken);
         // Add google refresh token
         user.meta.googleRefreshToken = refreshToken;
+        console.log('set googleRefreshToken:', user.meta.googleRefreshToken);
         // Add verification code
         user.meta.code = Math.random().toString().substr(2, 3);
+        console.log('set validation code:', user.meta.code);
         // Enable account
         user.meta.enabled = true;
+        console.log('set enabled:', user.meta.enabled);
 
         // Set the user on the session
-        req.session.profile = user;
+        /*req.session.profile = user;
+        console.log('Session user:', req.session.profile);*/
 
         console.log('- Created new user: ', user.general.email, ' -');
 
@@ -76,7 +100,7 @@ module.exports = (token, refreshToken, profile, done) => {
         return user.save((err) => {
           if (err)
             throw err;
-          return done(null, newUser);
+          return done(null, user);
         });
 
       }
@@ -86,219 +110,3 @@ module.exports = (token, refreshToken, profile, done) => {
   });
 
 }
-
-/*module.exports = function(token, refreshToken, profile, done) {
-
-  // Delete passport from session
-  delete req.session.passport;
-
-  console.log('Google User Profile:', profile);
-
-  if(profile._json.hd === "district01.be"){
-
-    console.log('District01 Profile:', profile);
-
-    // Find the profile based on the email
-    UserModel.findOne({ "general.email": profile._json.email.toLowerCase() })
-      .exec()
-      .then(onSuccess = (response) => {
-
-        // Check if user exist: fetch if exists, create if not
-        if (response) {
-
-          return UserHelper.findUser(response._id.toString(), false, null, true, true);
-
-        } else {
-
-          console.log('- Creating new user: ', user.general.email, ' -');
-
-          // Create new user if none was found (authorized anyway if domain matches Distric01)
-          var user = new UserModel();
-
-          // Set email
-          user.general.email = profile._json.email.toLowerCase();
-          // Set fullName
-          user.general.fullName = profile._json.name;
-          // Set firstName
-          user.general.firstName = profile._json.given_name;
-          // Set firstLast
-          user.general.lastName = profile._json.family_name;
-          // Set profile image
-          user.general.profileImage = profile._json.picture;
-
-          // Set veto permissions
-          user.permissions.vetosLeft = 1;
-          // Set super vote permissions
-          user.permissions.superVotesLeft = 2;
-
-          // Set as speaker if email matches speaker
-          if(profile._json.email === 'speaker@district01.com'){
-            user.permissions.isSpeaker = true;
-          }else{
-            user.permissions.isSpeaker = false;
-          }
-
-          // Add google token
-          user.meta.googleAuthToken = token;
-          // Add google refresh token
-          user.meta.googleRefreshToken = refreshToken;
-          // Add verification code
-          user.meta.code = Math.random().toString().substr(2, 3);
-          // Enable account
-          user.meta.enabled = true;
-
-          // Set the user on the session
-          req.session.profile = user;
-
-          console.log('- Created new user: ', user.general.email, ' -');
-
-          // Save the user
-          return user.save();
-
-        }
-
-      })
-      .then(onSuccess = (response) => {
-
-        // Save profile on the session
-        req.session.profile = response;
-
-        console.log('- Logged in as: ', response.general.email, ' -');
-
-        return {
-          type: "ok",
-          data: UserHelper.fillBlueprint(req.session.profile)
-        };
-
-      }, PromiseHelper.checkError)
-      .then(onSuccess = (response) => {
-
-        ResponseHelper(res, response.type, {
-          data: response.data
-        });
-
-      });
-
-  }else{
-
-    console.log('Not a District01 profile', profile);
-
-    throw {
-      type: "notFound"
-    };
-
-  }
-
-};*/
-
-/* module.exports = function(req, res) {
-
-    // Delete passport from session
-    delete req.session.passport;
-
-    passport.use(new GoogleStrategy({
-      clientID: "988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com",
-      clientSecret: "6RoBvh-aw5nUE4iOnNDHB2TE",
-      callbackURL: "/auth/google/callback"
-    }, (token, refreshToken, profile, done) => {
-
-      console.log('Google User Profile:', profile);
-
-      if(profile._json.hd === "district01.be"){
-
-        console.log('District01 Profile:', profile);
-
-        // Find the profile based on the email
-        UserModel.findOne({ "general.email": profile._json.email.toLowerCase() })
-          .exec()
-          .then(onSuccess = (response) => {
-
-            // Check if user exist: fetch if exists, create if not
-            if (response) {
-
-              return UserHelper.findUser(response._id.toString(), false, null, true, true);
-
-            } else {
-
-              console.log('- Creating new user: ', user.general.email, ' -');
-
-              // Create new user if none was found (authorized anyway if domain matches Distric01)
-              var user = new UserModel();
-
-              // Set email
-              user.general.email = profile._json.email.toLowerCase();
-              // Set fullName
-              user.general.fullName = profile._json.name;
-              // Set firstName
-              user.general.firstName = profile._json.given_name;
-              // Set firstLast
-              user.general.lastName = profile._json.family_name;
-              // Set profile image
-              user.general.profileImage = profile._json.picture;
-
-              // Set veto permissions
-              user.permissions.vetosLeft = 1;
-              // Set super vote permissions
-              user.permissions.superVotesLeft = 2;
-
-              // Set as speaker if email matches speaker
-              if(profile._json.email === 'speaker@district01.com'){
-                user.permissions.isSpeaker = true;
-              }else{
-                user.permissions.isSpeaker = false;
-              }
-
-              // Add google token
-              user.meta.googleAuthToken = token;
-              // Add google refresh token
-              user.meta.googleRefreshToken = refreshToken;
-              // Add verification code
-              user.meta.code = Math.random().toString().substr(2, 3);
-              // Enable account
-              user.meta.enabled = true;
-
-              // Set the user on the session
-              req.session.profile = user;
-
-              console.log('- Created new user: ', user.general.email, ' -');
-
-              // Save the user
-              return user.save();
-
-            }
-
-          })
-          .then(onSuccess = (response) => {
-
-            // Save profile on the session
-            req.session.profile = response;
-
-            console.log('- Logged in as: ', response.general.email, ' -');
-
-            return {
-              type: "ok",
-              data: UserHelper.fillBlueprint(req.session.profile)
-            };
-
-          }, PromiseHelper.checkError)
-          .then(onSuccess = (response) => {
-
-            ResponseHelper(res, response.type, {
-              data: response.data
-            });
-
-          });
-
-      }else{
-
-        console.log('Not a District01 profile', profile);
-
-        throw {
-          type: "notFound"
-        };
-
-      }
-
-    }));
-
-}; */

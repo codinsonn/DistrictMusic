@@ -35,7 +35,7 @@ export default class LoginModal extends Component {
         // Request scopes in addition to 'profile' and 'email'
         //scope: 'additional_scope'
       });
-      //this.attachSignin(document.querySelector(`.google-signin`));
+      this.attachSignin(document.querySelector(`.google-signin`));
     });
 
   }
@@ -71,8 +71,11 @@ export default class LoginModal extends Component {
     postData.email = profile.getEmail();
     postData.googleToken = idToken;
 
+    const base = `http://localhost:3020`;
+    window.location = `${base}/auth/user/google`;/**/
+
     // Send email and token to api
-    users.authenticateUser(postData)
+    /*users.authenticateUser(postData)
       .then(res => {
 
         console.log(`Auth response:`, res);
@@ -84,7 +87,7 @@ export default class LoginModal extends Component {
         this.props.setLoginModal(false);
 
       })
-    ;
+    ;/**/
 
   }
 
@@ -99,7 +102,7 @@ export default class LoginModal extends Component {
           <div className='login-modal--logo'>&nbsp;</div>
           <div className='google-signin'>
             <span className='icon'>&nbsp;</span>
-            <span className='buttonText'><a href='/auth/user/google'>Sign in with Google+</a></span>
+            <span className='buttonText'>Sign in with Google+</span>
           </div>
           <div className='login-modal--btn-cancel' onClick={() => this.props.setLoginModal(false)}>
             <span className='icon'>&nbsp;</span>
@@ -117,3 +120,5 @@ LoginModal.propTypes = {
   visible: PropTypes.string,
   setLoginModal: PropTypes.func
 };
+
+// <span className='buttonText'><a href="/auth/user/google">Sign in with Google+</a></span>

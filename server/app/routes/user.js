@@ -2,9 +2,9 @@ require("rootpath")();
 var config = require(__base + "config");
 var authConfig = require(__base + "config/auth");
 var passport = require("passport");
-//var UsersController = require("app/controllers/users");
-//var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var UsersController = require(__base + "app/controllers/users/v1");
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+//var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var PassportHelper = require(__base + "app/helpers/passport");
 var baseUrlUser = "user/";
 
@@ -19,20 +19,20 @@ module.exports = (app) => {
     //});
   });
 
-  /*passport.use(new GoogleStrategy({
+  passport.use(new GoogleStrategy({
     clientID: authConfig.googleAuth.clientID,
     clientSecret: authConfig.googleAuth.clientSecret,
     callbackURL: authConfig.googleAuth.callbackURL
-  }, (token, refreshToken, profile, done) => PassportHelper.auth(token, refreshToken, profile, done)));*/
+  }, (token, refreshToken, profile, done) => PassportHelper.auth(token, refreshToken, profile, done)));
 
-  passport.use(new GoogleStrategy({
+  /*passport.use(new GoogleStrategy({
     clientID: authConfig.googleAuth.clientID,
     clientSecret: authConfig.googleAuth.clientSecret,
     callbackURL: authConfig.googleAuth.callbackURL,
     passReqToCallback: true
   }, (token, refreshToken, profile, done) => {
     console.log('token', token);
-  }));
+  }));*/
 
   /** --- Login User -----------------------------------------------------------------------------
    * @api {get} /auth/user/google Log user in
@@ -61,15 +61,11 @@ module.exports = (app) => {
    * @apiUse messageNotFound
    */
   //app.get("/auth/user/google", passport.authenticate('google', { scope : ['profile', 'email'], hostedDomain: 'district01.be' }));
-  app.get("/auth/user/google", passport.authenticate('google', { scope : ['profile', 'email'] }));
-  app.get("/auth/google/callback", () => {
-    passport.authenticate('google', {
-      successRedirect: '/',
-      failureRedirect: '/fail'
-    });
-  }, function(req){
-    console.log('Test');
-  });
+  app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }));
+  app.get("/auth/google/callback", passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/fail'
+  }));
 
   /** --- Logout User -----------------------------------------------------------------------------
    * @api {get} /auth/user/logout Logout the user

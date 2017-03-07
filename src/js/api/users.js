@@ -5,7 +5,7 @@ const base = `http://localhost:3020`;
 
 export const authenticateUser = data => {
 
-  console.log(`Loggin in user:`, data);
+  console.log(`Attempting to log in user:`, data);
 
   return fetch(`${base}/auth/user/google`)
     .then(checkStatus)
