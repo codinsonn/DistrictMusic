@@ -22,6 +22,7 @@ var allowCrossDomain = (req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Access-Control-Allow-Origin');
   res.header("Access-Control-Max-Age", "86400"); // 24 hours
+  res.header("Access-Control-Allow-Credentials", true);
 
   // intercept OPTIONS method
   if ('OPTIONS' == req.method) {
@@ -43,19 +44,17 @@ var express = require('express'),
 
 var app = express();
 //app.use(allowCrossDomain);
-app.use(cors({credentials: true, origin: true}));
+//app.use(cors({credentials: true, origin: true}));
 app.use(morgan('dev'));
 app.use(errorHandler({dumpExceptions: true, showStack: true}));
+app.use(session({
+  secret: 'd1str1ctO1Mus1c1sGr3@t',
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type:'application/vnd.api+json'}));
-app.use(session({
-  secret: 'd1str1ctO1Mus1c1sGr3@t',
-  name: 'DistrictMusic',
-  resave: true,
-  saveUninitialized: true,
-  expire: 86400
-}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride());

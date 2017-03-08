@@ -13,6 +13,25 @@ export const authenticateUser = data => {
 
 };
 
+export const getSessionProfile = () => {
+
+  //console.log(`Fetching user session`);
+
+  const options = {
+    method: `get`,
+    headers: new Headers({
+      Accept: `application/json, application/xml, text/plain, text/html, *.*`
+    }),
+    credentials: `same-origin`,
+    withCredentials: true
+  };
+
+  return fetch(`${base}/api/sess/profile`, options)
+    .then(checkStatus)
+  ;
+
+};
+
 /*export const authenticateUser = data => {
 
   const method = `POST`;
@@ -33,5 +52,6 @@ export const authenticateUser = data => {
 };*/
 
 export default {
-  authenticateUser
+  authenticateUser,
+  getSessionProfile
 };

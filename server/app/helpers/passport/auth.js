@@ -29,7 +29,7 @@ module.exports = (req, token, refreshToken, profile, done) => {
 
         //console.log('- Found user: - \n', user);
         req.session.profile = user;
-        //console.log('User in session', req.session.profile);
+        console.log('UserSession', req.session.profile);
 
         // if a user is found, log them in
         return done(null, user);

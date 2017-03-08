@@ -29,7 +29,15 @@ module.exports = function(app) {
 
     // Fallback & non api routes -> React Router routes or 404
     app.route(["/", "/*"]).all( (req, res) => {
-        res.sendFile(path.join(__dirname, "../../" + config.server.frontendPath + "index.html"));
+
+      var sess = req.session;
+
+      if(sess.profile){
+        console.log('Session Profile', sess.profile);
+      }
+
+      res.sendFile(path.join(__dirname, "../../" + config.server.frontendPath + "index.html"));
+
     });
 
 };

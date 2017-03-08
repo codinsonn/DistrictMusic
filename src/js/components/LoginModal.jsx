@@ -3,7 +3,8 @@ import React, {Component, PropTypes} from 'react';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
 //import PlaylistStore from '../stores/PlaylistStore';
-import {users} from '../api/';
+//import {users} from '../api/';
+import * as UserActions from '../actions/UserActions';
 import gapi from 'googleapi';
 
 export default class LoginModal extends Component {
@@ -72,22 +73,7 @@ export default class LoginModal extends Component {
     postData.googleToken = idToken;
 
     const base = `http://localhost:3020`;
-    window.location = `${base}/auth/user/google`;/**/
-
-    // Send email and token to api
-    /*users.authenticateUser(postData)
-      .then(res => {
-
-        console.log(`Auth response:`, res);
-        this.props.setLoginModal(false);
-
-      }, failData => {
-
-        console.log(`Auth failed:`, failData);
-        this.props.setLoginModal(false);
-
-      })
-    ;/**/
+    window.location = `${base}/auth/user/google`;
 
   }
 
@@ -97,14 +83,14 @@ export default class LoginModal extends Component {
 
     return (
       <div className={visible}>
-        <div className='lightbox' onClick={() => this.props.setLoginModal(false)}>&nbsp;</div>
+        <div className='lightbox' onClick={() => UserActions.hideLoginModal()}>&nbsp;</div>
         <article className='login-modal'>
           <div className='login-modal--logo'>&nbsp;</div>
           <div className='google-signin'>
             <span className='icon'>&nbsp;</span>
             <span className='buttonText'>Sign in with Google+</span>
           </div>
-          <div className='login-modal--btn-cancel' onClick={() => this.props.setLoginModal(false)}>
+          <div className='login-modal--btn-cancel' onClick={() => UserActions.hideLoginModal()}>
             <span className='icon'>&nbsp;</span>
             <span className='buttonText'>Cancel or just listen</span>
           </div>

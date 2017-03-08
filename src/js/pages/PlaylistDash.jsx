@@ -3,22 +3,26 @@ import React, {Component} from 'react';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
 import {LoginModal} from '../components';
-//import PlaylistStore from '../stores/PlaylistStore';
+import UserStore from '../stores/UserStore';
+import * as UserActions from '../actions/UserActions';
 
 export default class PlaylistDash extends Component {
 
   constructor(props, context) {
+
     super(props, context);
 
     this.state = {
-      isLoggedIn: 0,
-      showLoginModal: false
+      isLoggedIn: UserStore.getLoggedIn(),
+      userProfile: {},
+      showLoginModal: UserStore.getShowLoginModal()
     };
 
   }
 
   componentWillMount() {
-
+    UserStore.on(`USER_PROFILE_FETCHED`, () => this.showUserProfile());
+    UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setLoginModal());
   }
 
   componentWillUnmount() {
@@ -26,12 +30,26 @@ export default class PlaylistDash extends Component {
   }
 
   componentDidMount() {
+    UserActions.fetchProfile();
+  }
+
+  showUserProfile() {
+
+    let {isLoggedIn, userProfile} = this.state;
+
+    isLoggedIn = UserStore.getLoggedIn();
+
+    if (isLoggedIn) {
+      userProfile = UserStore.getProfile();
+    }
+
+    this.setState({isLoggedIn, userProfile});
 
   }
 
-  setLoginModal(visible) {
+  setLoginModal() {
 
-    const showLoginModal = visible;
+    const showLoginModal = UserStore.getShowLoginModal();
     this.setState({showLoginModal});
 
   }
@@ -47,8 +65,8 @@ export default class PlaylistDash extends Component {
 
     return (
       <div>
-        <LoginModal visible={visible} setLoginModal={visible => this.setLoginModal(visible)} />
-        <button onClick={() => this.setLoginModal(true)}>Login</button>
+        <LoginModal visible={visible} />
+        <button onClick={() => UserActions.showLoginModal()}>Login</button>
       </div>
     );
 

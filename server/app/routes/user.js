@@ -53,11 +53,8 @@ module.exports = (app) => {
    *
    * @apiUse messageNotFound
    */
-  //app.get("/auth/user/google", passport.authenticate('google', { scope : ['profile', 'email'], hostedDomain: 'district01.be' }));
-  //app.get("/auth/user/google", UsersController.userSession.check, UsersController.userSession.googleAuth);
-  app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }), function(req, res){
-    console.log('Req Session', req.session);
-  });
+  //app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }));
+  app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }));
   app.get("/auth/google/callback", passport.authenticate('google', {
     successRedirect: '/',
     failureRedirect: '/fail'
@@ -75,7 +72,7 @@ module.exports = (app) => {
    *
    * @apiUse messageUnauthorized
    */
-  app.route("/logout").get(PassportHelper.logout);
+  app.route("/api/sess/profile").get(UsersController.userSession.returnProfile);
 
   /** --- Logout User -----------------------------------------------------------------------------
    * @api {get} /auth/user/logout Logout the user
