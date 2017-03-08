@@ -115,12 +115,61 @@ body {
   font-size: 62.5%;
 }
 
+/* --- Notifications ---------------------------------------------------- */
+
+.notifications {
+  position: fixed;
+  display: block;
+  width: 100vw;
+  height: 42px;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.notification {
+  position: absolute;
+  display: block;
+  width: 100vw;
+  height: 42px;
+  -webkit-transition: bottom .3s ease-in-out 0s;
+  transition: bottom .3s ease-in-out 0s;
+}
+
+.notification.hide {
+  bottom: -42px;
+}
+
+.notification.show {
+  bottom: 0;
+}
+
+.notifText {
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 84px);
+  color: white;
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+  font-family: Roboto, sans-serif;
+}
+
+.notification.error,
+.notification.error .icon {
+  background-color: #fb624a;
+}
+
+.notification.error .icon {
+  background: url(/assets/img/cancelButtonIcon.jpg) transparent 5px 50% no-repeat;
+}
+
 /* --- Profile ---------------------------------------------------------- */
 
 .profile {
   position: fixed;
   display: block;
-  width: 100px;
+  width: 50px;
   height: 150px;
   top: 10px;
   right: 10px;
@@ -128,12 +177,18 @@ body {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  overflow: hidden;
+  overflow: visible;
+  opacity: .9;
 }
 
 .profile:focus {
   outline: none;
   border: none;
+}
+
+.profile:hover,
+.profile:focus {
+  opacity: 1;
 }
 
 .profile-img {
@@ -180,7 +235,7 @@ body {
 }
 
 .profile-options ul li:hover {
-  background-color: rgb(230, 230, 230);
+  background-color: rgb(200, 200, 200);
 }
 
 /* --- Login Modal ---------------------------------------------------------- */

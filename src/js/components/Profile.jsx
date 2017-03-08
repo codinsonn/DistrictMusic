@@ -10,6 +10,7 @@ import * as UserActions from '../actions/UserActions';
 export default class Profile extends Component {
 
   constructor(props, context) {
+
     super(props, context);
 
     this.state = {
@@ -33,8 +34,6 @@ export default class Profile extends Component {
   }
 
   hideProfileOptions() {
-
-    console.log(`Blur`);
 
     const {isLoggedIn} = this.state;
     let {showProfileOptions} = this.state;

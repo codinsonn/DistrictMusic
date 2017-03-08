@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 //import {Link} from 'react-router';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
-import {Profile, LoginModal} from '../components';
+import {Notifications, Profile, LoginModal} from '../components';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
+import * as NotifActions from '../actions/NotifActions';
 
 export default class PlaylistDash extends Component {
 
@@ -30,7 +31,13 @@ export default class PlaylistDash extends Component {
   }
 
   componentDidMount() {
-    UserActions.fetchProfile();
+
+    if (this.props.error && this.props.error === `failedlogin`) {
+      NotifActions.addError(`Needs a District01 Google+ account`);
+    } else {
+      UserActions.fetchProfile();
+    }
+
   }
 
   updateUserProfile() {
@@ -63,6 +70,7 @@ export default class PlaylistDash extends Component {
     return (
       <div className='dashboard-wrapper'>
         <Profile />
+        <Notifications />
         <LoginModal visible={visible} />
       </div>
     );
@@ -70,3 +78,7 @@ export default class PlaylistDash extends Component {
   }
 
 }
+
+PlaylistDash.propTypes = {
+  error: PropTypes.string
+};

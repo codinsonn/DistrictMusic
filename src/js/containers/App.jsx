@@ -30,6 +30,7 @@ export default class App extends Component {
     <Router history={browserHistory}>
       <div className='wrapper'>
         <Route path='/' component={PlaylistDash} />
+        <Route path='/fail' component={() => (<PlaylistDash error='failedlogin' />)} />
         <Route path='/song' component={PlaylistDash} />
         <Route path='/song/:id' component={PlaylistDash} />
         <Route path='/*' component={NoMatch} />
