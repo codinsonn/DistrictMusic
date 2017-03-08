@@ -1,28 +1,26 @@
-import React, {Component} from 'react';
+import React, {Component/*, PropTypes*/} from 'react';
 //import {Link} from 'react-router';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
-import {Profile, LoginModal} from '../components';
+//import PlaylistStore from '../stores/PlaylistStore';
+//import {users} from '../api/';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 
-export default class PlaylistDash extends Component {
+export default class Profile extends Component {
 
   constructor(props, context) {
-
     super(props, context);
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
-      userProfile: UserStore.getProfile(),
-      showLoginModal: UserStore.getShowLoginModal()
+      userProfile: UserStore.getProfile()
     };
 
   }
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_FETCHED`, () => this.updateUserProfile());
-    UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setLoginModal());
   }
 
   componentWillUnmount() {
@@ -30,7 +28,7 @@ export default class PlaylistDash extends Component {
   }
 
   componentDidMount() {
-    UserActions.fetchProfile();
+
   }
 
   updateUserProfile() {
@@ -47,29 +45,37 @@ export default class PlaylistDash extends Component {
 
   }
 
-  setLoginModal() {
+  checkProfileActions() {
 
-    const showLoginModal = UserStore.getShowLoginModal();
-    this.setState({showLoginModal});
+    const {isLoggedIn} = this.state;
+
+    if (isLoggedIn) {
+      console.log(`User is logged in`);
+    } else {
+      console.log(`Must login to continue...`);
+      UserActions.showLoginModal();
+    }
 
   }
 
   render() {
 
-    const {showLoginModal} = this.state;
-
-    let visible = `hidden`;
-    if (showLoginModal) {
-      visible = `shown`;
-    }
+    const {userProfile} = this.state;
+    const profileImage = userProfile.general.profileImage;
+    const style = {backgroundImage: `url(${  profileImage  })`};
 
     return (
-      <div className='dashboard-wrapper'>
-        <Profile />
-        <LoginModal visible={visible} />
+      <div className='profile-wrapper'>
+        <section className='profile' style={style} onClick={() => this.checkProfileActions()}>
+          &nbsp;
+        </section>
       </div>
     );
 
   }
 
 }
+
+/*Profile.propTypes = {
+
+};*/

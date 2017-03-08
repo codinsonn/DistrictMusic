@@ -69,6 +69,12 @@ html {
   opacity: 0;
 }
 
+.hidewrap {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .flex {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -107,6 +113,35 @@ html {
 }
 body {
   font-size: 62.5%;
+}
+
+/* --- Profile ---------------------------------------------------------- */
+
+.profile-wrapper,
+.profile {
+  position: fixed;
+  display: block;
+  top: 10px;
+  right: 10px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.profile {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-image: url(/assets/img/defaultProfile.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.profile-options {
+  display: block;
+
 }
 
 /* --- Login Modal ---------------------------------------------------------- */

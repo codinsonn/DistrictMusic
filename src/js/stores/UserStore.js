@@ -9,8 +9,14 @@ class UserStore extends EventEmitter {
     super();
 
     this.isLoggedIn = false;
-    this.userProfile = {};
     this.showLoginModal = false;
+
+    this.userProfile = {};
+    this.defaultProfile = {
+      general: {
+        profileImage: `/assets/img/defaultProfile.png`
+      }
+    };
 
   }
 
@@ -18,8 +24,6 @@ class UserStore extends EventEmitter {
 
     users.getSessionProfile()
       .then(res => {
-
-        //console.log(`Session user:`, res);
 
         this.isLoggedIn = true;
         this.userProfile = res;
@@ -36,6 +40,9 @@ class UserStore extends EventEmitter {
   }
 
   setShowLoginModal(visible) {
+
+    console.log(`Setting login modal visibility to:`, visible);
+    console.log(`User logged in:`, this.isLoggedIn);
 
     let blnShowModal = false;
     if (!this.isLoggedIn) {
@@ -58,7 +65,7 @@ class UserStore extends EventEmitter {
     if (this.isLoggedIn) {
       return this.userProfile;
     } else {
-      return {error: `User profile unavailable`};
+      return this.defaultProfile;
     }
 
   }
