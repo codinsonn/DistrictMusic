@@ -1,8 +1,15 @@
 import dispatcher from '../dispatcher';
 
+export function addSuccess(message) {
+  dispatcher.dispatch({
+    type: `ADD_SUCCESS`,
+    notification: message
+  });
+}
+
 export function addNotification(message) {
   dispatcher.dispatch({
-    type: `ADD_NOTIFICATION`,
+    type: `ADD_INFO`,
     notification: message
   });
 }

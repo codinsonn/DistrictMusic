@@ -33,7 +33,7 @@ export default class PlaylistDash extends Component {
   componentDidMount() {
 
     if (this.props.error && this.props.error === `failedlogin`) {
-      NotifActions.addError(`Needs a District01 Google+ account`);
+      NotifActions.addError(`Not a District01 Google+ account`);
     } else {
       UserActions.fetchProfile();
     }
@@ -48,6 +48,12 @@ export default class PlaylistDash extends Component {
     userProfile = UserStore.getProfile();
 
     this.setState({isLoggedIn, userProfile});
+
+    if (isLoggedIn) {
+      NotifActions.addSuccess(`Welcome, ${userProfile.general.firstName}!`);
+    } else {
+      NotifActions.addNotification(`Logout successfull`);
+    }
 
   }
 

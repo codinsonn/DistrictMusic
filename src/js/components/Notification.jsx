@@ -38,6 +38,7 @@ export default class Notification extends Component {
     const notificationClasses = `notification ${type} show`;
 
     document.querySelector(`.notification`).className = notificationClasses;
+    document.querySelector(`.notification`).focus();
 
   }
 
@@ -64,7 +65,7 @@ export default class Notification extends Component {
     const notificationClasses = `notification ${type} hide`;
 
     return (
-      <section className={notificationClasses}>
+      <section className={notificationClasses} tabIndex='1' onBlur={() => this.hideNotification()}>
         <span className='icon' onClick={() => this.hideNotification()}>&nbsp;</span>
         <span className='notifText'>{message}</span>
       </section>

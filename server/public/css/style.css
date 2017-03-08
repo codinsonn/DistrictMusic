@@ -155,6 +155,24 @@ body {
   font-family: Roboto, sans-serif;
 }
 
+.notification.success,
+.notification.success .icon {
+  background-color: #60ac7b;
+}
+
+.notification.success .icon {
+  background: url(/assets/img/successIcon.jpg) transparent 5px 50% no-repeat;
+}
+
+.notification.info,
+.notification.info .icon {
+  background-color: #299cbb;
+}
+
+.notification.info .icon {
+  background: url(/assets/img/infoIcon.jpg) transparent 5px 50% no-repeat;
+}
+
 .notification.error,
 .notification.error .icon {
   background-color: #fb624a;

@@ -11,9 +11,17 @@ class NotificationsStore extends EventEmitter {
 
   }
 
+  addSuccess(message) {
+
+    this.notifs.push({type: `success`, message: message});
+
+    this.emit(`NOTIFICATIONS_CHANGED`);
+
+  }
+
   addNotification(message) {
 
-    this.notifs.push({type: `notification`, message: message});
+    this.notifs.push({type: `info`, message: message});
 
     this.emit(`NOTIFICATIONS_CHANGED`);
 
@@ -51,7 +59,11 @@ class NotificationsStore extends EventEmitter {
 
     switch (action.type) {
 
-    case `ADD_NOTIFICATION`:
+    case `ADD_SUCCESS`:
+      this.addSuccess(action.notification);
+      break;
+
+    case `ADD_INFO`:
       this.addNotification(action.notification);
       break;
 
