@@ -53,8 +53,7 @@ module.exports = (app) => {
    *
    * @apiUse messageNotFound
    */
-  //app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }));
-  app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'] }));
+  app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'], hostedDomain: 'district01.be' }));
   app.get("/auth/google/callback", passport.authenticate('google', {
     successRedirect: '/',
     failureRedirect: '/fail'

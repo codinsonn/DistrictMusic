@@ -62,7 +62,6 @@ export default class Profile extends Component {
     let {showProfileOptions} = this.state;
 
     if (isLoggedIn) {
-      console.log(`User is logged in`);
       showProfileOptions = !showProfileOptions;
       this.setState({showProfileOptions});
     } else {
@@ -87,7 +86,7 @@ export default class Profile extends Component {
       return (
         <div className={optionsClasses}>
           <ul>
-            <li className='btn-logout' onClick={() => UserActions.logoutUser()}>Logout</li>
+            <li onClick={() => UserActions.logoutUser()}><span className='btn-logout'>&nbsp;</span></li>
           </ul>
         </div>
       );
