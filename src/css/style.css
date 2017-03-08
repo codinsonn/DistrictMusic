@@ -11,16 +11,27 @@ body {
 
 /* --- Profile ---------------------------------------------------------- */
 
-.profile-wrapper,
 .profile {
   position: fixed;
   display: block;
+  width: 100px;
+  height: 150px;
   top: 10px;
   right: 10px;
   user-select: none;
+  overflow: hidden;
 }
 
-.profile {
+.profile:focus {
+  outline: none;
+  border: none;
+}
+
+.profile-img {
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -30,9 +41,37 @@ body {
   background-size: cover;
 }
 
-.profile-options {
+.profile:hover .profile-options,
+.profile-options.show {
   display: block;
+}
 
+.profile-options {
+  position: absolute;
+  display: none;
+  top: 60px;
+  right: 0;
+  width: auto;
+  height: auto;
+  padding: 3px 0;
+  background-color: rgb(240, 240, 240);
+  border-radius: 3px;
+}
+
+.profile-options ul li {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 5px 8px;
+  color: var(--dark);
+  font-family: Roboto, sans-serif;
+  font-size: 1.8em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.profile-options ul li:hover {
+  background-color: rgb(230, 230, 230);
 }
 
 /* --- Login Modal ---------------------------------------------------------- */

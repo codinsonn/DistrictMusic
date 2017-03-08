@@ -28,11 +28,11 @@ class UserStore extends EventEmitter {
         this.isLoggedIn = true;
         this.userProfile = res;
 
-        this.emit(`USER_PROFILE_FETCHED`);
+        this.emit(`USER_PROFILE_CHANGED`);
 
       }, failData => {
 
-        console.log(`-!- Request failed: -!- \n`, failData, `\n-!-`);
+        console.log(`-!- Login failed: -!- \n`, failData, `\n-!-`);
 
       })
     ;
@@ -41,9 +41,6 @@ class UserStore extends EventEmitter {
 
   setShowLoginModal(visible) {
 
-    console.log(`Setting login modal visibility to:`, visible);
-    console.log(`User logged in:`, this.isLoggedIn);
-
     let blnShowModal = false;
     if (!this.isLoggedIn) {
       blnShowModal = visible;
@@ -51,6 +48,27 @@ class UserStore extends EventEmitter {
     this.showLoginModal = blnShowModal;
 
     this.emit(`SHOW_LOGIN_MODAL_CHANGED`);
+
+  }
+
+  logout() {
+
+    users.logout()
+      .then(res => {
+
+        console.log(`Succesfully logged out`, res);
+
+        this.isLoggedIn = false;
+        this.userProfile = this.defaultProfile;
+
+        this.emit(`USER_PROFILE_CHANGED`);
+
+      }, failData => {
+
+        console.log(`-!- Logout failed: -!- \n`, failData, `\n-!-`);
+
+      })
+    ;
 
   }
 
@@ -90,6 +108,10 @@ class UserStore extends EventEmitter {
 
     case `HIDE_LOGIN_MODAL`:
       this.setShowLoginModal(false);
+      break;
+
+    case `LOGOUT_USER`:
+      this.logout();
       break;
 
     }

@@ -3,9 +3,16 @@ import {checkStatus/*, buildBody*/} from '../util/';
 
 const base = `http://localhost:3020`;
 
-export const authenticateUser = data => {
+const getOptions = {
+  method: `get`,
+  headers: new Headers({
+    Accept: `application/json, application/xml, text/plain, text/html, *.*`
+  }),
+  credentials: `same-origin`,
+  withCredentials: true
+};
 
-  console.log(`Attempting to log in user:`, data);
+export const authenticateUser = () => {
 
   return fetch(`${base}/auth/user/google`)
     .then(checkStatus)
@@ -15,18 +22,15 @@ export const authenticateUser = data => {
 
 export const getSessionProfile = () => {
 
-  //console.log(`Fetching user session`);
+  return fetch(`${base}/api/sess/profile`, getOptions)
+    .then(checkStatus)
+  ;
 
-  const options = {
-    method: `get`,
-    headers: new Headers({
-      Accept: `application/json, application/xml, text/plain, text/html, *.*`
-    }),
-    credentials: `same-origin`,
-    withCredentials: true
-  };
+};
 
-  return fetch(`${base}/api/sess/profile`, options)
+export const logout = () => {
+
+  return fetch(`${base}/auth/user/logout`, getOptions)
     .then(checkStatus)
   ;
 
@@ -53,5 +57,6 @@ export const getSessionProfile = () => {
 
 export default {
   authenticateUser,
-  getSessionProfile
+  getSessionProfile,
+  logout
 };

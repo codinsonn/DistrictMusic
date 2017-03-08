@@ -14,13 +14,14 @@ export default class Profile extends Component {
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
-      userProfile: UserStore.getProfile()
+      userProfile: UserStore.getProfile(),
+      showProfileOptions: false
     };
 
   }
 
   componentWillMount() {
-    UserStore.on(`USER_PROFILE_FETCHED`, () => this.updateUserProfile());
+    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
   }
 
   componentWillUnmount() {
@@ -31,15 +32,26 @@ export default class Profile extends Component {
 
   }
 
+  hideProfileOptions() {
+
+    console.log(`Blur`);
+
+    const {isLoggedIn} = this.state;
+    let {showProfileOptions} = this.state;
+
+    if (isLoggedIn && showProfileOptions) {
+      showProfileOptions = false;
+      this.setState({showProfileOptions});
+    }
+
+  }
+
   updateUserProfile() {
 
     let {isLoggedIn, userProfile} = this.state;
 
     isLoggedIn = UserStore.getLoggedIn();
-
-    if (isLoggedIn) {
-      userProfile = UserStore.getProfile();
-    }
+    userProfile = UserStore.getProfile();
 
     this.setState({isLoggedIn, userProfile});
 
@@ -48,12 +60,38 @@ export default class Profile extends Component {
   checkProfileActions() {
 
     const {isLoggedIn} = this.state;
+    let {showProfileOptions} = this.state;
 
     if (isLoggedIn) {
       console.log(`User is logged in`);
+      showProfileOptions = !showProfileOptions;
+      this.setState({showProfileOptions});
     } else {
       console.log(`Must login to continue...`);
       UserActions.showLoginModal();
+    }
+
+  }
+
+  renderProfileOptions() {
+
+    const {isLoggedIn, showProfileOptions} = this.state;
+
+    let optionsClasses = `profile-options`;
+    if (showProfileOptions) {
+      optionsClasses = `profile-options show`;
+      const $profile = document.querySelector(`.profile`);
+      $profile.focus();
+    }
+
+    if (isLoggedIn) {
+      return (
+        <div className={optionsClasses}>
+          <ul>
+            <li className='btn-logout' onClick={() => UserActions.logoutUser()}>Logout</li>
+          </ul>
+        </div>
+      );
     }
 
   }
@@ -65,11 +103,10 @@ export default class Profile extends Component {
     const style = {backgroundImage: `url(${  profileImage  })`};
 
     return (
-      <div className='profile-wrapper'>
-        <section className='profile' style={style} onClick={() => this.checkProfileActions()}>
-          &nbsp;
-        </section>
-      </div>
+      <section className='profile' tabIndex='0' onBlur={() => this.hideProfileOptions()}>
+        <div className='profile-img' style={style} onClick={() => this.checkProfileActions()}>&nbsp;</div>
+        { this.renderProfileOptions() }
+      </section>
     );
 
   }

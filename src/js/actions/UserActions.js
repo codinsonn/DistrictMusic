@@ -17,3 +17,9 @@ export function hideLoginModal() {
     type: `HIDE_LOGIN_MODAL`
   });
 }
+
+export function logoutUser() {
+  dispatcher.dispatch({
+    type: `LOGOUT_USER`
+  });
+}

@@ -21,7 +21,7 @@ export default class PlaylistDash extends Component {
   }
 
   componentWillMount() {
-    UserStore.on(`USER_PROFILE_FETCHED`, () => this.updateUserProfile());
+    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
     UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setLoginModal());
   }
 
@@ -38,10 +38,7 @@ export default class PlaylistDash extends Component {
     let {isLoggedIn, userProfile} = this.state;
 
     isLoggedIn = UserStore.getLoggedIn();
-
-    if (isLoggedIn) {
-      userProfile = UserStore.getProfile();
-    }
+    userProfile = UserStore.getProfile();
 
     this.setState({isLoggedIn, userProfile});
 
