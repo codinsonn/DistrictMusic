@@ -38,11 +38,12 @@ module.exports = (app) => {
       maxResults: 8,
       key: authConfig.googleAuth.apiKey,
       safeSearch: 'moderate',
-      topicId: '/m/04rlf',
+      topicId: '/m/04rlf', // music general
       type: 'video',
-      videoDuration: 'medium',
+      videoDuration: 'short', // 4 - 20 minutes
       videoEmbeddable: true,
-      videoSyndicated: true
+      //videoSyndicated: true, // play outside youtube
+      videoCategoryId: 10 // music
     }
 
     search(req.params.query, opts, (err, results) => {
@@ -64,8 +65,15 @@ module.exports = (app) => {
 
         //console.log(results);
 
+        var suggestions = [];
+        results.forEach((suggestion) => {
+          if(suggestion.kind === 'youtube#video'){
+            suggestions.push(suggestion);
+          }
+        });
+
         res.statusCode = 200;
-        return res.json(results);
+        return res.json(suggestions);
 
         next();
 

@@ -34,11 +34,17 @@ export default class Notification extends Component {
 
   showNotification() {
 
-    const {type} = this.state;
-    const notificationClasses = `notification ${type} show`;
+    const $this = document.querySelector(`.notification`);
 
-    document.querySelector(`.notification`).className = notificationClasses;
-    document.querySelector(`.notification`).focus();
+    if (!this.hasBeenRemoved && $this) {
+
+      const {type} = this.state;
+      const notificationClasses = `notification ${type} show`;
+
+      $this.className = notificationClasses;
+      $this.focus();
+
+    }
 
   }
 

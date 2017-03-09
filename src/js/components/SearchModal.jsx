@@ -8,6 +8,8 @@ import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';
 import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
+import * as NotifActions from '../actions/NotifActions';
+import songs from '../api/songs';
 import gapi from 'googleapi';
 
 export default class SearchModal extends Component {
@@ -16,12 +18,14 @@ export default class SearchModal extends Component {
 
     super(props, context);
 
-    this.lastInputChange =
+    this.inputPaused = false;
+    this.inputChanged = false;
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
       searchEnabled: false,
-      gapiLoaded: false
+      gapiLoaded: false,
+      currentSuggestions: []
     };
 
   }
@@ -48,7 +52,7 @@ export default class SearchModal extends Component {
     if (!isLoggedIn) {
       searchEnabled = false;
       document.querySelector(`.search-query`).disabled = true;
-      document.querySelector(`.search-query`).value = ``;
+      this.endSearch();
     }
 
     this.setState({isLoggedIn, searchEnabled});
@@ -76,7 +80,15 @@ export default class SearchModal extends Component {
 
   }
 
-  triggerLoginOrSearch() {
+  endSearch() {
+
+    this.currentSuggestions = [];
+    document.querySelector(`.search-query`).value = ``;
+    PlaylistActions.hideSearchModal();
+
+  }
+
+  triggerLoginOrModal() {
 
     const {isLoggedIn} = this.state;
 
@@ -93,9 +105,57 @@ export default class SearchModal extends Component {
     const {isLoggedIn} = this.state;
 
     const $search = document.querySelector(`.search-query`);
+    let query = $search.value;
 
-    if (isLoggedIn && $search.value.length >= 2) {
-      console.log(`Long input`);
+    if (isLoggedIn && this.inputPaused && this.inputChanged && query.length >= 4) {
+
+      console.log(`Fetching suggestions for \'${query}\'`);
+
+      // filter out id if youtube url
+      const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = query.match(regExp);
+      if (match && match[2].length === 11) {
+        query = match[2];
+      }
+
+      // send to api to get suggestions
+      songs.youtubeSearch(query)
+        .then(res => {
+
+          let {currentSuggestions} = this.state;
+
+          currentSuggestions = res;
+
+          this.setState({currentSuggestions});
+
+          console.log(`Suggestions`, currentSuggestions);
+
+        }, failData => {
+
+          console.log(`-!- Search error -!- \n`, failData, `\n-!-`);
+
+          failData.errors.forEach(error => {
+            NotifActions.addError(error);
+          });
+
+        })
+      ;
+
+      this.inputChanged = false;
+
+    }
+
+  }
+
+  onInputChanged() {
+
+    const {isLoggedIn} = this.state;
+
+    if (isLoggedIn) {
+      setTimeout(() => { this.inputPaused = true; }, 1000);
+      setTimeout(() => { this.search(); }, 1100);
+      this.inputPaused = false;
+      this.inputChanged = true;
     }
 
   }
@@ -114,12 +174,12 @@ export default class SearchModal extends Component {
 
     return (
       <div>
-        <div className={lightboxClasses} onClick={() => PlaylistActions.hideSearchModal()}>&nbsp;</div>
-        <section className='search-bar' onClick={() => this.triggerLoginOrSearch()}>
+        <div className={lightboxClasses} onClick={() => this.endSearch()}>&nbsp;</div>
+        <section className='search-bar' onClick={() => this.triggerLoginOrModal()}>
           <input className='search-query' type='text' placeholder={placeholder} disabled
-            onInput={() => this.search()}
-            onFocus={() => this.triggerLoginOrSearch()}
-            onBlur={() => PlaylistActions.hideSearchModal()}
+            onInput={() => this.onInputChanged()}
+            onFocus={() => this.triggerLoginOrModal()}
+            onBlur={() => this.endSearch()}
           />
         </section>
       </div>

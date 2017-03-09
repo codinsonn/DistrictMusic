@@ -207,6 +207,7 @@ body {
   transition: all .5s ease-in .1s;
 }
 
+.profile:focus .profile-options ul li span,
 .profile:hover .profile-options ul li span {
   opacity: 1;
 }
@@ -215,6 +216,7 @@ body {
   background-image: url(../assets/img/loginButton.svg);
 }
 
+.profile:focus .profile-options ul li .btn-login,
 .profile-options ul li .btn-login:hover {
   background-image: url(../assets/img/loginButtonHover.svg);
 }
@@ -223,6 +225,7 @@ body {
   background-image: url(../assets/img/logoutButton.svg);
 }
 
+.profile:focus .profile-options ul li .btn-logout,
 .profile-options ul li .btn-logout:hover {
   background-image: url(../assets/img/logoutButtonHover.svg);
 }

@@ -1,42 +1,25 @@
-//import fetch from 'isomorphic-fetch';
-//import {checkStatus, buildBody} from '../util/';
+import fetch from 'isomorphic-fetch';
+import {checkStatus/*, buildBody*/} from '../util/';
 
-/*const base = `https://www.motorshop.be/api`;
+const base = `http://localhost:3020`;
 
-/*const whitelist = {
-  POST: [`file`]
+const getOptions = {
+  method: `get`,
+  headers: new Headers({
+    Accept: `application/json, application/xml, text/plain, text/html, *.*`
+  }),
+  credentials: `same-origin`,
+  withCredentials: true
 };
 
-/*export const getNewQuote = current => {
+export const youtubeSearch = query => {
 
-  return fetch(`${base}/quote/reason/${current}`)
-    .then(checkStatus);
+  return fetch(`${base}/api/youtube/search/${query}`, getOptions)
+    .then(checkStatus)
+  ;
+
 };
-
-export const selectRandom = () => {
-
-  return fetch(`${base}/quotes/rand`)
-    .then(checkStatus);
-};
-
-export const getImage = imgId => {
-
-  return fetch(`${base}/quotes/image/${imgId}`)
-    .then(checkStatus);
-};
-
-export const insert = data => {
-
-  const method = `POST`;
-  const body = buildBody(data, whitelist.POST);
-
-  return fetch(`${base}/quotes/generated`, {method, body})
-    .then(checkStatus);
-};*/
 
 export default {
-  /*getNewQuote,
-  selectRandom,
-  getImage,
-  insert*/
+  youtubeSearch
 };
