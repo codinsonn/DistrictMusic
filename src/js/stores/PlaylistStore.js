@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 //import {songs} from '../api/';
+import UserStore from '../stores/UserStore';
 
 class PlaylistStore extends EventEmitter {
 
@@ -8,27 +9,40 @@ class PlaylistStore extends EventEmitter {
 
     super();
 
-    this.queue = [
-      {
-        url: `https://youtu.be/E5GD_fb7v3s`,
-        currentVotes: 1,
-        legacyVotes: 10,
-        lastAddedBy: `Thorr Stevens`
-      }
-    ];
+    this.showSearchModal = false;
+
+    this.queue = [];
 
   }
 
-  eventHandler(param) {
-    console.log(`EVENT`, param);
+  setShowSearchModal(visible) {
+
+    let blnShowModal = false;
+    if (UserStore.getLoggedIn()) {
+      blnShowModal = visible;
+    }
+    this.showSearchModal = blnShowModal;
+
+    this.emit(`SHOW_SEARCH_MODAL_CHANGED`);
+
+  }
+
+  getShowSearchModal() {
+
+    return this.showSearchModal;
+
   }
 
   handleActions(action) {
 
     switch (action.type) {
 
-    case `EVENT`:
-      this.eventHandler(action.param);
+    case `SHOW_LOGIN_MODAL`:
+      this.setShowSearchModal(true);
+      break;
+
+    case `HIDE_LOGIN_MODAL`:
+      this.setShowSearchModal(false);
       break;
 
     }

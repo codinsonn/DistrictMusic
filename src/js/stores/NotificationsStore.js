@@ -7,7 +7,17 @@ class NotificationsStore extends EventEmitter {
 
     super();
 
+    this.gapiClientLoaded = false;
+
     this.notifs = [];
+
+  }
+
+  setGapiClientLoaded() {
+
+    this.gapiClientLoaded = true;
+
+    this.emit(`GAPI_CLIENT_READY`);
 
   }
 
@@ -58,6 +68,10 @@ class NotificationsStore extends EventEmitter {
   handleActions(action) {
 
     switch (action.type) {
+
+    case `GAPI_CLIENT_LOADED`:
+      this.setGapiClientLoaded();
+      break;
 
     case `ADD_SUCCESS`:
       this.addSuccess(action.notification);

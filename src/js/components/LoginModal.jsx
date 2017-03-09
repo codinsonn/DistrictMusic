@@ -4,6 +4,7 @@ import React, {Component, PropTypes} from 'react';
 //import Scrollchor from 'react-scrollchor';
 //import PlaylistStore from '../stores/PlaylistStore';
 //import {users} from '../api/';
+import NotificationsStore from '../stores/NotificationsStore';
 import * as UserActions from '../actions/UserActions';
 import gapi from 'googleapi';
 
@@ -19,7 +20,7 @@ export default class LoginModal extends Component {
   }
 
   componentWillMount() {
-
+    NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.initOauth());
   }
 
   componentWillUnmount() {
@@ -28,16 +29,13 @@ export default class LoginModal extends Component {
 
   componentDidMount() {
 
-    gapi.load(`auth2`, () => {
-      // Retrieve the singleton for the GoogleAuth library and set up the client.
-      this.auth2 = gapi.auth2.init({
-        client_id: `988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com`,
-        cookiepolicy: `single_host_origin`,
-        // Request scopes in addition to 'profile' and 'email'
-        //scope: 'additional_scope'
-      });
-      this.attachSignin(document.querySelector(`.google-signin`));
-    });
+  }
+
+  initOauth() {
+
+    this.auth2 = gapi.auth2.getAuthInstance();
+
+    this.attachSignin(document.querySelector(`.google-signin`));
 
   }
 
@@ -97,8 +95,8 @@ export default class LoginModal extends Component {
 }
 
 LoginModal.propTypes = {
-  visible: PropTypes.string,
-  setLoginModal: PropTypes.func
+  visible: PropTypes.string
 };
 
+// <span className='buttonText'><a href={authURI}>Sign in with Google+</a></span>
 // <span className='buttonText'><a href="/auth/user/google">Sign in with Google+</a></span>

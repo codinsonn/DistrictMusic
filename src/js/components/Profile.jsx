@@ -66,6 +66,7 @@ export default class Profile extends Component {
       this.setState({showProfileOptions});
     } else {
       console.log(`Must login to continue...`);
+      document.querySelector(`.profile`).blur();
       UserActions.showLoginModal();
     }
 
@@ -87,6 +88,14 @@ export default class Profile extends Component {
         <div className={optionsClasses}>
           <ul>
             <li onClick={() => UserActions.logoutUser()}><span className='btn-logout'>&nbsp;</span></li>
+          </ul>
+        </div>
+      );
+    } else {
+      return (
+        <div className={optionsClasses}>
+          <ul>
+            <li onClick={() => this.checkProfileActions()}><span className='btn-login'>&nbsp;</span></li>
           </ul>
         </div>
       );

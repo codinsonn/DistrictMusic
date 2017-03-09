@@ -1,7 +1,13 @@
 import dispatcher from '../dispatcher';
 
-export function mute() {
+export function showSearchModal() {
   dispatcher.dispatch({
-    type: `MUTE`
+    type: `SHOW_SEARCH_MODAL`
+  });
+}
+
+export function hideSearchModal() {
+  dispatcher.dispatch({
+    type: `HIDE_SEARCH_MODAL`
   });
 }

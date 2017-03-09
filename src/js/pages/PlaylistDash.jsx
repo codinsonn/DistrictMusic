@@ -2,8 +2,9 @@ import React, {Component, PropTypes} from 'react';
 //import {Link} from 'react-router';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
-import {Notifications, Profile, LoginModal} from '../components';
+import {Notifications, Profile, LoginModal, SearchModal} from '../components';
 import UserStore from '../stores/UserStore';
+import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 
@@ -16,7 +17,8 @@ export default class PlaylistDash extends Component {
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
       userProfile: UserStore.getProfile(),
-      showLoginModal: UserStore.getShowLoginModal()
+      showLoginModal: UserStore.getShowLoginModal(),
+      showSearchModal: PlaylistStore.getShowSearchModal()
     };
 
   }
@@ -24,6 +26,7 @@ export default class PlaylistDash extends Component {
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
     UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setLoginModal());
+    PlaylistStore.on(`SHOW_SEARCH_MODAL_CHANGED`, () => this.setSearchModal());
   }
 
   componentWillUnmount() {
@@ -64,20 +67,29 @@ export default class PlaylistDash extends Component {
 
   }
 
+  setSearchModal() {
+
+    const showSearchModal = PlaylistStore.getShowSearchModal();
+    this.setState({showSearchModal});
+
+  }
+
   render() {
 
-    const {showLoginModal} = this.state;
+    const {showLoginModal, showSearchModal} = this.state;
 
-    let visible = `hidden`;
-    if (showLoginModal) {
-      visible = `shown`;
-    }
+    let loginModalVisible = `hidden`;
+    if (showLoginModal) { loginModalVisible = `shown`; }
+
+    let searchModalVisible = `hidden`;
+    if (showSearchModal) { searchModalVisible = `shown`; }
 
     return (
       <div className='dashboard-wrapper'>
         <Profile />
         <Notifications />
-        <LoginModal visible={visible} />
+        <LoginModal visible={loginModalVisible} />
+        <SearchModal visible={searchModalVisible} />
       </div>
     );
 

@@ -38,7 +38,8 @@
     "react-newline-to-break": "^1.0.6",
     "react-scrollchor": "^2.2.0",
     "rootpath": "^0.1.2",
-    "socket.io": "^1.5.0"
+    "socket.io": "^1.5.0",
+    "youtube-search": "^1.0.8"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",

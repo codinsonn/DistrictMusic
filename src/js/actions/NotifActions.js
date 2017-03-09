@@ -1,5 +1,11 @@
 import dispatcher from '../dispatcher';
 
+export function gapiClientLoaded() {
+  dispatcher.dispatch({
+    type: `GAPI_CLIENT_LOADED`
+  });
+}
+
 export function addSuccess(message) {
   dispatcher.dispatch({
     type: `ADD_SUCCESS`,
