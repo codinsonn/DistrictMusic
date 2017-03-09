@@ -7,7 +7,7 @@ var baseUrlUser = "youtube/";
 module.exports = (app) => {
 
   /** --- Search Videos -----------------------------------------------------------------------------
-   * @api {get} /api/youtube/{query} Search youtube videos
+   * @api {get} /api/youtube/search/{query} Search youtube videos
    * @apiDescription Return search results
    * @apiGroup Authentication
    * @apiVersion 1.0.0

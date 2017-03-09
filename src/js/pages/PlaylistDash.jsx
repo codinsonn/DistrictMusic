@@ -86,6 +86,7 @@ export default class PlaylistDash extends Component {
 
     return (
       <div className='dashboard-wrapper'>
+        <div className='logo'>&nbsp;</div>
         <Profile />
         <Notifications />
         <LoginModal visible={loginModalVisible} />

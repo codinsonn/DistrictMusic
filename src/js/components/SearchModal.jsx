@@ -4,7 +4,9 @@ import React, {Component, PropTypes} from 'react';
 //import Scrollchor from 'react-scrollchor';
 //import PlaylistStore from '../stores/PlaylistStore';
 //import {users} from '../api/';
+import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';
+import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import gapi from 'googleapi';
 
@@ -14,14 +16,19 @@ export default class SearchModal extends Component {
 
     super(props, context);
 
+    this.lastInputChange =
+
     this.state = {
+      isLoggedIn: UserStore.getLoggedIn(),
+      searchEnabled: false,
       gapiLoaded: false
     };
 
   }
 
   componentWillMount() {
-    NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.initSearchApi());
+    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateLoggedIn());
+    NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.enableSearch());
   }
 
   componentWillUnmount() {
@@ -32,43 +39,89 @@ export default class SearchModal extends Component {
 
   }
 
-  initSearchApi() {
+  updateLoggedIn() {
+
+    let {isLoggedIn, searchEnabled} = this.state;
+
+    isLoggedIn = UserStore.getLoggedIn();
+
+    if (!isLoggedIn) {
+      searchEnabled = false;
+      document.querySelector(`.search-query`).disabled = true;
+      document.querySelector(`.search-query`).value = ``;
+    }
+
+    this.setState({isLoggedIn, searchEnabled});
+
+  }
+
+  enableSearch() {
+
+    const {isLoggedIn} = this.state;
+    let {gapiLoaded, searchEnabled} = this.state;
 
     gapi.client.setApiKey(`AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU`);
     gapi.client.load(`youtube`, `v3`, () => {
-      //this.search('music');
+
+      gapiLoaded = true;
+
+      if (isLoggedIn) {
+        searchEnabled = true;
+        document.querySelector(`.search-query`).disabled = false;
+      }
+
+      this.setState({gapiLoaded, searchEnabled});
+
     });
 
   }
 
-  /*search(query) {
+  triggerLoginOrSearch() {
 
-    //var q = $('#query').val();
-    const q = query;
-    const request = gapi.client.youtube.search.list({
-      q: q,
-      part: `snippet`,
-      kind: `video`
-    });
+    const {isLoggedIn} = this.state;
 
-    request.execute(function(response) {
-      const str = JSON.stringify(response.result);
-      //$('#search-container').html('<pre>' + str + '</pre>');
-      console.log(`Search Results`, str);
-    });
+    if (isLoggedIn) {
+      PlaylistActions.showSearchModal();
+    } else {
+      UserActions.showLoginModal();
+    }
 
-  }*/
+  }
+
+  search() {
+
+    const {isLoggedIn} = this.state;
+
+    const $search = document.querySelector(`.search-query`);
+
+    if (isLoggedIn && $search.value.length >= 2) {
+      console.log(`Long input`);
+    }
+
+  }
 
   render() {
 
+    const {isLoggedIn} = this.state;
     const {visible} = this.props;
 
-    return (
-      <div className={visible}>
-        <div className='lightbox' onClick={() => PlaylistActions.hideSearchModal()}>&nbsp;</div>
-        <article className='search-modal'>
+    const lightboxClasses = `lightbox ${visible}`;
 
-        </article>
+    let placeholder = `Login to add songs`;
+    if (isLoggedIn) {
+      placeholder = `Search or paste url`;
+    }
+
+    return (
+      <div>
+        <div className={lightboxClasses} onClick={() => PlaylistActions.hideSearchModal()}>&nbsp;</div>
+        <section className='search-bar' onClick={() => this.triggerLoginOrSearch()}>
+          <input className='search-query' type='text' placeholder={placeholder} disabled
+            onInput={() => this.search()}
+            onFocus={() => this.triggerLoginOrSearch()}
+            onBlur={() => PlaylistActions.hideSearchModal()}
+          />
+        </section>
       </div>
     );
 

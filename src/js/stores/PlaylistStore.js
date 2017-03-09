@@ -37,11 +37,11 @@ class PlaylistStore extends EventEmitter {
 
     switch (action.type) {
 
-    case `SHOW_LOGIN_MODAL`:
+    case `SHOW_SEARCH_MODAL`:
       this.setShowSearchModal(true);
       break;
 
-    case `HIDE_LOGIN_MODAL`:
+    case `HIDE_SEARCH_MODAL`:
       this.setShowSearchModal(false);
       break;
 

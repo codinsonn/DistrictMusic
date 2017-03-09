@@ -41,7 +41,6 @@ export default class LoginModal extends Component {
 
   attachSignin($element) {
 
-    console.log($element.className);
     this.auth2.attachClickHandler($element, {},
       googleUser => this.onSignIn(googleUser),
       error => {
