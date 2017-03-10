@@ -243,5 +243,3 @@ export default class SearchModal extends Component {
 SearchModal.propTypes = {
   visible: PropTypes.string
 };
-
-// <div className='no-suggestions'>Sorry, no suggestions were found!</div>

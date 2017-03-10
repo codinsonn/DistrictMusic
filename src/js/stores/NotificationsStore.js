@@ -16,9 +16,7 @@ class NotificationsStore extends EventEmitter {
 
   emitNotifChange() {
 
-    if (this.notifs.length >= 1) {
-      this.emit(`NOTIFICATIONS_CHANGED`);
-    }
+    this.emit(`NOTIFICATIONS_CHANGED`);
 
   }
 
