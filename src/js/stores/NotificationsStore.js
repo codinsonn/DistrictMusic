@@ -10,6 +10,15 @@ class NotificationsStore extends EventEmitter {
     this.gapiClientLoaded = false;
 
     this.notifs = [];
+    this.emptyNotif = {type: ``, message: ``};
+
+  }
+
+  emitNotifChange() {
+
+    if (this.notifs.length >= 1) {
+      this.emit(`NOTIFICATIONS_CHANGED`);
+    }
 
   }
 
@@ -23,44 +32,54 @@ class NotificationsStore extends EventEmitter {
 
   addSuccess(message) {
 
+    this.notifs.splice(0, 1); // remove current notification
+
     this.notifs.push({type: `success`, message: message});
 
-    this.emit(`NOTIFICATIONS_CHANGED`);
+    this.emitNotifChange();
 
   }
 
   addNotification(message) {
 
+    this.notifs.splice(0, 1); // remove current notification
+
     this.notifs.push({type: `info`, message: message});
 
-    this.emit(`NOTIFICATIONS_CHANGED`);
+    this.emitNotifChange();
 
   }
 
   addError(message) {
 
+    this.notifs.splice(0, 1); // remove current notification
+
     this.notifs.push({type: `error`, message: message});
 
-    this.emit(`NOTIFICATIONS_CHANGED`);
+    this.emitNotifChange();
 
   }
 
-  removeNotification() {
+  removeCurrentNotification() {
 
-    this.notifs.splice(0, 1);
+    this.notifs.splice(0, 1); // remove current notification
 
-    this.emit(`NOTIFICATIONS_CHANGED`);
+    this.emitNotifChange();
+
+  }
+
+  hideNotification() {
+
+    this.emit(`HIDE_NOTIFICATION`);
 
   }
 
   getNext() {
 
     if (this.notifs.length >= 1) {
-      const notifs = [];
-      notifs.push(this.notifs[0]);
-      return notifs;
+      return this.notifs[0];
     } else {
-      return [];
+      return this.emptyNotif;
     }
 
   }
@@ -86,7 +105,11 @@ class NotificationsStore extends EventEmitter {
       break;
 
     case `REMOVE_NOTIFICATION`:
-      this.removeNotification();
+      this.removeCurrentNotification();
+      break;
+
+    case `HIDE_NOTIFICATION`:
+      this.hideNotification();
       break;
 
     }

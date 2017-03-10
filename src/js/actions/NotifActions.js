@@ -32,3 +32,9 @@ export function removeNotification() {
     type: `REMOVE_NOTIFICATION`
   });
 }
+
+export function hideNotification() {
+  dispatcher.dispatch({
+    type: `HIDE_NOTIFICATION`
+  });
+}

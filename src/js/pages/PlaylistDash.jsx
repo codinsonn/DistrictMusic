@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 //import {Link} from 'react-router';
 //import Parallax from '../vendor/parallax';
 //import Scrollchor from 'react-scrollchor';
-import {Notifications, Profile, LoginModal, SearchModal} from '../components';
+import {Notification, Profile, LoginModal, SearchModal} from '../components';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
@@ -35,7 +35,7 @@ export default class PlaylistDash extends Component {
 
   componentDidMount() {
 
-    if (this.props.error && this.props.error === `failedlogin`) {
+    if (this.props.loginStatus && this.props.loginStatus === `loginFailed`) {
       NotifActions.addError(`Not a District01 Google+ account`);
     } else {
       UserActions.fetchProfile();
@@ -53,7 +53,9 @@ export default class PlaylistDash extends Component {
     this.setState({isLoggedIn, userProfile});
 
     if (isLoggedIn) {
-      NotifActions.addSuccess(`Welcome back, ${userProfile.general.firstName}`);
+      if (this.props.loginStatus === `loginSuccess`) {
+        NotifActions.addSuccess(`Welcome back, ${userProfile.general.firstName}`);
+      }
     } else {
       NotifActions.addNotification(`Till next time!`);
     }
@@ -88,7 +90,7 @@ export default class PlaylistDash extends Component {
       <div className='dashboard-wrapper'>
         <div className='logo'>&nbsp;</div>
         <Profile />
-        <Notifications />
+        <Notification />
         <LoginModal visible={loginModalVisible} />
         <SearchModal visible={searchModalVisible} />
       </div>
@@ -99,5 +101,5 @@ export default class PlaylistDash extends Component {
 }
 
 PlaylistDash.propTypes = {
-  error: PropTypes.string
+  loginStatus: PropTypes.string
 };

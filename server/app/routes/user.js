@@ -55,7 +55,7 @@ module.exports = (app) => {
    */
   app.get("/auth/user/google", UsersController.userSession.check, passport.authenticate('google', { scope : ['profile', 'email'], hostedDomain: 'district01.be' }));
   app.get("/auth/google/callback", passport.authenticate('google', {
-    successRedirect: '/',
+    successRedirect: '/hello',
     failureRedirect: '/fail'
   }));
 

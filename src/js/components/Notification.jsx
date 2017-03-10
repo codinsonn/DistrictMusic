@@ -1,5 +1,6 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 //import NotificationsStore from '../stores/NotificationsStore';
+import NotificationsStore from '../stores/NotificationsStore';
 import * as NotifActions from '../actions/NotifActions';
 
 export default class Notification extends Component {
@@ -9,16 +10,17 @@ export default class Notification extends Component {
     super(props, context);
 
     this.state = {
-      type: props.type,
-      message: props.message
+      type: ``,
+      message: ``
     };
 
-    this.hasBeenRemoved = false;
+    this.hidden = true;
 
   }
 
   componentWillMount() {
-
+    NotificationsStore.on(`NOTIFICATIONS_CHANGED`, () => this.updateNotification());
+    NotificationsStore.on(`HIDE_NOTIFICATION`, () => this.hideNotification());
   }
 
   componentWillUnmount() {
@@ -27,8 +29,19 @@ export default class Notification extends Component {
 
   componentDidMount() {
 
-    setTimeout(() => this.showNotification(), 800);
-    setTimeout(() => this.hideNotification(), 8000);
+  }
+
+  updateNotification() {
+
+    let {type, message} = this.state;
+
+    const notif = NotificationsStore.getNext();
+    type = notif.type;
+    message = notif.message;
+
+    this.setState({type, message});
+
+    console.log(`State`, this.state);
 
   }
 
@@ -36,13 +49,14 @@ export default class Notification extends Component {
 
     const $this = document.querySelector(`.notification`);
 
-    if (!this.hasBeenRemoved && $this) {
+    if (this.hidden) {
 
       const {type} = this.state;
       const notificationClasses = `notification ${type} show`;
 
       $this.className = notificationClasses;
-      $this.focus();
+
+      this.hidden = false;
 
     }
 
@@ -50,16 +64,18 @@ export default class Notification extends Component {
 
   hideNotification() {
 
-    if (!this.hasBeenRemoved) {
+    const $this = document.querySelector(`.notification`);
+
+    if (!this.hidden) {
 
       const {type} = this.state;
       const notificationClasses = `notification ${type} hide`;
 
-      document.querySelector(`.notification`).className = notificationClasses;
+      $this.className = notificationClasses;
 
-      setTimeout(() => NotifActions.removeNotification(), 300);
+      setTimeout(() => NotifActions.removeNotification(), 600);
 
-      this.hasBeenRemoved = true;
+      this.hidden = true;
 
     }
 
@@ -70,18 +86,20 @@ export default class Notification extends Component {
     const {type, message} = this.state;
     const notificationClasses = `notification ${type} hide`;
 
+    if (type !== `` && message !== ``) {
+      setTimeout(() => this.showNotification(), 600);
+      setTimeout(() => this.hideNotification(), 6000);
+    }
+
     return (
-      <section className={notificationClasses} tabIndex='1' onBlur={() => this.hideNotification()}>
-        <span className='icon' onClick={() => this.hideNotification()}>&nbsp;</span>
-        <span className='notifText'>{message}</span>
-      </section>
+      <article className='notifications'>
+        <section className={notificationClasses}>
+          <span className='icon' onClick={() => this.hideNotification()}>&nbsp;</span>
+          <span className='notifText'>{message}</span>
+        </section>
+      </article>
     );
 
   }
 
 }
-
-Notification.propTypes = {
-  type: PropTypes.string,
-  message: PropTypes.string
-};
