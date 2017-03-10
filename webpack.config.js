@@ -37,7 +37,10 @@ const config = {
 
   resolve: {
     // import files without extension import ... from './Test'
-    extensions: [`.js`, `.jsx`, `.css`]
+    extensions: [`.js`, `.jsx`, `.css`],
+    "alias": {
+      "request$": "xhr"
+    }
   },
 
   output: {

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-//import NotificationsStore from '../stores/NotificationsStore';
 import NotificationsStore from '../stores/NotificationsStore';
 import * as NotifActions from '../actions/NotifActions';
 
@@ -40,8 +39,6 @@ export default class Notification extends Component {
     message = notif.message;
 
     this.setState({type, message});
-
-    console.log(`State`, this.state);
 
   }
 

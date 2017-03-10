@@ -1,9 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
 import {Suggestion} from '../components';
 import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';

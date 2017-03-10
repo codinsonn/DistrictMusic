@@ -1,11 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
 import NotificationsStore from '../stores/NotificationsStore';
 import * as UserActions from '../actions/UserActions';
+import * as NotifActions from '../actions/NotifActions';
 import gapi from 'googleapi';
 
 export default class LoginModal extends Component {
@@ -71,6 +67,12 @@ export default class LoginModal extends Component {
   render() {
 
     const {visible} = this.props;
+
+    if (visible === `show`) {
+      setTimeout(() => NotifActions.addNotification(`Please login with District01 account`), 10);
+    } else {
+      setTimeout(() => NotifActions.hideNotification(), 10);
+    }
 
     return (
       <div className={visible}>

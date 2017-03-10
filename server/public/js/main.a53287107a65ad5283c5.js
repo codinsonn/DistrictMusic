@@ -3591,6 +3591,59 @@ module.exports = React;
 
 /***/ }),
 /* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(22);
+/* harmony export (immutable) */ __webpack_exports__["a"] = gapiClientLoaded;
+/* harmony export (immutable) */ __webpack_exports__["c"] = addSuccess;
+/* harmony export (immutable) */ __webpack_exports__["d"] = addNotification;
+/* harmony export (immutable) */ __webpack_exports__["b"] = addError;
+/* harmony export (immutable) */ __webpack_exports__["f"] = removeNotification;
+/* harmony export (immutable) */ __webpack_exports__["e"] = hideNotification;
+
+
+function gapiClientLoaded() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'GAPI_CLIENT_LOADED'
+  });
+}
+
+function addSuccess(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_SUCCESS',
+    notification: message
+  });
+}
+
+function addNotification(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_INFO',
+    notification: message
+  });
+}
+
+function addError(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_ERROR',
+    error: message
+  });
+}
+
+function removeNotification() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'REMOVE_NOTIFICATION'
+  });
+}
+
+function hideNotification() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'HIDE_NOTIFICATION'
+  });
+}
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3616,7 +3669,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3900,7 +3953,7 @@ module.exports = EventPluginHub;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3916,7 +3969,7 @@ module.exports = EventPluginHub;
 
 
 
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginUtils = __webpack_require__(55);
 
 var accumulateInto = __webpack_require__(102);
@@ -4040,7 +4093,7 @@ module.exports = EventPropagators;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4093,7 +4146,7 @@ var ReactInstanceMap = {
 module.exports = ReactInstanceMap;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4157,7 +4210,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 module.exports = SyntheticUIEvent;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4197,59 +4250,6 @@ var component = oneOfType([func, string]);
 var components = oneOfType([component, object]);
 var route = oneOfType([object, element]);
 var routes = oneOfType([route, arrayOf(route)]);
-
-/***/ }),
-/* 35 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(22);
-/* harmony export (immutable) */ __webpack_exports__["a"] = gapiClientLoaded;
-/* harmony export (immutable) */ __webpack_exports__["c"] = addSuccess;
-/* harmony export (immutable) */ __webpack_exports__["d"] = addNotification;
-/* harmony export (immutable) */ __webpack_exports__["b"] = addError;
-/* harmony export (immutable) */ __webpack_exports__["f"] = removeNotification;
-/* harmony export (immutable) */ __webpack_exports__["e"] = hideNotification;
-
-
-function gapiClientLoaded() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'GAPI_CLIENT_LOADED'
-  });
-}
-
-function addSuccess(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_SUCCESS',
-    notification: message
-  });
-}
-
-function addNotification(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_INFO',
-    notification: message
-  });
-}
-
-function addError(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_ERROR',
-    error: message
-  });
-}
-
-function removeNotification() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'REMOVE_NOTIFICATION'
-  });
-}
-
-function hideNotification() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'HIDE_NOTIFICATION'
-  });
-}
 
 /***/ }),
 /* 36 */
@@ -5106,7 +5106,7 @@ module.exports = ReactBrowserEventEmitter;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 var ViewportMetrics = __webpack_require__(101);
 
 var getEventModifierState = __webpack_require__(63);
@@ -5663,9 +5663,7 @@ var NotificationsStore = function (_EventEmitter) {
 
   NotificationsStore.prototype.emitNotifChange = function emitNotifChange() {
 
-    if (this.notifs.length >= 1) {
-      this.emit('NOTIFICATIONS_CHANGED');
-    }
+    this.emit('NOTIFICATIONS_CHANGED');
   };
 
   NotificationsStore.prototype.setGapiClientLoaded = function setGapiClientLoaded() {
@@ -7318,7 +7316,7 @@ module.exports = ReactErrorUtils;
 var _prodInvariant = __webpack_require__(3);
 
 var ReactCurrentOwner = __webpack_require__(13);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactUpdates = __webpack_require__(12);
 
@@ -8614,7 +8612,7 @@ var _prodInvariant = __webpack_require__(21);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
 var canDefineProperty = __webpack_require__(75);
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
 
@@ -27656,14 +27654,14 @@ var ReactDOMComponentTree = __webpack_require__(6);
 var ReactDOMContainerInfo = __webpack_require__(180);
 var ReactDOMFeatureFlags = __webpack_require__(182);
 var ReactFeatureFlags = __webpack_require__(95);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactMarkupChecksum = __webpack_require__(202);
 var ReactReconciler = __webpack_require__(25);
 var ReactUpdateQueue = __webpack_require__(60);
 var ReactUpdates = __webpack_require__(12);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var instantiateReactComponent = __webpack_require__(106);
 var invariant = __webpack_require__(1);
 var setInnerHTML = __webpack_require__(45);
@@ -29052,7 +29050,7 @@ function isPromise(obj) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PatternUtils__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -29933,8 +29931,9 @@ var logout = function logout() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_googleapi__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_googleapi__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_googleapi__);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/LoginModal.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29944,11 +29943,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
+
 
 
 
@@ -29982,7 +29977,7 @@ var LoginModal = function (_Component) {
 
   LoginModal.prototype.initOauth = function initOauth() {
 
-    this.auth2 = __WEBPACK_IMPORTED_MODULE_3_googleapi___default.a.auth2.getAuthInstance();
+    this.auth2 = __WEBPACK_IMPORTED_MODULE_4_googleapi___default.a.auth2.getAuthInstance();
 
     this.attachSignin(document.querySelector('.google-signin'));
   };
@@ -30018,11 +30013,21 @@ var LoginModal = function (_Component) {
     var visible = this.props.visible;
 
 
+    if (visible === 'show') {
+      setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["d" /* addNotification */]('Please login with District01 account');
+      }, 10);
+    } else {
+      setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["e" /* hideNotification */]();
+      }, 10);
+    }
+
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: visible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 76
+          lineNumber: 78
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30031,7 +30036,7 @@ var LoginModal = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 77
+            lineNumber: 79
           }
         },
         '\xA0'
@@ -30040,14 +30045,14 @@ var LoginModal = function (_Component) {
         'article',
         { className: 'login-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 78
+            lineNumber: 80
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'login-modal--logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 79
+              lineNumber: 81
             }
           },
           '\xA0'
@@ -30056,14 +30061,14 @@ var LoginModal = function (_Component) {
           'div',
           { className: 'google-signin', __source: {
               fileName: _jsxFileName,
-              lineNumber: 80
+              lineNumber: 82
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 81
+                lineNumber: 83
               }
             },
             '\xA0'
@@ -30072,7 +30077,7 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 82
+                lineNumber: 84
               }
             },
             'Sign in with Google+'
@@ -30084,14 +30089,14 @@ var LoginModal = function (_Component) {
               return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 84
+              lineNumber: 86
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 85
+                lineNumber: 87
               }
             },
             '\xA0'
@@ -30100,7 +30105,7 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 86
+                lineNumber: 88
               }
             },
             'Cancel or just listen'
@@ -30131,7 +30136,7 @@ LoginModal.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_NotifActions__ = __webpack_require__(29);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/Notification.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30141,7 +30146,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import NotificationsStore from '../stores/NotificationsStore';
 
 
 
@@ -30189,8 +30193,6 @@ var Notification = function (_Component) {
     message = notif.message;
 
     this.setState({ type: type, message: message });
-
-    console.log('State', this.state);
   };
 
   Notification.prototype.showNotification = function showNotification() {
@@ -30249,14 +30251,14 @@ var Notification = function (_Component) {
       'article',
       { className: 'notifications', __source: {
           fileName: _jsxFileName,
-          lineNumber: 95
+          lineNumber: 92
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: notificationClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 96
+            lineNumber: 93
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30265,7 +30267,7 @@ var Notification = function (_Component) {
               return _this3.hideNotification();
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 97
+              lineNumber: 94
             }
           },
           '\xA0'
@@ -30274,7 +30276,7 @@ var Notification = function (_Component) {
           'span',
           { className: 'notifText', __source: {
               fileName: _jsxFileName,
-              lineNumber: 98
+              lineNumber: 95
             }
           },
           message
@@ -30527,7 +30529,7 @@ var Profile = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_NotificationsStore__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__ = __webpack_require__(123);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__api_songs__ = __webpack_require__(78);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_googleapi__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_googleapi__);
@@ -30542,11 +30544,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
 
 
 
@@ -30745,7 +30742,7 @@ var SearchModal = function (_Component) {
       return currentSuggestions.map(function (suggestion) {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["e" /* Suggestion */], _extends({}, suggestion, { key: suggestion.id, __source: {
             fileName: _jsxFileName,
-            lineNumber: 199
+            lineNumber: 194
           }
         }));
       });
@@ -30778,7 +30775,7 @@ var SearchModal = function (_Component) {
       {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 224
+          lineNumber: 219
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30787,7 +30784,7 @@ var SearchModal = function (_Component) {
             return _this6.endSearch();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 225
+            lineNumber: 220
           }
         },
         '\xA0'
@@ -30798,7 +30795,7 @@ var SearchModal = function (_Component) {
             return _this6.triggerLoginOrModal();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 226
+            lineNumber: 221
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { className: 'search-query', type: 'text', placeholder: placeholder, disabled: true,
@@ -30813,14 +30810,14 @@ var SearchModal = function (_Component) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 227
+            lineNumber: 222
           }
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: suggestionsClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 232
+              lineNumber: 227
             }
           },
           this.renderSuggestions()
@@ -30838,8 +30835,6 @@ var SearchModal = function (_Component) {
 SearchModal.propTypes = {
   visible: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string
 };
-
-// <div className='no-suggestions'>Sorry, no suggestions were found!</div>
 
 /***/ }),
 /* 130 */
@@ -30867,6 +30862,7 @@ var Suggestion = function (_Component) {
     var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
 
     _this.state = {
+      id: props.id,
       title: props.title,
       channel: props.channelTitle,
       thumbs: props.thumbnails
@@ -30884,31 +30880,39 @@ var Suggestion = function (_Component) {
   Suggestion.prototype.render = function render() {
     var _state = this.state,
         title = _state.title,
-        thumbs = _state.thumbs;
+        thumbs = _state.thumbs,
+        duration = _state.duration;
 
-    //const style = {backgroundImage: `url(${  thumbs.medium.url  })`};
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'section',
       { className: 'search-suggestion', __source: {
           fileName: _jsxFileName,
-          lineNumber: 36
+          lineNumber: 35
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { src: thumbs.medium.url, alt: title, __source: {
           fileName: _jsxFileName,
-          lineNumber: 37
+          lineNumber: 36
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'span',
-        {
-          __source: {
+        { className: 'song-title', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 37
+          }
+        },
+        title
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        { className: 'song-duration', __source: {
             fileName: _jsxFileName,
             lineNumber: 38
           }
         },
-        title
+        duration
       )
     );
   };
@@ -30920,6 +30924,7 @@ var Suggestion = function (_Component) {
 
 
 Suggestion.propTypes = {
+  id: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   title: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   channelTitle: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   thumbnails: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object
@@ -30934,7 +30939,7 @@ Suggestion.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages__ = __webpack_require__(134);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_googleapi__);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/containers/App.jsx';
@@ -31097,7 +31102,7 @@ var NoMatch = function NoMatch() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(29);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/pages/PlaylistDash.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31107,9 +31112,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
 
 
 
@@ -31199,26 +31201,26 @@ var PlaylistDash = function (_Component) {
 
     var loginModalVisible = 'hidden';
     if (showLoginModal) {
-      loginModalVisible = 'shown';
+      loginModalVisible = 'show';
     }
 
     var searchModalVisible = 'hidden';
     if (showSearchModal) {
-      searchModalVisible = 'shown';
+      searchModalVisible = 'show';
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'dashboard-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 90
+          lineNumber: 87
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'logo', __source: {
             fileName: _jsxFileName,
-            lineNumber: 91
+            lineNumber: 88
           }
         },
         '\xA0'
@@ -31226,23 +31228,23 @@ var PlaylistDash = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["a" /* Profile */], {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 92
+          lineNumber: 89
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["b" /* Notification */], {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 93
+          lineNumber: 90
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["c" /* LoginModal */], { visible: loginModalVisible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 94
+          lineNumber: 91
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["d" /* SearchModal */], { visible: searchModalVisible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 95
+          lineNumber: 92
         }
       })
     );
@@ -33463,7 +33465,7 @@ module.exports = AutoFocusUtils;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var FallbackCompositionState = __webpack_require__(173);
 var SyntheticCompositionEvent = __webpack_require__(216);
@@ -34068,8 +34070,8 @@ module.exports = CSSPropertyOperations;
 
 
 
-var EventPluginHub = __webpack_require__(30);
-var EventPropagators = __webpack_require__(31);
+var EventPluginHub = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactUpdates = __webpack_require__(12);
@@ -34479,7 +34481,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ReactDOMComponentTree = __webpack_require__(6);
 var SyntheticMouseEvent = __webpack_require__(42);
 
@@ -35103,7 +35105,7 @@ var React = __webpack_require__(28);
 var ReactComponentEnvironment = __webpack_require__(58);
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactErrorUtils = __webpack_require__(59);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactNodeTypes = __webpack_require__(99);
 var ReactReconciler = __webpack_require__(25);
@@ -35112,7 +35114,7 @@ if (process.env.NODE_ENV !== 'production') {
   var checkReactTypeSpec = __webpack_require__(225);
 }
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var shallowEqual = __webpack_require__(48);
 var shouldUpdateReactComponent = __webpack_require__(66);
@@ -36132,7 +36134,7 @@ var DOMLazyTree = __webpack_require__(24);
 var DOMNamespaces = __webpack_require__(54);
 var DOMProperty = __webpack_require__(16);
 var DOMPropertyOperations = __webpack_require__(91);
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginRegistry = __webpack_require__(40);
 var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactDOMComponentFlags = __webpack_require__(92);
@@ -39225,7 +39227,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 
 function runEventQueueInBatch(events) {
   EventPluginHub.enqueueEvents(events);
@@ -39463,7 +39465,7 @@ module.exports = ReactHostOperationHistoryHook;
 
 
 var DOMProperty = __webpack_require__(16);
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginUtils = __webpack_require__(55);
 var ReactComponentEnvironment = __webpack_require__(58);
 var ReactEmptyComponent = __webpack_require__(94);
@@ -39602,7 +39604,7 @@ module.exports = ReactMarkupChecksum;
 var _prodInvariant = __webpack_require__(3);
 
 var ReactComponentEnvironment = __webpack_require__(58);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 
 var ReactCurrentOwner = __webpack_require__(13);
@@ -41031,7 +41033,7 @@ module.exports = SVGDOMPropertyConfig;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactInputSelection = __webpack_require__(97);
@@ -41231,7 +41233,7 @@ module.exports = SelectEventPlugin;
 var _prodInvariant = __webpack_require__(3);
 
 var EventListener = __webpack_require__(81);
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ReactDOMComponentTree = __webpack_require__(6);
 var SyntheticAnimationEvent = __webpack_require__(214);
 var SyntheticClipboardEvent = __webpack_require__(215);
@@ -41242,7 +41244,7 @@ var SyntheticMouseEvent = __webpack_require__(42);
 var SyntheticDragEvent = __webpack_require__(217);
 var SyntheticTouchEvent = __webpack_require__(221);
 var SyntheticTransitionEvent = __webpack_require__(222);
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 var SyntheticWheelEvent = __webpack_require__(223);
 
 var emptyFunction = __webpack_require__(11);
@@ -41630,7 +41632,7 @@ module.exports = SyntheticDragEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 /**
  * @interface FocusEvent
@@ -41713,7 +41715,7 @@ module.exports = SyntheticInputEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 var getEventCharCode = __webpack_require__(62);
 var getEventKey = __webpack_require__(229);
@@ -41802,7 +41804,7 @@ module.exports = SyntheticKeyboardEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 var getEventModifierState = __webpack_require__(63);
 
@@ -42186,7 +42188,7 @@ var _prodInvariant = __webpack_require__(3);
 
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 
 var getHostComponentFromComposite = __webpack_require__(104);
 var invariant = __webpack_require__(1);
@@ -42765,7 +42767,7 @@ var IndexLink = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Redirect__ = __webpack_require__(112);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42824,7 +42826,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__RouteUtils__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42881,7 +42883,7 @@ var IndexRoute = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42938,7 +42940,7 @@ var Route = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createTransitionManager__ = __webpack_require__(116);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RouterContext__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__RouteUtils__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RouterUtils__ = __webpack_require__(113);
@@ -44528,7 +44530,7 @@ var ReactElement = __webpack_require__(20);
 var ReactPropTypeLocationNames = __webpack_require__(74);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
 
@@ -45864,7 +45866,7 @@ var _assign = __webpack_require__(4);
 var ReactComponent = __webpack_require__(72);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 
 /**
  * Base class helpers for the updating state of a component.
@@ -46769,4 +46771,4 @@ module.exports = __webpack_require__(121);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.8c67641d280a25ad9566.js.map
+//# sourceMappingURL=main.a53287107a65ad5283c5.js.map

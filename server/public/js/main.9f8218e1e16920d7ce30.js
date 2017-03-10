@@ -3591,6 +3591,59 @@ module.exports = React;
 
 /***/ }),
 /* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(22);
+/* harmony export (immutable) */ __webpack_exports__["a"] = gapiClientLoaded;
+/* harmony export (immutable) */ __webpack_exports__["c"] = addSuccess;
+/* harmony export (immutable) */ __webpack_exports__["d"] = addNotification;
+/* harmony export (immutable) */ __webpack_exports__["b"] = addError;
+/* harmony export (immutable) */ __webpack_exports__["f"] = removeNotification;
+/* harmony export (immutable) */ __webpack_exports__["e"] = hideNotification;
+
+
+function gapiClientLoaded() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'GAPI_CLIENT_LOADED'
+  });
+}
+
+function addSuccess(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_SUCCESS',
+    notification: message
+  });
+}
+
+function addNotification(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_INFO',
+    notification: message
+  });
+}
+
+function addError(message) {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'ADD_ERROR',
+    error: message
+  });
+}
+
+function removeNotification() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'REMOVE_NOTIFICATION'
+  });
+}
+
+function hideNotification() {
+  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
+    type: 'HIDE_NOTIFICATION'
+  });
+}
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3616,7 +3669,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3900,7 +3953,7 @@ module.exports = EventPluginHub;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3916,7 +3969,7 @@ module.exports = EventPluginHub;
 
 
 
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginUtils = __webpack_require__(55);
 
 var accumulateInto = __webpack_require__(102);
@@ -4040,7 +4093,7 @@ module.exports = EventPropagators;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4093,7 +4146,7 @@ var ReactInstanceMap = {
 module.exports = ReactInstanceMap;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4157,7 +4210,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 module.exports = SyntheticUIEvent;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4197,59 +4250,6 @@ var component = oneOfType([func, string]);
 var components = oneOfType([component, object]);
 var route = oneOfType([object, element]);
 var routes = oneOfType([route, arrayOf(route)]);
-
-/***/ }),
-/* 35 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(22);
-/* harmony export (immutable) */ __webpack_exports__["a"] = gapiClientLoaded;
-/* harmony export (immutable) */ __webpack_exports__["c"] = addSuccess;
-/* harmony export (immutable) */ __webpack_exports__["d"] = addNotification;
-/* harmony export (immutable) */ __webpack_exports__["b"] = addError;
-/* harmony export (immutable) */ __webpack_exports__["f"] = removeNotification;
-/* harmony export (immutable) */ __webpack_exports__["e"] = hideNotification;
-
-
-function gapiClientLoaded() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'GAPI_CLIENT_LOADED'
-  });
-}
-
-function addSuccess(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_SUCCESS',
-    notification: message
-  });
-}
-
-function addNotification(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_INFO',
-    notification: message
-  });
-}
-
-function addError(message) {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'ADD_ERROR',
-    error: message
-  });
-}
-
-function removeNotification() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'REMOVE_NOTIFICATION'
-  });
-}
-
-function hideNotification() {
-  __WEBPACK_IMPORTED_MODULE_0__dispatcher__["a" /* default */].dispatch({
-    type: 'HIDE_NOTIFICATION'
-  });
-}
 
 /***/ }),
 /* 36 */
@@ -5106,7 +5106,7 @@ module.exports = ReactBrowserEventEmitter;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 var ViewportMetrics = __webpack_require__(101);
 
 var getEventModifierState = __webpack_require__(63);
@@ -5663,9 +5663,7 @@ var NotificationsStore = function (_EventEmitter) {
 
   NotificationsStore.prototype.emitNotifChange = function emitNotifChange() {
 
-    if (this.notifs.length >= 1) {
-      this.emit('NOTIFICATIONS_CHANGED');
-    }
+    this.emit('NOTIFICATIONS_CHANGED');
   };
 
   NotificationsStore.prototype.setGapiClientLoaded = function setGapiClientLoaded() {
@@ -7318,7 +7316,7 @@ module.exports = ReactErrorUtils;
 var _prodInvariant = __webpack_require__(3);
 
 var ReactCurrentOwner = __webpack_require__(13);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactUpdates = __webpack_require__(12);
 
@@ -8614,7 +8612,7 @@ var _prodInvariant = __webpack_require__(21);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
 var canDefineProperty = __webpack_require__(75);
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
 
@@ -27656,14 +27654,14 @@ var ReactDOMComponentTree = __webpack_require__(6);
 var ReactDOMContainerInfo = __webpack_require__(180);
 var ReactDOMFeatureFlags = __webpack_require__(182);
 var ReactFeatureFlags = __webpack_require__(95);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactMarkupChecksum = __webpack_require__(202);
 var ReactReconciler = __webpack_require__(25);
 var ReactUpdateQueue = __webpack_require__(60);
 var ReactUpdates = __webpack_require__(12);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var instantiateReactComponent = __webpack_require__(106);
 var invariant = __webpack_require__(1);
 var setInnerHTML = __webpack_require__(45);
@@ -29052,7 +29050,7 @@ function isPromise(obj) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PatternUtils__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -29933,8 +29931,9 @@ var logout = function logout() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_googleapi__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_googleapi__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_googleapi__);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/LoginModal.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29944,11 +29943,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
+
 
 
 
@@ -29982,7 +29977,7 @@ var LoginModal = function (_Component) {
 
   LoginModal.prototype.initOauth = function initOauth() {
 
-    this.auth2 = __WEBPACK_IMPORTED_MODULE_3_googleapi___default.a.auth2.getAuthInstance();
+    this.auth2 = __WEBPACK_IMPORTED_MODULE_4_googleapi___default.a.auth2.getAuthInstance();
 
     this.attachSignin(document.querySelector('.google-signin'));
   };
@@ -30018,11 +30013,21 @@ var LoginModal = function (_Component) {
     var visible = this.props.visible;
 
 
+    if (visible === 'show') {
+      setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["d" /* addNotification */]('Please login with District01 account');
+      }, 10);
+    } else {
+      setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["e" /* hideNotification */]();
+      }, 10);
+    }
+
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: visible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 76
+          lineNumber: 78
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30031,7 +30036,7 @@ var LoginModal = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 77
+            lineNumber: 79
           }
         },
         '\xA0'
@@ -30040,14 +30045,14 @@ var LoginModal = function (_Component) {
         'article',
         { className: 'login-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 78
+            lineNumber: 80
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'login-modal--logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 79
+              lineNumber: 81
             }
           },
           '\xA0'
@@ -30056,14 +30061,14 @@ var LoginModal = function (_Component) {
           'div',
           { className: 'google-signin', __source: {
               fileName: _jsxFileName,
-              lineNumber: 80
+              lineNumber: 82
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 81
+                lineNumber: 83
               }
             },
             '\xA0'
@@ -30072,7 +30077,7 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 82
+                lineNumber: 84
               }
             },
             'Sign in with Google+'
@@ -30084,14 +30089,14 @@ var LoginModal = function (_Component) {
               return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 84
+              lineNumber: 86
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'span',
             { className: 'icon', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 85
+                lineNumber: 87
               }
             },
             '\xA0'
@@ -30100,7 +30105,7 @@ var LoginModal = function (_Component) {
             'span',
             { className: 'buttonText', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 86
+                lineNumber: 88
               }
             },
             'Cancel or just listen'
@@ -30131,7 +30136,7 @@ LoginModal.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_NotifActions__ = __webpack_require__(29);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/Notification.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30141,7 +30146,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import NotificationsStore from '../stores/NotificationsStore';
 
 
 
@@ -30189,8 +30193,6 @@ var Notification = function (_Component) {
     message = notif.message;
 
     this.setState({ type: type, message: message });
-
-    console.log('State', this.state);
   };
 
   Notification.prototype.showNotification = function showNotification() {
@@ -30249,14 +30251,14 @@ var Notification = function (_Component) {
       'article',
       { className: 'notifications', __source: {
           fileName: _jsxFileName,
-          lineNumber: 95
+          lineNumber: 92
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: notificationClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 96
+            lineNumber: 93
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30265,7 +30267,7 @@ var Notification = function (_Component) {
               return _this3.hideNotification();
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 97
+              lineNumber: 94
             }
           },
           '\xA0'
@@ -30274,7 +30276,7 @@ var Notification = function (_Component) {
           'span',
           { className: 'notifText', __source: {
               fileName: _jsxFileName,
-              lineNumber: 98
+              lineNumber: 95
             }
           },
           message
@@ -30527,7 +30529,7 @@ var Profile = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_NotificationsStore__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__ = __webpack_require__(123);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__api_songs__ = __webpack_require__(78);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_googleapi__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_googleapi__);
@@ -30542,11 +30544,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
 
 
 
@@ -30745,7 +30742,7 @@ var SearchModal = function (_Component) {
       return currentSuggestions.map(function (suggestion) {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["e" /* Suggestion */], _extends({}, suggestion, { key: suggestion.id, __source: {
             fileName: _jsxFileName,
-            lineNumber: 199
+            lineNumber: 194
           }
         }));
       });
@@ -30778,7 +30775,7 @@ var SearchModal = function (_Component) {
       {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 224
+          lineNumber: 219
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30787,7 +30784,7 @@ var SearchModal = function (_Component) {
             return _this6.endSearch();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 225
+            lineNumber: 220
           }
         },
         '\xA0'
@@ -30798,7 +30795,7 @@ var SearchModal = function (_Component) {
             return _this6.triggerLoginOrModal();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 226
+            lineNumber: 221
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { className: 'search-query', type: 'text', placeholder: placeholder, disabled: true,
@@ -30813,14 +30810,14 @@ var SearchModal = function (_Component) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 227
+            lineNumber: 222
           }
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: suggestionsClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 232
+              lineNumber: 227
             }
           },
           this.renderSuggestions()
@@ -30846,6 +30843,8 @@ SearchModal.propTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_silverscreen__ = __webpack_require__(309);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_silverscreen___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_silverscreen__);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/Suggestion.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30853,6 +30852,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -30865,9 +30865,11 @@ var Suggestion = function (_Component) {
     var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
 
     _this.state = {
+      id: props.id,
       title: props.title,
       channel: props.channelTitle,
-      thumbs: props.thumbnails
+      thumbs: props.thumbnails,
+      duration: 0
     };
 
     return _this;
@@ -30877,36 +30879,47 @@ var Suggestion = function (_Component) {
 
   Suggestion.prototype.componentWillUnmount = function componentWillUnmount() {};
 
-  Suggestion.prototype.componentDidMount = function componentDidMount() {};
+  Suggestion.prototype.componentDidMount = function componentDidMount() {
+
+    infoForVideoWithURL('https://vimeo.com/165384179');
+  };
 
   Suggestion.prototype.render = function render() {
     var _state = this.state,
         title = _state.title,
-        thumbs = _state.thumbs;
+        thumbs = _state.thumbs,
+        duration = _state.duration;
 
-    //const style = {backgroundImage: `url(${  thumbs.medium.url  })`};
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'section',
       { className: 'search-suggestion', __source: {
           fileName: _jsxFileName,
-          lineNumber: 36
+          lineNumber: 39
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { src: thumbs.medium.url, alt: title, __source: {
           fileName: _jsxFileName,
-          lineNumber: 37
+          lineNumber: 40
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'span',
-        {
-          __source: {
+        { className: 'song-title', __source: {
             fileName: _jsxFileName,
-            lineNumber: 38
+            lineNumber: 41
           }
         },
         title
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        { className: 'song-duration', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 42
+          }
+        },
+        duration
       )
     );
   };
@@ -30918,6 +30931,7 @@ var Suggestion = function (_Component) {
 
 
 Suggestion.propTypes = {
+  id: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   title: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   channelTitle: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   thumbnails: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object
@@ -30932,7 +30946,7 @@ Suggestion.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages__ = __webpack_require__(134);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_googleapi___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_googleapi__);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/containers/App.jsx';
@@ -31095,7 +31109,7 @@ var NoMatch = function NoMatch() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(29);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/pages/PlaylistDash.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31105,9 +31119,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
 
 
 
@@ -31197,26 +31208,26 @@ var PlaylistDash = function (_Component) {
 
     var loginModalVisible = 'hidden';
     if (showLoginModal) {
-      loginModalVisible = 'shown';
+      loginModalVisible = 'show';
     }
 
     var searchModalVisible = 'hidden';
     if (showSearchModal) {
-      searchModalVisible = 'shown';
+      searchModalVisible = 'show';
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'dashboard-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 90
+          lineNumber: 87
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'logo', __source: {
             fileName: _jsxFileName,
-            lineNumber: 91
+            lineNumber: 88
           }
         },
         '\xA0'
@@ -31224,23 +31235,23 @@ var PlaylistDash = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["a" /* Profile */], {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 92
+          lineNumber: 89
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["b" /* Notification */], {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 93
+          lineNumber: 90
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["c" /* LoginModal */], { visible: loginModalVisible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 94
+          lineNumber: 91
         }
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["d" /* SearchModal */], { visible: searchModalVisible, __source: {
           fileName: _jsxFileName,
-          lineNumber: 95
+          lineNumber: 92
         }
       })
     );
@@ -33461,7 +33472,7 @@ module.exports = AutoFocusUtils;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var FallbackCompositionState = __webpack_require__(173);
 var SyntheticCompositionEvent = __webpack_require__(216);
@@ -34066,8 +34077,8 @@ module.exports = CSSPropertyOperations;
 
 
 
-var EventPluginHub = __webpack_require__(30);
-var EventPropagators = __webpack_require__(31);
+var EventPluginHub = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactUpdates = __webpack_require__(12);
@@ -34477,7 +34488,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ReactDOMComponentTree = __webpack_require__(6);
 var SyntheticMouseEvent = __webpack_require__(42);
 
@@ -35101,7 +35112,7 @@ var React = __webpack_require__(28);
 var ReactComponentEnvironment = __webpack_require__(58);
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactErrorUtils = __webpack_require__(59);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactNodeTypes = __webpack_require__(99);
 var ReactReconciler = __webpack_require__(25);
@@ -35110,7 +35121,7 @@ if (process.env.NODE_ENV !== 'production') {
   var checkReactTypeSpec = __webpack_require__(225);
 }
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var shallowEqual = __webpack_require__(48);
 var shouldUpdateReactComponent = __webpack_require__(66);
@@ -36130,7 +36141,7 @@ var DOMLazyTree = __webpack_require__(24);
 var DOMNamespaces = __webpack_require__(54);
 var DOMProperty = __webpack_require__(16);
 var DOMPropertyOperations = __webpack_require__(91);
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginRegistry = __webpack_require__(40);
 var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactDOMComponentFlags = __webpack_require__(92);
@@ -39223,7 +39234,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 
 function runEventQueueInBatch(events) {
   EventPluginHub.enqueueEvents(events);
@@ -39461,7 +39472,7 @@ module.exports = ReactHostOperationHistoryHook;
 
 
 var DOMProperty = __webpack_require__(16);
-var EventPluginHub = __webpack_require__(30);
+var EventPluginHub = __webpack_require__(31);
 var EventPluginUtils = __webpack_require__(55);
 var ReactComponentEnvironment = __webpack_require__(58);
 var ReactEmptyComponent = __webpack_require__(94);
@@ -39600,7 +39611,7 @@ module.exports = ReactMarkupChecksum;
 var _prodInvariant = __webpack_require__(3);
 
 var ReactComponentEnvironment = __webpack_require__(58);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 var ReactInstrumentation = __webpack_require__(10);
 
 var ReactCurrentOwner = __webpack_require__(13);
@@ -41029,7 +41040,7 @@ module.exports = SVGDOMPropertyConfig;
 
 
 
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ExecutionEnvironment = __webpack_require__(7);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactInputSelection = __webpack_require__(97);
@@ -41229,7 +41240,7 @@ module.exports = SelectEventPlugin;
 var _prodInvariant = __webpack_require__(3);
 
 var EventListener = __webpack_require__(81);
-var EventPropagators = __webpack_require__(31);
+var EventPropagators = __webpack_require__(32);
 var ReactDOMComponentTree = __webpack_require__(6);
 var SyntheticAnimationEvent = __webpack_require__(214);
 var SyntheticClipboardEvent = __webpack_require__(215);
@@ -41240,7 +41251,7 @@ var SyntheticMouseEvent = __webpack_require__(42);
 var SyntheticDragEvent = __webpack_require__(217);
 var SyntheticTouchEvent = __webpack_require__(221);
 var SyntheticTransitionEvent = __webpack_require__(222);
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 var SyntheticWheelEvent = __webpack_require__(223);
 
 var emptyFunction = __webpack_require__(11);
@@ -41628,7 +41639,7 @@ module.exports = SyntheticDragEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 /**
  * @interface FocusEvent
@@ -41711,7 +41722,7 @@ module.exports = SyntheticInputEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 var getEventCharCode = __webpack_require__(62);
 var getEventKey = __webpack_require__(229);
@@ -41800,7 +41811,7 @@ module.exports = SyntheticKeyboardEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(33);
+var SyntheticUIEvent = __webpack_require__(34);
 
 var getEventModifierState = __webpack_require__(63);
 
@@ -42184,7 +42195,7 @@ var _prodInvariant = __webpack_require__(3);
 
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactDOMComponentTree = __webpack_require__(6);
-var ReactInstanceMap = __webpack_require__(32);
+var ReactInstanceMap = __webpack_require__(33);
 
 var getHostComponentFromComposite = __webpack_require__(104);
 var invariant = __webpack_require__(1);
@@ -42763,7 +42774,7 @@ var IndexLink = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Redirect__ = __webpack_require__(112);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42822,7 +42833,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__RouteUtils__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42879,7 +42890,7 @@ var IndexRoute = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(35);
 
 
 
@@ -42936,7 +42947,7 @@ var Route = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createTransitionManager__ = __webpack_require__(116);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RouterContext__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__RouteUtils__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RouterUtils__ = __webpack_require__(113);
@@ -44526,7 +44537,7 @@ var ReactElement = __webpack_require__(20);
 var ReactPropTypeLocationNames = __webpack_require__(74);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(2);
 
@@ -45862,7 +45873,7 @@ var _assign = __webpack_require__(4);
 var ReactComponent = __webpack_require__(72);
 var ReactNoopUpdateQueue = __webpack_require__(73);
 
-var emptyObject = __webpack_require__(29);
+var emptyObject = __webpack_require__(30);
 
 /**
  * Base class helpers for the updating state of a component.
@@ -46765,6 +46776,3680 @@ __webpack_require__(122);
 module.exports = __webpack_require__(121);
 
 
+/***/ }),
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */,
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */,
+/* 281 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bind = __webpack_require__(286);
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  typeof document.createElement -> undefined
+ */
+function isStandardBrowserEnv() {
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined' &&
+    typeof document.createElement === 'function'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object' && !isArray(obj)) {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+
+/***/ }),
+/* 282 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.decode = exports.parse = __webpack_require__(307);
+exports.encode = exports.stringify = __webpack_require__(308);
+
+
+/***/ }),
+/* 283 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(289);
+
+/***/ }),
+/* 284 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(281);
+var settle = __webpack_require__(294);
+var buildURL = __webpack_require__(298);
+var parseHeaders = __webpack_require__(304);
+var isURLSameOrigin = __webpack_require__(302);
+var createError = __webpack_require__(285);
+var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(297);
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if (process.env.NODE_ENV !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      if (request.status === 0) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(300);
+
+      // Add xsrf header
+      var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        if (request.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.progress === 'function') {
+      if (config.method === 'post' || config.method === 'put') {
+        request.upload.addEventListener('progress', config.progress);
+      } else if (config.method === 'get') {
+        request.addEventListener('progress', config.progress);
+      }
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 285 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(293);
+
+/**
+ * Create an Error with the specified message, config, error code, and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, response);
+};
+
+
+/***/ }),
+/* 286 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var punycode = __webpack_require__(306);
+var util = __webpack_require__(312);
+
+exports.parse = urlParse;
+exports.resolve = urlResolve;
+exports.resolveObject = urlResolveObject;
+exports.format = urlFormat;
+
+exports.Url = Url;
+
+function Url() {
+  this.protocol = null;
+  this.slashes = null;
+  this.auth = null;
+  this.host = null;
+  this.port = null;
+  this.hostname = null;
+  this.hash = null;
+  this.search = null;
+  this.query = null;
+  this.pathname = null;
+  this.path = null;
+  this.href = null;
+}
+
+// Reference: RFC 3986, RFC 1808, RFC 2396
+
+// define these here so at least they only have to be
+// compiled once on the first module load.
+var protocolPattern = /^([a-z0-9.+-]+:)/i,
+    portPattern = /:[0-9]*$/,
+
+    // Special case for a simple path URL
+    simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/,
+
+    // RFC 2396: characters reserved for delimiting URLs.
+    // We actually just auto-escape these.
+    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
+
+    // RFC 2396: characters not allowed for various reasons.
+    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
+
+    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
+    autoEscape = ['\''].concat(unwise),
+    // Characters that are never ever allowed in a hostname.
+    // Note that any invalid chars are also handled, but these
+    // are the ones that are *expected* to be seen, so we fast-path
+    // them.
+    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
+    hostEndingChars = ['/', '?', '#'],
+    hostnameMaxLen = 255,
+    hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
+    hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
+    // protocols that can allow "unsafe" and "unwise" chars.
+    unsafeProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that never have a hostname.
+    hostlessProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that always contain a // bit.
+    slashedProtocol = {
+      'http': true,
+      'https': true,
+      'ftp': true,
+      'gopher': true,
+      'file': true,
+      'http:': true,
+      'https:': true,
+      'ftp:': true,
+      'gopher:': true,
+      'file:': true
+    },
+    querystring = __webpack_require__(282);
+
+function urlParse(url, parseQueryString, slashesDenoteHost) {
+  if (url && util.isObject(url) && url instanceof Url) return url;
+
+  var u = new Url;
+  u.parse(url, parseQueryString, slashesDenoteHost);
+  return u;
+}
+
+Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+  if (!util.isString(url)) {
+    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
+  }
+
+  // Copy chrome, IE, opera backslash-handling behavior.
+  // Back slashes before the query string get converted to forward slashes
+  // See: https://code.google.com/p/chromium/issues/detail?id=25916
+  var queryIndex = url.indexOf('?'),
+      splitter =
+          (queryIndex !== -1 && queryIndex < url.indexOf('#')) ? '?' : '#',
+      uSplit = url.split(splitter),
+      slashRegex = /\\/g;
+  uSplit[0] = uSplit[0].replace(slashRegex, '/');
+  url = uSplit.join(splitter);
+
+  var rest = url;
+
+  // trim before proceeding.
+  // This is to support parse stuff like "  http://foo.com  \n"
+  rest = rest.trim();
+
+  if (!slashesDenoteHost && url.split('#').length === 1) {
+    // Try fast path regexp
+    var simplePath = simplePathPattern.exec(rest);
+    if (simplePath) {
+      this.path = rest;
+      this.href = rest;
+      this.pathname = simplePath[1];
+      if (simplePath[2]) {
+        this.search = simplePath[2];
+        if (parseQueryString) {
+          this.query = querystring.parse(this.search.substr(1));
+        } else {
+          this.query = this.search.substr(1);
+        }
+      } else if (parseQueryString) {
+        this.search = '';
+        this.query = {};
+      }
+      return this;
+    }
+  }
+
+  var proto = protocolPattern.exec(rest);
+  if (proto) {
+    proto = proto[0];
+    var lowerProto = proto.toLowerCase();
+    this.protocol = lowerProto;
+    rest = rest.substr(proto.length);
+  }
+
+  // figure out if it's got a host
+  // user@server is *always* interpreted as a hostname, and url
+  // resolution will treat //foo/bar as host=foo,path=bar because that's
+  // how the browser resolves relative URLs.
+  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+    var slashes = rest.substr(0, 2) === '//';
+    if (slashes && !(proto && hostlessProtocol[proto])) {
+      rest = rest.substr(2);
+      this.slashes = true;
+    }
+  }
+
+  if (!hostlessProtocol[proto] &&
+      (slashes || (proto && !slashedProtocol[proto]))) {
+
+    // there's a hostname.
+    // the first instance of /, ?, ;, or # ends the host.
+    //
+    // If there is an @ in the hostname, then non-host chars *are* allowed
+    // to the left of the last @ sign, unless some host-ending character
+    // comes *before* the @-sign.
+    // URLs are obnoxious.
+    //
+    // ex:
+    // http://a@b@c/ => user:a@b host:c
+    // http://a@b?@c => user:a host:c path:/?@c
+
+    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
+    // Review our test case against browsers more comprehensively.
+
+    // find the first instance of any hostEndingChars
+    var hostEnd = -1;
+    for (var i = 0; i < hostEndingChars.length; i++) {
+      var hec = rest.indexOf(hostEndingChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+
+    // at this point, either we have an explicit point where the
+    // auth portion cannot go past, or the last @ char is the decider.
+    var auth, atSign;
+    if (hostEnd === -1) {
+      // atSign can be anywhere.
+      atSign = rest.lastIndexOf('@');
+    } else {
+      // atSign must be in auth portion.
+      // http://a@b/c@d => host:b auth:a path:/c@d
+      atSign = rest.lastIndexOf('@', hostEnd);
+    }
+
+    // Now we have a portion which is definitely the auth.
+    // Pull that off.
+    if (atSign !== -1) {
+      auth = rest.slice(0, atSign);
+      rest = rest.slice(atSign + 1);
+      this.auth = decodeURIComponent(auth);
+    }
+
+    // the host is the remaining to the left of the first non-host char
+    hostEnd = -1;
+    for (var i = 0; i < nonHostChars.length; i++) {
+      var hec = rest.indexOf(nonHostChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+    // if we still have not hit it, then the entire thing is a host.
+    if (hostEnd === -1)
+      hostEnd = rest.length;
+
+    this.host = rest.slice(0, hostEnd);
+    rest = rest.slice(hostEnd);
+
+    // pull out port.
+    this.parseHost();
+
+    // we've indicated that there is a hostname,
+    // so even if it's empty, it has to be present.
+    this.hostname = this.hostname || '';
+
+    // if hostname begins with [ and ends with ]
+    // assume that it's an IPv6 address.
+    var ipv6Hostname = this.hostname[0] === '[' &&
+        this.hostname[this.hostname.length - 1] === ']';
+
+    // validate a little.
+    if (!ipv6Hostname) {
+      var hostparts = this.hostname.split(/\./);
+      for (var i = 0, l = hostparts.length; i < l; i++) {
+        var part = hostparts[i];
+        if (!part) continue;
+        if (!part.match(hostnamePartPattern)) {
+          var newpart = '';
+          for (var j = 0, k = part.length; j < k; j++) {
+            if (part.charCodeAt(j) > 127) {
+              // we replace non-ASCII char with a temporary placeholder
+              // we need this to make sure size of hostname is not
+              // broken by replacing non-ASCII by nothing
+              newpart += 'x';
+            } else {
+              newpart += part[j];
+            }
+          }
+          // we test again with ASCII char only
+          if (!newpart.match(hostnamePartPattern)) {
+            var validParts = hostparts.slice(0, i);
+            var notHost = hostparts.slice(i + 1);
+            var bit = part.match(hostnamePartStart);
+            if (bit) {
+              validParts.push(bit[1]);
+              notHost.unshift(bit[2]);
+            }
+            if (notHost.length) {
+              rest = '/' + notHost.join('.') + rest;
+            }
+            this.hostname = validParts.join('.');
+            break;
+          }
+        }
+      }
+    }
+
+    if (this.hostname.length > hostnameMaxLen) {
+      this.hostname = '';
+    } else {
+      // hostnames are always lower case.
+      this.hostname = this.hostname.toLowerCase();
+    }
+
+    if (!ipv6Hostname) {
+      // IDNA Support: Returns a punycoded representation of "domain".
+      // It only converts parts of the domain name that
+      // have non-ASCII characters, i.e. it doesn't matter if
+      // you call it with a domain that already is ASCII-only.
+      this.hostname = punycode.toASCII(this.hostname);
+    }
+
+    var p = this.port ? ':' + this.port : '';
+    var h = this.hostname || '';
+    this.host = h + p;
+    this.href += this.host;
+
+    // strip [ and ] from the hostname
+    // the host field still retains them, though
+    if (ipv6Hostname) {
+      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+      if (rest[0] !== '/') {
+        rest = '/' + rest;
+      }
+    }
+  }
+
+  // now rest is set to the post-host stuff.
+  // chop off any delim chars.
+  if (!unsafeProtocol[lowerProto]) {
+
+    // First, make 100% sure that any "autoEscape" chars get
+    // escaped, even if encodeURIComponent doesn't think they
+    // need to be.
+    for (var i = 0, l = autoEscape.length; i < l; i++) {
+      var ae = autoEscape[i];
+      if (rest.indexOf(ae) === -1)
+        continue;
+      var esc = encodeURIComponent(ae);
+      if (esc === ae) {
+        esc = escape(ae);
+      }
+      rest = rest.split(ae).join(esc);
+    }
+  }
+
+
+  // chop off from the tail first.
+  var hash = rest.indexOf('#');
+  if (hash !== -1) {
+    // got a fragment string.
+    this.hash = rest.substr(hash);
+    rest = rest.slice(0, hash);
+  }
+  var qm = rest.indexOf('?');
+  if (qm !== -1) {
+    this.search = rest.substr(qm);
+    this.query = rest.substr(qm + 1);
+    if (parseQueryString) {
+      this.query = querystring.parse(this.query);
+    }
+    rest = rest.slice(0, qm);
+  } else if (parseQueryString) {
+    // no query string, but parseQueryString still requested
+    this.search = '';
+    this.query = {};
+  }
+  if (rest) this.pathname = rest;
+  if (slashedProtocol[lowerProto] &&
+      this.hostname && !this.pathname) {
+    this.pathname = '/';
+  }
+
+  //to support http.request
+  if (this.pathname || this.search) {
+    var p = this.pathname || '';
+    var s = this.search || '';
+    this.path = p + s;
+  }
+
+  // finally, reconstruct the href based on what has been validated.
+  this.href = this.format();
+  return this;
+};
+
+// format a parsed object into a url string
+function urlFormat(obj) {
+  // ensure it's an object, and not a string url.
+  // If it's an obj, this is a no-op.
+  // this way, you can call url_format() on strings
+  // to clean up potentially wonky urls.
+  if (util.isString(obj)) obj = urlParse(obj);
+  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
+  return obj.format();
+}
+
+Url.prototype.format = function() {
+  var auth = this.auth || '';
+  if (auth) {
+    auth = encodeURIComponent(auth);
+    auth = auth.replace(/%3A/i, ':');
+    auth += '@';
+  }
+
+  var protocol = this.protocol || '',
+      pathname = this.pathname || '',
+      hash = this.hash || '',
+      host = false,
+      query = '';
+
+  if (this.host) {
+    host = auth + this.host;
+  } else if (this.hostname) {
+    host = auth + (this.hostname.indexOf(':') === -1 ?
+        this.hostname :
+        '[' + this.hostname + ']');
+    if (this.port) {
+      host += ':' + this.port;
+    }
+  }
+
+  if (this.query &&
+      util.isObject(this.query) &&
+      Object.keys(this.query).length) {
+    query = querystring.stringify(this.query);
+  }
+
+  var search = this.search || (query && ('?' + query)) || '';
+
+  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+
+  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
+  // unless they had them to begin with.
+  if (this.slashes ||
+      (!protocol || slashedProtocol[protocol]) && host !== false) {
+    host = '//' + (host || '');
+    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
+  } else if (!host) {
+    host = '';
+  }
+
+  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
+  if (search && search.charAt(0) !== '?') search = '?' + search;
+
+  pathname = pathname.replace(/[?#]/g, function(match) {
+    return encodeURIComponent(match);
+  });
+  search = search.replace('#', '%23');
+
+  return protocol + host + pathname + search + hash;
+};
+
+function urlResolve(source, relative) {
+  return urlParse(source, false, true).resolve(relative);
+}
+
+Url.prototype.resolve = function(relative) {
+  return this.resolveObject(urlParse(relative, false, true)).format();
+};
+
+function urlResolveObject(source, relative) {
+  if (!source) return relative;
+  return urlParse(source, false, true).resolveObject(relative);
+}
+
+Url.prototype.resolveObject = function(relative) {
+  if (util.isString(relative)) {
+    var rel = new Url();
+    rel.parse(relative, false, true);
+    relative = rel;
+  }
+
+  var result = new Url();
+  var tkeys = Object.keys(this);
+  for (var tk = 0; tk < tkeys.length; tk++) {
+    var tkey = tkeys[tk];
+    result[tkey] = this[tkey];
+  }
+
+  // hash is always overridden, no matter what.
+  // even href="" will remove it.
+  result.hash = relative.hash;
+
+  // if the relative url is empty, then there's nothing left to do here.
+  if (relative.href === '') {
+    result.href = result.format();
+    return result;
+  }
+
+  // hrefs like //foo/bar always cut to the protocol.
+  if (relative.slashes && !relative.protocol) {
+    // take everything except the protocol from relative
+    var rkeys = Object.keys(relative);
+    for (var rk = 0; rk < rkeys.length; rk++) {
+      var rkey = rkeys[rk];
+      if (rkey !== 'protocol')
+        result[rkey] = relative[rkey];
+    }
+
+    //urlParse appends trailing / to urls like http://www.example.com
+    if (slashedProtocol[result.protocol] &&
+        result.hostname && !result.pathname) {
+      result.path = result.pathname = '/';
+    }
+
+    result.href = result.format();
+    return result;
+  }
+
+  if (relative.protocol && relative.protocol !== result.protocol) {
+    // if it's a known url protocol, then changing
+    // the protocol does weird things
+    // first, if it's not file:, then we MUST have a host,
+    // and if there was a path
+    // to begin with, then we MUST have a path.
+    // if it is file:, then the host is dropped,
+    // because that's known to be hostless.
+    // anything else is assumed to be absolute.
+    if (!slashedProtocol[relative.protocol]) {
+      var keys = Object.keys(relative);
+      for (var v = 0; v < keys.length; v++) {
+        var k = keys[v];
+        result[k] = relative[k];
+      }
+      result.href = result.format();
+      return result;
+    }
+
+    result.protocol = relative.protocol;
+    if (!relative.host && !hostlessProtocol[relative.protocol]) {
+      var relPath = (relative.pathname || '').split('/');
+      while (relPath.length && !(relative.host = relPath.shift()));
+      if (!relative.host) relative.host = '';
+      if (!relative.hostname) relative.hostname = '';
+      if (relPath[0] !== '') relPath.unshift('');
+      if (relPath.length < 2) relPath.unshift('');
+      result.pathname = relPath.join('/');
+    } else {
+      result.pathname = relative.pathname;
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    result.host = relative.host || '';
+    result.auth = relative.auth;
+    result.hostname = relative.hostname || relative.host;
+    result.port = relative.port;
+    // to support http.request
+    if (result.pathname || result.search) {
+      var p = result.pathname || '';
+      var s = result.search || '';
+      result.path = p + s;
+    }
+    result.slashes = result.slashes || relative.slashes;
+    result.href = result.format();
+    return result;
+  }
+
+  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
+      isRelAbs = (
+          relative.host ||
+          relative.pathname && relative.pathname.charAt(0) === '/'
+      ),
+      mustEndAbs = (isRelAbs || isSourceAbs ||
+                    (result.host && relative.pathname)),
+      removeAllDots = mustEndAbs,
+      srcPath = result.pathname && result.pathname.split('/') || [],
+      relPath = relative.pathname && relative.pathname.split('/') || [],
+      psychotic = result.protocol && !slashedProtocol[result.protocol];
+
+  // if the url is a non-slashed url, then relative
+  // links like ../.. should be able
+  // to crawl up to the hostname, as well.  This is strange.
+  // result.protocol has already been set by now.
+  // Later on, put the first path part into the host field.
+  if (psychotic) {
+    result.hostname = '';
+    result.port = null;
+    if (result.host) {
+      if (srcPath[0] === '') srcPath[0] = result.host;
+      else srcPath.unshift(result.host);
+    }
+    result.host = '';
+    if (relative.protocol) {
+      relative.hostname = null;
+      relative.port = null;
+      if (relative.host) {
+        if (relPath[0] === '') relPath[0] = relative.host;
+        else relPath.unshift(relative.host);
+      }
+      relative.host = null;
+    }
+    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
+  }
+
+  if (isRelAbs) {
+    // it's absolute.
+    result.host = (relative.host || relative.host === '') ?
+                  relative.host : result.host;
+    result.hostname = (relative.hostname || relative.hostname === '') ?
+                      relative.hostname : result.hostname;
+    result.search = relative.search;
+    result.query = relative.query;
+    srcPath = relPath;
+    // fall through to the dot-handling below.
+  } else if (relPath.length) {
+    // it's relative
+    // throw away the existing file, and take the new path instead.
+    if (!srcPath) srcPath = [];
+    srcPath.pop();
+    srcPath = srcPath.concat(relPath);
+    result.search = relative.search;
+    result.query = relative.query;
+  } else if (!util.isNullOrUndefined(relative.search)) {
+    // just pull out the search.
+    // like href='?foo'.
+    // Put this after the other two cases because it simplifies the booleans
+    if (psychotic) {
+      result.hostname = result.host = srcPath.shift();
+      //occationaly the auth can get stuck only in host
+      //this especially happens in cases like
+      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+      var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                       result.host.split('@') : false;
+      if (authInHost) {
+        result.auth = authInHost.shift();
+        result.host = result.hostname = authInHost.shift();
+      }
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    //to support http.request
+    if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+      result.path = (result.pathname ? result.pathname : '') +
+                    (result.search ? result.search : '');
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  if (!srcPath.length) {
+    // no path at all.  easy.
+    // we've already handled the other stuff above.
+    result.pathname = null;
+    //to support http.request
+    if (result.search) {
+      result.path = '/' + result.search;
+    } else {
+      result.path = null;
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  // if a url ENDs in . or .., then it must get a trailing slash.
+  // however, if it ends in anything else non-slashy,
+  // then it must NOT get a trailing slash.
+  var last = srcPath.slice(-1)[0];
+  var hasTrailingSlash = (
+      (result.host || relative.host || srcPath.length > 1) &&
+      (last === '.' || last === '..') || last === '');
+
+  // strip single dots, resolve double dots to parent dir
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = srcPath.length; i >= 0; i--) {
+    last = srcPath[i];
+    if (last === '.') {
+      srcPath.splice(i, 1);
+    } else if (last === '..') {
+      srcPath.splice(i, 1);
+      up++;
+    } else if (up) {
+      srcPath.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (!mustEndAbs && !removeAllDots) {
+    for (; up--; up) {
+      srcPath.unshift('..');
+    }
+  }
+
+  if (mustEndAbs && srcPath[0] !== '' &&
+      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
+    srcPath.unshift('');
+  }
+
+  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
+    srcPath.push('');
+  }
+
+  var isAbsolute = srcPath[0] === '' ||
+      (srcPath[0] && srcPath[0].charAt(0) === '/');
+
+  // put the host back
+  if (psychotic) {
+    result.hostname = result.host = isAbsolute ? '' :
+                                    srcPath.length ? srcPath.shift() : '';
+    //occationaly the auth can get stuck only in host
+    //this especially happens in cases like
+    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+    var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                     result.host.split('@') : false;
+    if (authInHost) {
+      result.auth = authInHost.shift();
+      result.host = result.hostname = authInHost.shift();
+    }
+  }
+
+  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
+
+  if (mustEndAbs && !isAbsolute) {
+    srcPath.unshift('');
+  }
+
+  if (!srcPath.length) {
+    result.pathname = null;
+    result.path = null;
+  } else {
+    result.pathname = srcPath.join('/');
+  }
+
+  //to support request.http
+  if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+    result.path = (result.pathname ? result.pathname : '') +
+                  (result.search ? result.search : '');
+  }
+  result.auth = relative.auth || result.auth;
+  result.slashes = result.slashes || relative.slashes;
+  result.href = result.format();
+  return result;
+};
+
+Url.prototype.parseHost = function() {
+  var host = this.host;
+  var port = portPattern.exec(host);
+  if (port) {
+    port = port[0];
+    if (port !== ':') {
+      this.port = port.substr(1);
+    }
+    host = host.substr(0, host.length - port.length);
+  }
+  if (host) this.hostname = host;
+};
+
+
+/***/ }),
+/* 288 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * VerbalExpressions JavaScript Library v0.2.1
+ * https://github.com/VerbalExpressions/JSVerbalExpressions
+ *
+ *
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ * Date: 2013-07-19
+ *
+ */
+
+// Define the collection class.
+(function verbalExpressionIIFE(root) {
+    // Constants
+    var MODULE_NAME = 'VerEx';
+
+    // I am the constructor function.
+    function VerbalExpression() {
+        var verbalExpression = new RegExp();
+
+        // Add all the class methods
+        VerbalExpression.injectClassMethods(verbalExpression);
+
+        // Return the new object.
+        return verbalExpression;
+    }
+
+    // Define the static methods.
+    VerbalExpression.injectClassMethods = function injectClassMethods(verbalExpression) {
+        var method;
+        // Loop over all the prototype methods
+        for (method in VerbalExpression.prototype) {
+            // Make sure this is a local method.
+            if (VerbalExpression.prototype.hasOwnProperty(method)) {
+                // Add the method
+                verbalExpression[method] = VerbalExpression.prototype[method];
+            }
+        }
+
+        return verbalExpression;
+    };
+
+    // Define the class methods.
+    VerbalExpression.prototype = {
+        // Variables to hold the whole
+        // expression construction in order
+        _prefixes: '',
+        _source: '',
+        _suffixes: '',
+        _modifiers: 'gm', // default to global multiline matching
+
+        // Sanitation function for adding
+        // anything safely to the expression
+        sanitize: function sanitize(value) {
+            var reRegExpEscape;
+
+            if (value.source) {
+                return value.source;
+            }
+
+            if (typeof value === 'number') {
+                return value;
+            }
+
+            // Regular expression meta characters, URL: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/regexp
+            reRegExpEscape = /([\].|*?+(){}^$\\:=[])/g;
+
+            // Escape RegExp special characters only
+            // $& => Last match, URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastMatch
+            return value.replace(reRegExpEscape, '\\$&');
+        },
+
+        // Function to add stuff to the
+        // expression. Also compiles the
+        // new expression so it's ready to
+        // be used.
+        add: function add(value) {
+            this._source += value || '';
+            this.compile(this._prefixes + this._source + this._suffixes, this._modifiers);
+
+            return this;
+        },
+
+        // Start and end of line functions
+        startOfLine: function startOfLine(enable) {
+            enable = (enable !== false);
+            this._prefixes = enable ? '^' : '';
+            this.add();
+
+            return this;
+        },
+
+        endOfLine: function endOfLine(enable) {
+            enable = (enable !== false);
+            this._suffixes = enable ? '$' : '';
+            this.add();
+
+            return this;
+        },
+
+        // We try to keep the syntax as
+        // user-friendly as possible.
+        // So we can use the "normal"
+        // behaviour to split the "sentences"
+        // naturally.
+        then: function then(value) {
+            value = this.sanitize(value);
+            this.add('(?:' + value + ')');
+
+            return this;
+        },
+
+        // And because we can't start with
+        // "then" function, we create an alias
+        // to be used as the first function
+        // of the chain.
+        find: function find(value) {
+            return this.then(value);
+        },
+
+        // Maybe is used to add values with ?
+        maybe: function maybe(value) {
+            value = this.sanitize(value);
+            this.add('(?:' + value + ')?');
+
+            return this;
+        },
+
+        // Any character any number of times
+        anything: function anything() {
+            this.add('(?:.*)');
+            return this;
+        },
+
+        // Anything but these characters
+        anythingBut: function anythingBut(value) {
+            value = this.sanitize(value);
+            this.add('(?:[^' + value + ']*)');
+
+            return this;
+        },
+
+        // Any character at least one time
+        something: function something() {
+            this.add('(?:.+)');
+            return this;
+        },
+
+        // Any character at least one time except for these characters
+        somethingBut: function somethingBut(value) {
+            value = this.sanitize(value);
+            this.add('(?:[^' + value + ']+)');
+
+            return this;
+        },
+
+        // Shorthand function for the
+        // String.replace function to
+        // give more logical flow if, for
+        // example, we're doing multiple
+        // replacements on one regexp.
+        replace: function replace(source, value) {
+            source = source.toString();
+            return source.replace(this, value);
+        },
+
+        /// Add regular expression special ///
+        /// characters                     ///
+
+        // Line break
+        lineBreak: function lineBreak() {
+            this.add('(?:\\r\\n|\\r|\\n)'); // Unix + Windows CRLF
+            return this;
+        },
+
+        // And a shorthand for html-minded
+        br: function br() {
+            return this.lineBreak();
+        },
+
+        // Tab (duh?)
+        tab: function tab() {
+            this.add('\\t');
+            return this;
+        },
+
+        // Any alphanumeric
+        word: function word() {
+            this.add('\\w+');
+            return this;
+        },
+
+        // Any whitespace
+        whitespace: function whitespace() {
+            this.add('\\s');
+            return this;
+        },
+
+        // Any given character
+        anyOf: function anyOf(value) {
+            value = this.sanitize(value);
+            this.add('[' + value + ']');
+
+            return this;
+        },
+
+        // Shorthand
+        any: function any(value) {
+            return this.anyOf(value);
+        },
+
+        // Usage: .range( from, to [, from, to ... ] )
+        range: function range() {
+            var length = arguments.length;
+
+            // Create a string buffer instead of concatenating on iteration
+            var buffer = new Array(length / 2);
+            var index = 0;
+            var i = 0;
+            var from;
+            var to;
+
+            buffer[index++] = '[';
+
+            while (i < length) {
+                from = this.sanitize(arguments[i++]);
+                to = this.sanitize(arguments[i++]);
+                buffer[index++] = from + '-' + to;
+            }
+
+            buffer[index++] = ']';
+
+            this.add(buffer.join(''));
+
+            return this;
+        },
+
+        /// Modifiers      ///
+
+        // Modifier abstraction
+        addModifier: function addModifier(modifier) {
+            if (this._modifiers.indexOf(modifier) === -1) {
+                this._modifiers += modifier;
+            }
+
+            this.add();
+
+            return this;
+        },
+
+        removeModifier: function removeModifier(modifier) {
+            this._modifiers = this._modifiers.replace(modifier, '');
+            this.add();
+
+            return this;
+        },
+
+        // Case-insensitivity modifier
+        withAnyCase: function withAnyCase(enable) {
+            if (enable !== false) {
+                this.addModifier('i');
+            } else {
+                this.removeModifier('i');
+            }
+
+            this.add();
+
+            return this;
+        },
+
+        // Default behaviour is with "g" modifier,
+        // so we can turn this another way around
+        // than other modifiers
+        stopAtFirst: function stopAtFirst(enable) {
+            if (enable !== false) {
+                this.removeModifier('g');
+            } else {
+                this.addModifier('g');
+            }
+
+            this.add();
+
+            return this;
+        },
+
+        // Multiline, also reversed
+        searchOneLine: function searchOneLine(enable) {
+            if (enable !== false) {
+                this.removeModifier('m');
+            } else {
+                this.addModifier('m');
+            }
+
+            this.add();
+
+            return this;
+        },
+
+        // Repeats the previous item
+        // exactly n times or
+        // between n and m times.
+        repeatPrevious: function repeatPrevious() {
+            var value;
+            var reIsInteger = /\d+/;
+            var length = arguments.length;
+            var values = new Array(length);
+            var i = 0;
+            var j = 0;
+            for (i = 0; i < length; i++) {
+                if (reIsInteger.test(arguments[i])) {
+                    values[j++] = arguments[i];
+                }
+            }
+
+            if (j > 0) {
+                // Set the new length of the array, thus reducing to the elements that have content
+                values.length = j;
+                value = '{' + values.join(',') + '}';
+            }
+
+
+            this.add(value);
+
+            return (this);
+        },
+
+        // Repeats the previous at least once
+        oneOrMore: function oneOrMore() {
+            this.add('+');
+            return (this);
+        },
+
+        /// Loops  ///
+
+        multiple: function multiple(value) {
+            // Use expression or string
+            value = value.source || this.sanitize(value);
+            if (arguments.length === 1) {
+                this.add('(?:' + value + ')*');
+            }
+
+            if (arguments.length > 1) {
+                this.add('(?:' + value + ')');
+                this.add('{' + arguments[1] + '}');
+            }
+
+            return this;
+        },
+
+        // Adds alternative expressions
+        or: function or(value) {
+            this._prefixes += '(?:';
+            this._suffixes = ')' + this._suffixes;
+
+            this.add(')|(?:');
+            if (value) {
+                this.then(value);
+            }
+
+            return this;
+        },
+
+        // Starts a capturing group
+        beginCapture: function beginCapture() {
+            // Add the end of the capture group to the suffixes for now so compilation continues to work
+            this._suffixes += ')';
+            this.add('(');
+
+            return this;
+        },
+
+        // Ends a capturing group
+        endCapture: function endCapture() {
+            // Remove the last parentheses from the _suffixes and add to the regex itself
+            this._suffixes = this._suffixes.substring(0, this._suffixes.length - 1);
+            this.add(')');
+
+            return this;
+        },
+
+        // Convert to RegExp object
+        toRegExp: function toRegExp() {
+            var array = this.toString().match(/\/(.*)\/([gimuy]+)?/);
+            return new RegExp(array[1], array[2]);
+        },
+    };
+
+    function createVerbalExpression() {
+        return new VerbalExpression();
+    }
+
+    // UMD (Universal Module Definition), URL: https://github.com/umdjs/umd
+    // Supports AMD, CommonJS and the browser
+    if (typeof module !== 'undefined' && module.exports) {
+        // Node.js Module
+        module.exports = createVerbalExpression;
+    } else if (true) {
+        // AMD Module
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function define() {
+            return VerbalExpression;
+        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {
+        // Browser
+        root[MODULE_NAME] = createVerbalExpression;
+    }
+})(this);
+
+
+/***/ }),
+/* 289 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+var bind = __webpack_require__(286);
+var Axios = __webpack_require__(290);
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = module.exports = createInstance();
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(defaultConfig) {
+  return createInstance(defaultConfig);
+};
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(305);
+
+
+/***/ }),
+/* 290 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(296);
+var utils = __webpack_require__(281);
+var InterceptorManager = __webpack_require__(291);
+var dispatchRequest = __webpack_require__(292);
+var isAbsoluteURL = __webpack_require__(301);
+var combineURLs = __webpack_require__(299);
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ */
+function Axios(defaultConfig) {
+  this.defaults = utils.merge(defaults, defaultConfig);
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
+  }
+
+  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
+
+  // Hook up interceptors middleware
+  var chain = [dispatchRequest, undefined];
+  var promise = Promise.resolve(config);
+
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    chain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    chain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  while (chain.length) {
+    promise = promise.then(chain.shift(), chain.shift());
+  }
+
+  return promise;
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+/* 291 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+/* 292 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(281);
+var transformData = __webpack_require__(295);
+
+/**
+ * Dispatch a request to the server using whichever adapter
+ * is supported by the current environment.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData(
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers || {}
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter;
+
+  if (typeof config.adapter === 'function') {
+    // For custom adapter support
+    adapter = config.adapter;
+  } else if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(284);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(284);
+  }
+
+  return Promise.resolve(config)
+    // Wrap synchronous adapter errors and pass configuration
+    .then(adapter)
+    .then(function onFulfilled(response) {
+      // Transform response data
+      response.data = transformData(
+        response.data,
+        response.headers,
+        config.transformResponse
+      );
+
+      return response;
+    }, function onRejected(error) {
+      // Transform response data
+      if (error && error.response) {
+        error.response.data = transformData(
+          error.response.data,
+          error.response.headers,
+          config.transformResponse
+        );
+      }
+
+      return Promise.reject(error);
+    });
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+  error.response = response;
+  return error;
+};
+
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createError = __webpack_require__(285);
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response
+    ));
+  }
+};
+
+
+/***/ }),
+/* 295 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn(data, headers);
+  });
+
+  return data;
+};
+
+
+/***/ }),
+/* 296 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+var normalizeHeaderName = __webpack_require__(303);
+
+var PROTECTION_PREFIX = /^\)\]\}',?\n/;
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+module.exports = {
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      data = data.replace(PROTECTION_PREFIX, '');
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  headers: {
+    common: {
+      'Accept': 'application/json, text/plain, */*'
+    },
+    patch: utils.merge(DEFAULT_CONTENT_TYPE),
+    post: utils.merge(DEFAULT_CONTENT_TYPE),
+    put: utils.merge(DEFAULT_CONTENT_TYPE)
+  },
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+
+/***/ }),
+/* 297 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
+
+
+/***/ }),
+/* 298 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%40/gi, '@').
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      }
+
+      if (!utils.isArray(val)) {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+/* 299 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
+};
+
+
+/***/ }),
+/* 300 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
+);
+
+
+/***/ }),
+/* 301 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+/* 302 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      var href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
+);
+
+
+/***/ }),
+/* 303 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+/* 304 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(281);
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+/* 305 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+/* 306 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.1 by @mathias */
+;(function(root) {
+
+	/** Detect free variables */
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
+	var freeModule = typeof module == 'object' && module &&
+		!module.nodeType && module;
+	var freeGlobal = typeof global == 'object' && global;
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
+		root = freeGlobal;
+	}
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexPunycode = /^xn--/,
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw new RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		var result = [];
+		while (length--) {
+			result[length] = fn(array[length]);
+		}
+		return result;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
+	 * @private
+	 * @param {String} domain The domain name or email address.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
+	}
+
+	/**
+	 * Creates an array containing the numeric code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of numeric code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of numeric code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic numeric code point value.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		if (codePoint - 48 < 10) {
+			return codePoint - 22;
+		}
+		if (codePoint - 65 < 26) {
+			return codePoint - 65;
+		}
+		if (codePoint - 97 < 26) {
+			return codePoint - 97;
+		}
+		return base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if `flag` is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII-only symbols.
+	 * @returns {String} The resulting string of Unicode symbols.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode symbols.
+	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
+	 * @memberOf punycode
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
+	 * @memberOf punycode
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
+	 */
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.4.1',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to Unicode code points, and back.
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (
+		true
+	) {
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+			return punycode;
+		}.call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
+			freeModule.exports = punycode;
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else {
+		// in Rhino or a web browser
+		root.punycode = punycode;
+	}
+
+}(this));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(266)(module), __webpack_require__(265)))
+
+/***/ }),
+/* 307 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+
+/***/ }),
+/* 308 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+
+/***/ }),
+/* 309 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.typeForVideoURL = typeForVideoURL;
+exports.infoForVideoWithURL = infoForVideoWithURL;
+
+var _youTube = __webpack_require__(311);
+
+var youTube = _interopRequireWildcard(_youTube);
+
+var _vimeo = __webpack_require__(310);
+
+var vimeo = _interopRequireWildcard(_vimeo);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function typeForVideoURL(videoURL) {
+	if (youTube.isValidVideoURL(videoURL)) {
+		return youTube.sourceType;
+	} else if (vimeo.isValidVideoURL(videoURL)) {
+		return vimeo.sourceType;
+	} else {
+		return;
+	}
+}
+
+function handlerForVideoURL(videoURL) {
+	switch (typeForVideoURL(videoURL)) {
+		case youTube.sourceType:
+			return youTube;
+		case vimeo.sourceType:
+			return vimeo;
+		default:
+			return;
+	}
+}
+
+function infoForVideoWithURL(videoURL) {
+	var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	var handler = handlerForVideoURL(videoURL);
+	if (handler) {
+		return handler.infoForVideoWithURL(videoURL, options);
+	} else {
+		return Promise.reject({
+			videoURL: videoURL,
+			noHandler: true
+		});
+	}
+}
+
+/***/ }),
+/* 310 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.sourceType = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+//import openGraph from 'open-graph'
+
+
+exports.isValidVideoURL = isValidVideoURL;
+exports.infoForVideoWithURL = infoForVideoWithURL;
+
+var _axios = __webpack_require__(283);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _url = __webpack_require__(287);
+
+var _url2 = _interopRequireDefault(_url);
+
+var _querystring = __webpack_require__(282);
+
+var _querystring2 = _interopRequireDefault(_querystring);
+
+var _verbalExpressions = __webpack_require__(288);
+
+var _verbalExpressions2 = _interopRequireDefault(_verbalExpressions);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var sourceType = exports.sourceType = 'vimeo';
+
+var digitRE = (0, _verbalExpressions2.default)().range('0', '9').stopAtFirst(true);
+
+var nameComponentRE = (0, _verbalExpressions2.default)().anythingBut(digitRE).anythingBut('/').then('/').stopAtFirst(true);
+
+var vimeoURLRegEx = (0, _verbalExpressions2.default)().startOfLine().maybe('http').maybe('s').maybe(':').maybe('//').maybe('www.').then('vimeo.com/').maybe('ondemand/').maybe(nameComponentRE).maybe(nameComponentRE).multiple(digitRE).maybe('/').endOfLine().withAnyCase().stopAtFirst(true); // Remove stateful g flag: http://stackoverflow.com/questions/1520800/why-regexp-with-global-flag-in-javascript-give-wrong-results
+
+
+function videoIDForURL(videoURL) {
+	var matches = videoURL.match(vimeoURLRegEx);
+	if (matches.length === 1) {
+		return matches[0];
+	} else {
+		return null;
+	}
+}
+
+function isValidVideoURL(videoURL) {
+	return vimeoURLRegEx.test(videoURL);
+}
+
+function videoInfosInVimeoInfoList(videoInfoList, videoInfoOptions) {
+	return Promise.all(videoInfoList.forEach(function (videoInfo) {
+		return videoInfoForAPIInfo(videoInfo[0], videoInfoOptions);
+	}));
+}
+
+function videoInfoForAPIInfo(videoInfoFromAPI, _ref) {
+	var embedding = _ref.embedding;
+	var _ref$includeDimension = _ref.includeDimensions;
+	var includeDimensions = _ref$includeDimension === undefined ? false : _ref$includeDimension;
+	var _ref$includeDescripti = _ref.includeDescription;
+	var includeDescription = _ref$includeDescripti === undefined ? true : _ref$includeDescripti;
+	var _ref$includeThumbnail = _ref.includeThumbnail;
+	var includeThumbnail = _ref$includeThumbnail === undefined ? true : _ref$includeThumbnail;
+
+	// /video or /oembed API
+	var videoID = videoInfoFromAPI['id'] || videoInfoFromAPI['video_id'];
+
+	// /oembed API doesn't provide a URL
+	var url = videoInfoFromAPI['url'] || 'https://www.vimeo.com/' + videoID;
+
+	var title = videoInfoFromAPI['title'];
+
+	var publishedDate = videoInfoFromAPI['upload_date'];
+	var updatedDate = null;
+
+	var description = videoInfoFromAPI['description'];
+
+	// Differences between /oembed and /video
+	var thumbnailImageURL = videoInfoFromAPI['thumbnail_url'] || videoInfoFromAPI['thumbnail_large'];
+
+	var videoInfo = {
+		sourceType: sourceType,
+		videoID: videoID,
+		url: url,
+		title: title,
+		publishedDate: publishedDate,
+		updatedDate: updatedDate,
+		description: description,
+		thumbnailImageURL: thumbnailImageURL
+	};
+
+	var oEmbedPromise = null;
+
+	if (includeDimensions || embedding) {
+		var width = videoInfoFromAPI.width;
+		var height = videoInfoFromAPI.height;
+
+
+		videoInfo.originalDimensions = {
+			width: width,
+			height: height
+		};
+
+		// TODO: Extend to work with multiple sizes (e.g. Desktop, Mobile, etc)
+		if (embedding) {
+			var _ret = function () {
+				var embeddedWidth = embedding.width;
+				var embeddedHeight = void 0;
+				if (!!embedding.aspectRatio) {
+					embeddedHeight = Math.round(embeddedWidth / embedding.aspectRatio);
+				} else {
+					var scaleFactor = embeddedWidth / width;
+					embeddedHeight = Math.round(height * scaleFactor);
+				}
+
+				/*
+    embedCode = "<iframe width=\"#{embeddedWidth}\" height=\"#{embeddedHeight}\" src=\"http://www.youtube.com/embed/#{videoID}?wmode=opaque&feature=oembed&showinfo=0&theme=light\" frameborder=\"0\" allowfullscreen></iframe>"
+    */
+
+				return {
+					v: promiseVimeoOEmbed({
+						url: url,
+						maxwidth: embeddedWidth,
+						width: embeddedWidth,
+						maxheight: embeddedHeight,
+						byline: false,
+						title: false
+					}).then(function (oembedInfo) {
+						videoInfo.desktopSize = {
+							embedCode: oembedInfo['html'],
+							dimensions: {
+								width: oembedInfo['width'] || embeddedWidth,
+								height: oembedInfo['height'] || embeddedHeight
+							}
+						};
+
+						// /oembed has a larger thumbnail for some reason.
+						videoInfo.thumbnailImageURL = oembedInfo['thumbnail_url'];
+
+						return videoInfo;
+					})
+				};
+			}();
+
+			if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+		}
+	}
+
+	return Promise.resolve(videoInfo);
+}
+
+function promiseVimeoOEmbed() {
+	var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	var url = 'https://vimeo.com/api/oembed.json?' + _querystring2.default.stringify(options);
+	return _axios2.default.get(url).then(function (_ref2) {
+		var data = _ref2.data;
+		return data;
+	});
+}
+
+function infoForVideoWithURL(videoURL) {
+	var videoInfoOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	return promiseVimeoOEmbed({ url: videoURL }).then(function (oembedData) {
+		return _axios2.default.get('https://vimeo.com/api/v2/video/' + oembedData.video_id + '.json').then(function (_ref3) {
+			var data = _ref3.data;
+			return videoInfoForAPIInfo(data[0], videoInfoOptions);
+		}).catch(function (error) {
+			console.log('Vimeo /video API error', error);
+			return videoInfoForAPIInfo(oembedData, videoInfoOptions);
+		});
+	});
+}
+
+/***/ }),
+/* 311 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.sourceType = undefined;
+exports.isValidVideoURL = isValidVideoURL;
+exports.infoForVideoWithURL = infoForVideoWithURL;
+
+var _axios = __webpack_require__(283);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _url = __webpack_require__(287);
+
+var _url2 = _interopRequireDefault(_url);
+
+var _querystring = __webpack_require__(282);
+
+var _querystring2 = _interopRequireDefault(_querystring);
+
+var _verbalExpressions = __webpack_require__(288);
+
+var _verbalExpressions2 = _interopRequireDefault(_verbalExpressions);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var sourceType = exports.sourceType = 'youTube';
+//import openGraph from 'open-graph'
+
+
+var youTubeURLRegEx = /https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*[^\w\-\s])([\w\-]{11})(?=[^\w\-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/i;
+
+function videoIDForURL(videoURL) {
+	var matches = videoURL.match(youTubeURLRegEx);
+	if (matches.length === 1) {
+		return matches[0];
+	} else {
+		return null;
+	}
+}
+
+function isValidVideoURL(videoURL) {
+	return youTubeURLRegEx.test(videoURL);
+}
+
+function videoInfosInFeedInfo(feedInfo, videoInfoOptions) {
+	return Promise.all(feedInfo['entry'].forEach(function (feedEntry) {
+		return videoInfoForFeedEntry(feedEntry, videoInfoOptions);
+	}));
+}
+
+function videoInfoForFeedEntry(feedEntry, _ref) {
+	var embedding = _ref.embedding;
+	var _ref$includeDimension = _ref.includeDimensions;
+	var includeDimensions = _ref$includeDimension === undefined ? false : _ref$includeDimension;
+
+	var entryURL = feedEntry['id']['$t'];
+	var entryURLComponents = entryURL.split(':');
+	var videoID = entryURLComponents[entryURLComponents.length - 1];
+	// TODO: change to https
+	var url = 'https://www.youtube.com/watch?v=' + videoID;
+
+	var title = feedEntry['title']['$t'];
+
+	var publishedDate = feedEntry['published']['$t'];
+	var updatedDate = feedEntry['updated']['$t'];
+
+	var description = feedEntry['media$group']['media$description']['$t'];
+
+	var thumbnailImageURL = 'https://img.youtube.com/vi/' + videoID + '/maxresdefault.jpg';
+
+	var videoInfo = {
+		sourceType: sourceType,
+		videoID: videoID,
+		url: url,
+		title: title,
+		publishedDate: publishedDate,
+		updatedDate: updatedDate,
+		description: description,
+		thumbnailImageURL: thumbnailImageURL
+	};
+
+	if (includeDimensions || embedding) {
+		// Get OpenGraph info for the video URL.
+		return openGraph(url).then(function (openGraphTags) {
+			var width = parseInt(openGraphTags.video.width, 10);
+			var height = parseInt(openGraphTags.video.height, 10);
+
+			videoInfo.originalDimensions = {
+				width: width,
+				height: height
+			};
+
+			// TODO: Extend to work with multiple sizes (e.g. Desktop, Mobile, etc)
+			if (!!embedding) {
+				var embeddedWidth = embedding.width;
+				var embeddedHeight = void 0;
+
+				if (!!embedding.aspectRatio) {
+					embeddedHeight = Math.round(embeddedWidth / embedding.aspectRatio);
+				} else {
+					var scaleFactor = embeddedWidth / width;
+					embeddedHeight = Math.round(height * scaleFactor);
+				}
+
+				var embedCode = '<iframe width="' + embeddedWidth + '" height="' + embeddedHeight + '" src="https://www.youtube.com/embed/' + videoID + '?wmode=opaque&amp;feature=oembed&amp;showinfo=0&amp;theme=light" frameborder="0" allowfullscreen></iframe>';
+
+				videoInfo.desktopSize = {
+					embedCode: embedCode,
+					dimensions: {
+						width: embeddedWidth,
+						height: embeddedHeight
+					}
+				};
+			}
+			//console.log('videoInfo', videoInfo)
+			return videoInfo;
+		});
+	} else {
+		return Promise.resolve(videoInfo);
+	}
+}
+
+function infoForVideoWithURL(videoURL) {
+	var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	var embedding = _ref2.embedding;
+	var _ref2$includeDimensio = _ref2.includeDimensions;
+	var includeDimensions = _ref2$includeDimensio === undefined ? false : _ref2$includeDimensio;
+	var _ref2$includeDescript = _ref2.includeDescription;
+	var includeDescription = _ref2$includeDescript === undefined ? true : _ref2$includeDescript;
+	var _ref2$includeThumbnai = _ref2.includeThumbnail;
+	var includeThumbnail = _ref2$includeThumbnai === undefined ? true : _ref2$includeThumbnai;
+
+	// Only accepts URLs like: www.youtube.com/watch?v=# 
+	var videoURLObject = _url2.default.parse(videoURL, true);
+	// TODO: use videoIDForURL
+	var videoID = videoURLObject.query['v'];
+	// TODO: change to https
+	var youTubeVideoFeedURL = 'https://gdata.youtube.com/feeds/api/videos/' + videoID + '?alt=json&v=2';
+
+	return _axios2.default.get(youTubeVideoFeedURL).then(function (_ref3) {
+		var data = _ref3.data;
+		return videoInfoForFeedEntry(data['entry'], {
+			embedding: embedding,
+			includeDimensions: includeDimensions,
+			includeDescription: includeDescription,
+			includeThumbnail: includeThumbnail
+		});
+	});
+}
+
+/***/ }),
+/* 312 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+  isString: function(arg) {
+    return typeof(arg) === 'string';
+  },
+  isObject: function(arg) {
+    return typeof(arg) === 'object' && arg !== null;
+  },
+  isNull: function(arg) {
+    return arg === null;
+  },
+  isNullOrUndefined: function(arg) {
+    return arg == null;
+  }
+};
+
+
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.ba9916000a72fb2f05ad.js.map
+//# sourceMappingURL=main.9f8218e1e16920d7ce30.js.map

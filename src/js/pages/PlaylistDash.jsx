@@ -1,7 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
 import {Notification, Profile, LoginModal, SearchModal} from '../components';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
@@ -81,10 +78,10 @@ export default class PlaylistDash extends Component {
     const {showLoginModal, showSearchModal} = this.state;
 
     let loginModalVisible = `hidden`;
-    if (showLoginModal) { loginModalVisible = `shown`; }
+    if (showLoginModal) { loginModalVisible = `show`; }
 
     let searchModalVisible = `hidden`;
-    if (showSearchModal) { searchModalVisible = `shown`; }
+    if (showSearchModal) { searchModalVisible = `show`; }
 
     return (
       <div className='dashboard-wrapper'>

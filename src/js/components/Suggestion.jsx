@@ -7,9 +7,11 @@ export default class Suggestion extends Component {
     super(props, context);
 
     this.state = {
+      id: props.id,
       title: props.title,
       channel: props.channelTitle,
-      thumbs: props.thumbnails
+      thumbs: props.thumbnails,
+      duration: props.duration
     };
 
   }
@@ -28,14 +30,13 @@ export default class Suggestion extends Component {
 
   render() {
 
-    const {title, thumbs} = this.state;
-
-    //const style = {backgroundImage: `url(${  thumbs.medium.url  })`};
+    const {title, thumbs, duration} = this.state;
 
     return (
       <section className='search-suggestion'>
         <img src={thumbs.medium.url} alt={title} />
-        <span>{title}</span>
+        <span className='song-title'>{title}</span>
+        <span className='song-duration'>{duration}</span>
       </section>
     );
 
@@ -44,6 +45,7 @@ export default class Suggestion extends Component {
 }
 
 Suggestion.propTypes = {
+  id: PropTypes.string,
   title: PropTypes.string,
   channelTitle: PropTypes.string,
   thumbnails: PropTypes.object
