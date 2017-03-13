@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import * as PlaylistActions from '../actions/PlaylistActions';
 
 export default class Suggestion extends Component {
 
@@ -28,15 +29,27 @@ export default class Suggestion extends Component {
 
   }
 
+  showSuggestionDetail() {
+
+    const {id, title, channel, thumbs, duration} = this.state;
+    const data = {id: id, title: title, channel: channel, thumbs: thumbs, duration: duration};
+
+    PlaylistActions.showSuggestionDetail(data);
+
+  }
+
   render() {
 
     const {title, thumbs, duration} = this.state;
 
     return (
-      <section className='search-suggestion'>
+      <section className='search-suggestion' onClick={() => this.showSuggestionDetail()}>
         <img src={thumbs.medium.url} alt={title} />
-        <span className='song-title'>{title}</span>
-        <span className='song-duration'>{duration}</span>
+        <div className='suggestion-info'>
+          <span className='btn-add-to-queue' onClick={() => this.showSuggestionDetail()}>+ Add to queue</span>
+          <span className='suggestion-title'>{title}</span>
+          <span className='suggestion-duration'>{duration}</span>
+        </div>
       </section>
     );
 
@@ -48,5 +61,6 @@ Suggestion.propTypes = {
   id: PropTypes.string,
   title: PropTypes.string,
   channelTitle: PropTypes.string,
-  thumbnails: PropTypes.object
+  thumbnails: PropTypes.object,
+  duration: PropTypes.string
 };

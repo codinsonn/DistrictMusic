@@ -11,3 +11,10 @@ export function hideSearchModal() {
     type: `HIDE_SEARCH_MODAL`
   });
 }
+
+export function showSuggestionDetail(data) {
+  dispatcher.dispatch({
+    type: `SHOW_SUGGESTION_DETAIL`,
+    data: data
+  });
+}

@@ -16,6 +16,7 @@ export default class SearchModal extends Component {
 
     this.inputPaused = false;
     this.inputChanged = false;
+    this.cancelDelayed = false;
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
@@ -81,7 +82,7 @@ export default class SearchModal extends Component {
     let {currentSuggestions} = this.state;
 
     currentSuggestions = [];
-    document.querySelector(`.search-query`).value = ``;
+    //document.querySelector(`.search-query`).value = ``;
     PlaylistActions.hideSearchModal();
 
     this.setState({currentSuggestions});
@@ -94,13 +95,14 @@ export default class SearchModal extends Component {
 
     if (isLoggedIn) {
       PlaylistActions.showSearchModal();
+      this.onInputChanged(false);
     } else {
       UserActions.showLoginModal();
     }
 
   }
 
-  search() {
+  search(delayed) {
 
     const {isLoggedIn} = this.state;
 
@@ -109,77 +111,92 @@ export default class SearchModal extends Component {
 
     if (isLoggedIn && this.inputPaused && this.inputChanged) {
 
-      if (query.length >= 4) {
-
-        // filter out id if youtube url
-        const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = query.match(regExp);
-        if (match && match[2].length === 11) {
-          query = match[2];
-        }
-
-        // send to api to get suggestions
-        songs.youtubeSearch(query)
-          .then(res => {
-
-            let {currentSuggestions} = this.state;
-
-            currentSuggestions = res;
-
-            if (currentSuggestions.length === 0) {
-              NotifActions.addNotification(`No results were found`);
-            }
-
-            this.setState({currentSuggestions});
-
-          }, failData => {
-
-            console.log(`-!- Search error -!- \n`, failData, `\n-!-`);
-
-            if (failData.errors && failData.errors.length > 0) {
-              failData.errors.forEach(error => {
-                console.log(`Error Msg:`, error);
-                //NotifActions.addError(error);
-              });
-            }
-
-          })
-        ;
-
-      } else {
-
-        if (query.length >= 1) {
-
-          let {currentSuggestions} = this.state;
-          currentSuggestions = [];
-          this.setState({currentSuggestions});
-
-          NotifActions.addError(`Please enter more than 3 characters`);
-
-        }
-
+      let canSearch = true;
+      if (delayed && this.cancelDelayed) {
+        canSearch = false;
       }
 
-      this.inputChanged = false;
+      if (canSearch) {
+
+        if (query.length >= 4) {
+
+          // filter out id if youtube url
+          const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+          const match = query.match(regExp);
+          if (match && match[2].length === 11) {
+            query = match[2];
+          }
+
+          // send to api to get suggestions
+          songs.youtubeSearch(query)
+            .then(res => {
+
+              let {currentSuggestions} = this.state;
+
+              currentSuggestions = res;
+
+              if (currentSuggestions.length === 0) {
+                NotifActions.addNotification(`No results were found`);
+              }
+
+              this.setState({currentSuggestions});
+
+            }, failData => {
+
+              console.log(`-!- Search error -!- \n`, failData, `\n-!-`);
+
+              if (failData.errors && failData.errors.length > 0) {
+                failData.errors.forEach(error => {
+                  console.log(`Error Msg:`, error);
+                  //NotifActions.addError(error);
+                });
+              }
+
+            })
+          ;
+
+        } else {
+
+          if (query.length >= 1) {
+
+            let {currentSuggestions} = this.state;
+            currentSuggestions = [];
+            this.setState({currentSuggestions});
+
+            NotifActions.addError(`Please enter more than 3 characters`);
+
+          }
+
+        }
+
+        this.inputChanged = false;
+
+      }
 
     }
 
   }
 
-  onInputChanged() {
+  onInputChanged(delay) {
 
     const {isLoggedIn} = this.state;
 
+    // hide any lingering notifications
     const notif = NotificationsStore.getNext();
     if (notif) {
       NotifActions.hideNotification();
     }
 
-    if (isLoggedIn) {
+    this.inputChanged = true;
+    if (isLoggedIn && delay) {
       setTimeout(() => { this.inputPaused = true; }, 1400);
-      setTimeout(() => { this.search(); }, 1500);
+      setTimeout(() => { this.search(true); }, 1500);
       this.inputPaused = false;
-      this.inputChanged = true;
+    } else {
+      this.cancelDelayed = true;
+      setTimeout(() => { this.cancelDelayed = false; }, 1600);
+      this.inputPaused = true;
+      this.search(false);
     }
 
   }
@@ -220,7 +237,8 @@ export default class SearchModal extends Component {
         <div className={lightboxClasses} onClick={() => this.endSearch()}>&nbsp;</div>
         <section className='search-bar' onClick={() => this.triggerLoginOrModal()}>
           <input className='search-query' type='text' placeholder={placeholder} disabled
-            onInput={() => this.onInputChanged()}
+            onSubmit={() => this.onInputChanged(false)}
+            onInput={() => this.onInputChanged(true)}
             onFocus={() => this.triggerLoginOrModal()}
             onBlur={() => this.endSearch()}
           />

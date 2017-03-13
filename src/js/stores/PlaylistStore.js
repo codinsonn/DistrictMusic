@@ -10,6 +10,7 @@ class PlaylistStore extends EventEmitter {
     super();
 
     this.showSearchModal = false;
+    this.currentSuggestion = {};
 
     this.queue = [];
 
@@ -24,6 +25,19 @@ class PlaylistStore extends EventEmitter {
     this.showSearchModal = blnShowModal;
 
     this.emit(`SHOW_SEARCH_MODAL_CHANGED`);
+
+  }
+
+  setCurrentSuggestion(suggestion) {
+
+    this.currentSuggestion = suggestion;
+    this.emit(`CURRENT_SUGGESTION_CHANGED`);
+
+  }
+
+  getCurrentSuggestion() {
+
+    return this.currentSuggestion;
 
   }
 
@@ -43,6 +57,10 @@ class PlaylistStore extends EventEmitter {
 
     case `HIDE_SEARCH_MODAL`:
       this.setShowSearchModal(false);
+      break;
+
+    case `SHOW_SUGGESTION_DETAIL`:
+      this.setCurrentSuggestion(action.data);
       break;
 
     }

@@ -72,8 +72,6 @@ module.exports = (app) => {
 
     this.addSuggestionDetails = () => {
 
-      console.log('-- HIT --');
-
       var url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${this.youtubeIds}&key=${opts.key}`;
 
       xhr({ url: url, method: 'GET' }, (err, res, body) => {
@@ -87,8 +85,6 @@ module.exports = (app) => {
           var i = 0;
           this.loopsLeft = body.items.length;
           body.items.forEach((vid) => {
-
-            console.log('Text');
 
             var ytDuration = vid.contentDetails.duration;
             var hmsDuration = ytDurationFormat(ytDuration);
