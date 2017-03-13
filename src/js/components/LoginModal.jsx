@@ -74,10 +74,12 @@ export default class LoginModal extends Component {
       setTimeout(() => NotifActions.hideNotification(), 10);
     }
 
+    const loginModalClasses = `login-modal-wrapper ${visible}`;
+
     return (
-      <div className={visible}>
+      <article className={loginModalClasses}>
         <div className='lightbox' onClick={() => UserActions.hideLoginModal()}>&nbsp;</div>
-        <article className='login-modal'>
+        <section className='login-modal'>
           <div className='login-modal--logo'>&nbsp;</div>
           <div className='google-signin'>
             <span className='icon'>&nbsp;</span>
@@ -87,8 +89,8 @@ export default class LoginModal extends Component {
             <span className='icon'>&nbsp;</span>
             <span className='buttonText'>Cancel or just listen</span>
           </div>
-        </article>
-      </div>
+        </section>
+      </article>
     );
 
   }
@@ -99,5 +101,4 @@ LoginModal.propTypes = {
   visible: PropTypes.string
 };
 
-// <span className='buttonText'><a href={authURI}>Sign in with Google+</a></span>
 // <span className='buttonText'><a href="/auth/user/google">Sign in with Google+</a></span>

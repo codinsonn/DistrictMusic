@@ -18,3 +18,9 @@ export function showSuggestionDetail(data) {
     data: data
   });
 }
+
+export function hideSuggestionDetail() {
+  dispatcher.dispatch({
+    type: `HIDE_SUGGESTION_DETAIL`
+  });
+}

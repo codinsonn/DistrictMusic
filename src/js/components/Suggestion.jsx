@@ -34,6 +34,7 @@ export default class Suggestion extends Component {
     const {id, title, channel, thumbs, duration} = this.state;
     const data = {id: id, title: title, channel: channel, thumbs: thumbs, duration: duration};
 
+    PlaylistActions.hideSearchModal();
     PlaylistActions.showSuggestionDetail(data);
 
   }

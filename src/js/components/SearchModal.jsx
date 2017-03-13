@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Suggestion} from '../components';
 import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';
+import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import * as NotifActions from '../actions/NotifActions';
@@ -92,8 +93,9 @@ export default class SearchModal extends Component {
   triggerLoginOrModal() {
 
     const {isLoggedIn} = this.state;
+    const showSuggestionDetail = PlaylistStore.getShowSuggestionDetail();
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !showSuggestionDetail) {
       PlaylistActions.showSearchModal();
       this.onInputChanged(false);
     } else {
@@ -227,26 +229,26 @@ export default class SearchModal extends Component {
       placeholder = `Search or paste url`;
     }
 
-    let suggestionsClasses = `suggestions-wrapper`;
-    if (currentSuggestions.length > 0) {
+    let suggestionsClasses = `suggestions-wrapper hidden`;
+    if (visible === `show` && currentSuggestions.length > 0) {
       suggestionsClasses = `suggestions-wrapper show`;
     }
 
     return (
-      <div>
+      <article className='search-modal'>
         <div className={lightboxClasses} onClick={() => this.endSearch()}>&nbsp;</div>
         <section className='search-bar' onClick={() => this.triggerLoginOrModal()}>
           <input className='search-query' type='text' placeholder={placeholder} disabled
             onSubmit={() => this.onInputChanged(false)}
             onInput={() => this.onInputChanged(true)}
             onFocus={() => this.triggerLoginOrModal()}
-            onBlur={() => this.endSearch()}
+            //onBlur={() => setTimeout(() => { this.endSearch(); }, 50)}
           />
           <div className={suggestionsClasses}>
             {this.renderSuggestions()}
           </div>
         </section>
-      </div>
+      </article>
     );
 
   }

@@ -16,12 +16,6 @@ module.exports = (app) => {
    * @apiGroup Authentication
    * @apiVersion 1.0.0
    *
-   * @apiParamExample {json} Request-Example:
-   *     {
-   *       "email": "name@district01.com",
-   *       "googleToken": "googleToken"
-   *     }
-   *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
@@ -46,7 +40,7 @@ module.exports = (app) => {
       type: 'video',
       videoDuration: 'any', // 4 - 20 minutes
       videoEmbeddable: true,
-      //videoSyndicated: true, // playable outside youtube
+      videoSyndicated: true, // playable outside youtube
       videoCategoryId: 10 // music
     }
 
@@ -61,11 +55,11 @@ module.exports = (app) => {
       this.searchSuggestions.push(suggestion);
       this.loopsLeft--;
 
-      if(this.loopsLeft === 0){
+      if(this.loopsLeft !== 0){
+        this.youtubeIds += `${suggestion.id},`;
+      }else{
         this.youtubeIds += `${suggestion.id}`;
         this.addSuggestionDetails();
-      }else{
-        this.youtubeIds += `${suggestion.id},`;
       }
 
     }
@@ -86,39 +80,7 @@ module.exports = (app) => {
           this.loopsLeft = body.items.length;
           body.items.forEach((vid) => {
 
-            var ytDuration = vid.contentDetails.duration;
-            var hmsDuration = ytDurationFormat(ytDuration);
-
-            var duration = hmsDuration;
-            switch(hmsDuration.length){
-
-              case 1:
-                duration = `00:00:0` + duration;
-                break;
-
-              case 2:
-                duration = `00:00:` + duration;
-                break;
-
-              case 4:
-                duration = `00:0` + duration;
-                break;
-
-              case 5:
-                duration = `00:` + duration;
-                break;
-
-              case 7:
-                duration = `0` + duration;
-                break;
-
-              default:
-                duration = hmsDuration;
-                break;
-
-            }
-
-            //console.log('Duration: ', ytDuration, ' | ', hmsDuration, ' | ', duration);
+            var duration = this.normalizeDuration(vid.contentDetails.duration);
 
             if(duration < '00:08:00'){
               duration = duration.substring(3, 8);
@@ -128,6 +90,7 @@ module.exports = (app) => {
 
             i++;
             this.loopsLeft--;
+
             if(this.loopsLeft === 0){
               this.respondSuggestions();
             }
@@ -181,6 +144,43 @@ module.exports = (app) => {
       }
 
     });
+
+    this.normalizeDuration = ytDuration => {
+
+      var hmsDuration = ytDurationFormat(ytDuration);
+      var duration = hmsDuration;
+
+      switch(hmsDuration.length){
+
+        case 1:
+          duration = `00:00:0` + hmsDuration;
+          break;
+
+        case 2:
+          duration = `00:00:` + hmsDuration;
+          break;
+
+        case 4:
+          duration = `00:0` + hmsDuration;
+          break;
+
+        case 5:
+          duration = `00:` + hmsDuration;
+          break;
+
+        case 7:
+          duration = `0` + hmsDuration;
+          break;
+
+        default:
+          duration = hmsDuration;
+          break;
+
+      }
+
+      return duration;
+
+    }
 
   });
 

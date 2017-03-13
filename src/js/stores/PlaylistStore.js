@@ -10,7 +10,10 @@ class PlaylistStore extends EventEmitter {
     super();
 
     this.showSearchModal = false;
+    this.showSuggestionDetail = false;
+
     this.currentSuggestion = {};
+    this.defaultSuggestion = {id: ``, title: ``}; // { id: '', title: '', channel: '', thumbs: {}, duration: '' };
 
     this.queue = [];
 
@@ -31,13 +34,32 @@ class PlaylistStore extends EventEmitter {
   setCurrentSuggestion(suggestion) {
 
     this.currentSuggestion = suggestion;
-    this.emit(`CURRENT_SUGGESTION_CHANGED`);
+    console.log(`Suggestion`, this.currentSuggestion);
+    this.setShowSuggestionDetail(true);
+
+  }
+
+  setShowSuggestionDetail(visible) {
+
+    this.showSuggestionDetail = visible;
+
+    if (!visible) {
+      this.currentSuggestion = this.defaultSuggestion;
+    }
+
+    this.emit(`SHOW_SUGGESTION_DETAIL_CHANGED`);
 
   }
 
   getCurrentSuggestion() {
 
     return this.currentSuggestion;
+
+  }
+
+  getShowSuggestionDetail() {
+
+    return this.showSuggestionDetail;
 
   }
 
@@ -61,6 +83,10 @@ class PlaylistStore extends EventEmitter {
 
     case `SHOW_SUGGESTION_DETAIL`:
       this.setCurrentSuggestion(action.data);
+      break;
+
+    case `HIDE_SUGGESTION_DETAIL`:
+      this.setShowSuggestionDetail();
       break;
 
     }

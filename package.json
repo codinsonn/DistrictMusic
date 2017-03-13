@@ -38,14 +38,12 @@
     "passport-google-oauth20": "^1.0.0",
     "react-newline-to-break": "^1.0.6",
     "react-scrollchor": "^2.2.0",
+    "react-youtube": "^7.3.0",
     "rootpath": "^0.1.2",
-    "silverscreen": "^0.2.0",
     "socket.io": "^1.5.0",
     "xhr": "^2.4.0",
     "youtube-duration-format": "^0.2.0",
-    "youtube-info": "^1.1.1",
-    "youtube-search": "^1.0.8",
-    "youtube.get-video-info": "^1.0.0"
+    "youtube-search": "^1.0.8"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",

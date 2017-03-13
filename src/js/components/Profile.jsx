@@ -110,10 +110,10 @@ export default class Profile extends Component {
     const style = {backgroundImage: `url(${  profileImage  })`};
 
     return (
-      <section className='profile' tabIndex='0' onBlur={() => this.hideProfileOptions()}>
+      <article className='profile' tabIndex='0' onBlur={() => this.hideProfileOptions()}>
         <div className='profile-img' style={style} onClick={() => this.checkProfileActions()}>&nbsp;</div>
         { this.renderProfileOptions() }
-      </section>
+      </article>
     );
 
   }
