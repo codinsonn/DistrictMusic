@@ -6014,7 +6014,6 @@ var youtubeSearch = function youtubeSearch(query) {
 var addToQueue = function addToQueue(song) {
 
   var postRequest = _extends({ body: JSON.stringify(_extends({}, song)) }, postOptions);
-  console.log('PostReq', postRequest);
 
   return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["a" /* checkStatus */]);
 };
@@ -32155,6 +32154,10 @@ var SuggestionDetail = function (_Component) {
 
     var vidWidth = window.innerWidth * .9;
     var vidHeight = vidWidth * .6;
+    if (window.innerWidth >= 751) {
+      vidHeight = window.innerHeight * .5;
+      vidWidth = vidHeight * 1.64;
+    }
 
     var opts = {
       height: vidHeight,
@@ -32176,7 +32179,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 88
+          lineNumber: 92
         }
       });
     }
@@ -32194,7 +32197,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 108
+          lineNumber: 112
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32203,7 +32206,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["b" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 109
+            lineNumber: 113
           }
         },
         '\xA0'
@@ -32212,14 +32215,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 110
+            lineNumber: 114
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 111
+              lineNumber: 115
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32227,7 +32230,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 111
+                lineNumber: 115
               }
             },
             'Add to queue?'
@@ -32238,7 +32241,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 113
+              lineNumber: 117
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32247,7 +32250,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["b" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 114
+                lineNumber: 118
               }
             },
             'Cancel'
@@ -32258,7 +32261,7 @@ var SuggestionDetail = function (_Component) {
                 return _this3.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 115
+                lineNumber: 119
               }
             },
             'Add song'
@@ -53840,4 +53843,4 @@ module.exports = __webpack_require__(168);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.04d2677ddb537458c424.js.map
+//# sourceMappingURL=main.8e01fb3e13a77ddb51f5.js.map

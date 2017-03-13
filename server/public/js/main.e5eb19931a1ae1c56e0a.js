@@ -32154,6 +32154,10 @@ var SuggestionDetail = function (_Component) {
 
     var vidWidth = window.innerWidth * .9;
     var vidHeight = vidWidth * .6;
+    if (window.innerWidth >= 751) {
+      vidHeight = window.innerHeight * .6;
+      vidWidth = vidHeight * 1.64;
+    }
 
     var opts = {
       height: vidHeight,
@@ -32175,7 +32179,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 88
+          lineNumber: 92
         }
       });
     }
@@ -32193,7 +32197,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 108
+          lineNumber: 112
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32202,7 +32206,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["b" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 109
+            lineNumber: 113
           }
         },
         '\xA0'
@@ -32211,14 +32215,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 110
+            lineNumber: 114
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 111
+              lineNumber: 115
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32226,7 +32230,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 111
+                lineNumber: 115
               }
             },
             'Add to queue?'
@@ -32237,7 +32241,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 113
+              lineNumber: 117
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -32246,7 +32250,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["b" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 114
+                lineNumber: 118
               }
             },
             'Cancel'
@@ -32257,7 +32261,7 @@ var SuggestionDetail = function (_Component) {
                 return _this3.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 115
+                lineNumber: 119
               }
             },
             'Add song'
@@ -53839,4 +53843,4 @@ module.exports = __webpack_require__(168);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.d7ef89423fcbdf7d846e.js.map
+//# sourceMappingURL=main.e5eb19931a1ae1c56e0a.js.map

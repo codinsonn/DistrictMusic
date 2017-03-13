@@ -69,8 +69,12 @@ export default class SuggestionDetail extends Component {
 
     const {id, title} = this.state;
 
-    const vidWidth = window.innerWidth * .9;
-    const vidHeight = vidWidth * .6;
+    let vidWidth = window.innerWidth * .9;
+    let vidHeight = vidWidth * .6;
+    if (window.innerWidth >= 751) {
+      vidHeight = window.innerHeight * .5;
+      vidWidth = vidHeight  * 1.64;
+    }
 
     const opts = {
       height: vidHeight,

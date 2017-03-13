@@ -201,6 +201,28 @@ body {
   background-color: #60ac7b;
 }
 
+@media (max-width: 750px) {
+
+  .suggestion-detail-modal {
+    width: 90vw;
+    height: calc(90vw * .6 + 100px);
+    left: 5vw;
+    top: calc(50vh - (90vw * .6 + 100px) / 2);
+  }
+
+}
+
+@media (min-width: 751px) {
+
+  .suggestion-detail-modal {
+    width: 82vh;
+    height: calc(50vh + 100px);
+    left: calc(50vw - 82vh / 2);
+    top: calc(50vh - (50vh + 100px) / 2);
+  }
+
+}
+
 /* --- Search & Suggest ------------------------------------------------------------------ */
 
 .search-bar {
