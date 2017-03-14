@@ -72,7 +72,7 @@ export default class SuggestionDetail extends Component {
     let vidWidth = window.innerWidth * .9;
     let vidHeight = vidWidth * .6;
     if (window.innerWidth >= 751) {
-      vidHeight = window.innerHeight * .5;
+      vidHeight = window.innerHeight * .4;
       vidWidth = vidHeight  * 1.64;
     }
 

@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import {checkStatus/*, buildBody*/} from '../util/';
+import {checkStatus} from '../util/';
 
 const base = `http://localhost:3020`;
 

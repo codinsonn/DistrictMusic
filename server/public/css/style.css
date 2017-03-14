@@ -215,10 +215,10 @@ body {
 @media (min-width: 751px) {
 
   .suggestion-detail-modal {
-    width: 82vh;
-    height: calc(50vh + 100px);
-    left: calc(50vw - 82vh / 2);
-    top: calc(50vh - (50vh + 100px) / 2);
+    width: 65.6vh;
+    height: calc(40vh + 100px);
+    left: calc(50vw - 65.6vh / 2);
+    top: calc(50vh - (40vh + 100px) / 2);
   }
 
 }

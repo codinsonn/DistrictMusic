@@ -41,8 +41,6 @@ module.exports = (req, token, refreshToken, profile, done) => {
         // Create new user if none was found (authorized anyway if domain matches Distric01)
         var user = new UserModel();
 
-        console.log('Created new UserModel');
-
         // Set email
         user.general.email = profile.emails[0].value.toLowerCase();
         console.log('set email:', user.general.email);

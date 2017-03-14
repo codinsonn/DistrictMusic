@@ -109,10 +109,10 @@ body {
 @media (min-width: 751px) {
 
   .suggestion-detail-modal {
-    width: calc(50vh * 1.64);
-    height: calc(50vh + 100px);
-    left: calc(50vw - calc(50vh * 1.64) / 2);
-    top: calc(50vh - calc(50vh + 100px) / 2);
+    width: calc(40vh * 1.64);
+    height: calc(40vh + 100px);
+    left: calc(50vw - calc(40vh * 1.64) / 2);
+    top: calc(50vh - calc(40vh + 100px) / 2);
   }
 
 }

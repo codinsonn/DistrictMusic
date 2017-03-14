@@ -3,9 +3,9 @@ require("rootpath")();
 var _ = require("lodash");
 
 // Helpers
-var ResponseHelper = require(__base + "app/helpers/response");
-var PromiseHelper = require(__base + "app/helpers/promise");
-var Helpers = require("./helpers");
+//var ResponseHelper = require(__base + "app/helpers/response");
+//var PromiseHelper = require(__base + "app/helpers/promise");
+//var Helpers = require("./helpers");
 
 var authConfig = require(__base + "config/auth");
 var passport = require("passport");
@@ -15,7 +15,7 @@ var PassportHelper = require(__base + "app/helpers/passport");
 
 var UserModel = require(__base + "app/models/user");
 
-module.exports.require = function(req, res, next) {
+module.exports.require = (req, res, next) => {
 
   if (req.session.profile) {
 
@@ -28,7 +28,12 @@ module.exports.require = function(req, res, next) {
       if (err){
 
         console.log('Error occured while searching user:', err);
-        return done(err);
+        res.statusCode = 500;
+        return res.json({
+          errors: [
+            'Could not search for user'
+          ]
+        });
 
       }
 
@@ -68,7 +73,7 @@ module.exports.require = function(req, res, next) {
 
 };
 
-module.exports.check = function(req, res, next) {
+module.exports.check = (req, res, next) => {
 
   if (req.session.profile) {
 
@@ -86,7 +91,7 @@ module.exports.check = function(req, res, next) {
 
 };
 
-module.exports.returnProfile = function(req, res, next) {
+module.exports.returnProfile = (req, res, next) => {
 
   if (req.session.profile) {
 

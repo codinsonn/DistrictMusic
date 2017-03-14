@@ -17,9 +17,16 @@ const publicPath = `/`;
 // - json files (through fetch)
 // - fonts via WebFontLoader
 
-const copy = new CopyWebpackPlugin([{
+const copyAssets = new CopyWebpackPlugin([{
   from: `./src/assets`,
   to: `assets`
+}], {
+  ignore: [ `.DS_Store` ]
+});
+
+const copySongs = new CopyWebpackPlugin([{
+  from: `./server/uploads/audio`,
+  to: `assets/audio`
 }], {
   ignore: [ `.DS_Store` ]
 });
@@ -118,7 +125,8 @@ const config = {
 
   plugins: [
     extractCSS,
-    copy
+    copyAssets,
+    copySongs
   ]
 
 };
