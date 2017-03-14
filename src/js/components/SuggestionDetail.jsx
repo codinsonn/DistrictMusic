@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import YouTube from 'react-youtube';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as PlaylistActions from '../actions/PlaylistActions';
+import * as NotifActions from '../actions/NotifActions';
 import songs from '../api/songs';
 
 export default class SuggestionDetail extends Component {
@@ -51,12 +52,20 @@ export default class SuggestionDetail extends Component {
 
     const {suggestion} = this.state;
 
+    NotifActions.addNotification(`Waiting to add song to queue...`);
+    PlaylistActions.hideSuggestionDetail();
+    //PlaylistActions.hideSearchModal();
+
     songs.addToQueue(suggestion)
       .then(res => {
+
+        NotifActions.addSuccess(`Song added to queue!`);
 
         console.log(`Success!`, res);
 
       }, failData => {
+
+        NotifActions.addSuccess(`Could not add song to queue`);
 
         console.log(`Failed`, failData);
 

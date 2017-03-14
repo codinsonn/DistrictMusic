@@ -35,7 +35,7 @@ var SongSchema = new Schema({
         default: true
       },
       lastAddedBy: {
-        userId: {
+        googleId: {
           type: String,
           required: true
         },
@@ -53,7 +53,7 @@ var SongSchema = new Schema({
         }
       },
       originallyAddedBy: {
-        userId: {
+        googleId: {
           type: String,
           required: true
         },

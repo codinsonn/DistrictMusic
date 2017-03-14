@@ -8,6 +8,10 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     general: {
+      id: {
+        type: String,
+        index: true
+      },
       email: {
         type: String,
         index: true
@@ -47,6 +51,10 @@ var UserSchema = new Schema({
     },
     meta: {
       socketIds: [],
+      googleId: {
+        type: String,
+        index: true
+      },
       googleAuthToken: {
         type: String,
         index: true

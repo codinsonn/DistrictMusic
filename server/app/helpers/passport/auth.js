@@ -27,6 +27,11 @@ module.exports = (req, token, refreshToken, profile, done) => {
 
       if (user) {
 
+        /*user.general.id = profile.id;
+        user.meta.googleId = profile.id;
+        user.save();
+        /**/
+
         //console.log('- Found user: - \n', user);
         req.session.profile = user;
         console.log('UserSession', req.session.profile);
@@ -41,6 +46,9 @@ module.exports = (req, token, refreshToken, profile, done) => {
         // Create new user if none was found (authorized anyway if domain matches Distric01)
         var user = new UserModel();
 
+        // Add google id
+        user.general.id = profile.id;
+        console.log('set id:', user.meta.googleId);
         // Set email
         user.general.email = profile.emails[0].value.toLowerCase();
         console.log('set email:', user.general.email);

@@ -49,7 +49,8 @@ module.exports = (req, res, done) => {
       }else{ // song no longer in queue
 
         // update last submitter
-        song.queue.lastAddedBy.userId = this.profile.id;
+        song.queue.lastAddedBy.userId = this.profile._id;
+        console.log('userId', this.profile._id);
         song.queue.lastAddedBy.userName = this.profile.general.fullName;
         song.queue.lastAddedBy.profileImage = this.profile.general.profileImage;
         song.queue.lastAddedBy.added = (new Date()).getTime();
@@ -111,46 +112,13 @@ module.exports = (req, res, done) => {
           res.on('end', () => {
             process.stdout.write('\n');
             fse.copySync(tempOutput, audioOutput);
+            fs.unlinkSync(tempOutput);
             console.log('-f- Finished downloading song to:', audioOutput);
             this.filename = audioFilename;
             this.finishedDownload();
           });
         })
         .pipe(fs.createWriteStream(tempOutput))
-        /*.on('finish', () => {
-          this.filename = oudioOutput;
-          console.log('Finished downloading song to:', audioOutput);
-          this.finishedDownload();
-          ffmpeg()
-            .input(ytdl(url, { filter: (f) => {
-              return f.container === 'mp4' && !f.audioEncoding;
-            }}))
-              .videoCodec('copy')
-              .input(audioOutput)
-              .audioCodec('copy')
-              .save(audiooOutput)
-              .on('error', console.error)
-              .on('data', (data) => {
-                dataRead += data.length;
-                var percent = dataRead / totalSize;
-                var strPercent = (percent * 100).toFixed(2) + '%';
-                if(strPercent >= '99.99%'){
-                  this.filename = oudiooOutput;
-                  console.log('Finished downloading soong to:', audiooOutput);
-                  this.finishedDownload();
-                }
-                process.stdout.cursorTo(0);
-                process.stdout.clearLine(1);
-                process.stdout.write(strPercent);
-              })
-              .on('end', () => {
-                process.stdout.write('\n');
-                this.filename = oudiooOutput;
-                console.log('Finished downloading soong to:', audiooOutput);
-                this.finishedDownload();
-              });
-            ;
-        })*/
       ;
 
     }
@@ -161,13 +129,15 @@ module.exports = (req, res, done) => {
 
     console.log('Download finished');
 
-    res.statusCode = 200;
+    /*res.statusCode = 200;
     return res.json({
       success: [
         'Saved the song',
         this.filename
       ]
-    });
+    });*/
+
+    this.saveToDb();
 
   }
 
@@ -176,7 +146,7 @@ module.exports = (req, res, done) => {
     var newSong = new SongModel();
 
     console.log('Adding filename');
-    newSong.general.filename = "";
+    newSong.general.filename = this.filename;
 
     // -- general info ---------
     console.log('Adding youtube id');
@@ -193,8 +163,9 @@ module.exports = (req, res, done) => {
 
     // -- queue info ------------
     console.log('Setting user to original uploader');
-    newSong.queue.originallyAddedBy.id = this.profile.id;
-    newSong.queue.originallyAddedBy.name = this.profile.general.fullName;
+    newSong.queue.originallyAddedBy.userId = this.profile._id;
+    console.log('userId', this.profile._id);
+    newSong.queue.originallyAddedBy.userName = this.profile.general.fullName;
     newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
     newSong.queue.originallyAddedBy.added = (new Date()).getTime();
     newSong.queue.lastAddedBy = newSong.queue.originallyAddedBy;
@@ -211,8 +182,11 @@ module.exports = (req, res, done) => {
     console.log('Adding to queue');
     newSong.queue.inQueue = true;
 
+    res.statusCode = 200;
+    return res.json({newSong});/**/
+
     // Save the song to put back in queue
-    return newSong.save((err) => {
+    /*return newSong.save((err) => {
 
       if (err) {
 
@@ -230,7 +204,7 @@ module.exports = (req, res, done) => {
       res.statusCode = 200;
       return res.json(newSong);
 
-    });
+    });/**/
 
   }
 
