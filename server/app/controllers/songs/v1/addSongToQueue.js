@@ -9,8 +9,11 @@ var ytdl = require('ytdl-core');
 //var ytdl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 
+var EmitHelper = require(__base + "app/helpers/io/emitter");
+
 // Models
 var SongModel = require(__base + "app/models/song");
+var UserModel = require(__base + "app/models/user");
 
 module.exports = (req, res, done) => {
 
@@ -105,6 +108,9 @@ module.exports = (req, res, done) => {
             dataRead += data.length;
             var percent = dataRead / totalSize;
             var strPercent = (percent * 100).toFixed(2) + '%';
+            UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
+              EmitHelper.emit('DOWNLOAD_PROGRESS', user.meta.socketIds, {percent: percent, str: strPercent});
+            });
             process.stdout.cursorTo(0);
             process.stdout.clearLine(1);
             process.stdout.write(strPercent);
@@ -112,8 +118,12 @@ module.exports = (req, res, done) => {
           res.on('end', () => {
             process.stdout.write('\n');
             fse.copySync(tempOutput, audioOutput);
+            fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
             fs.unlinkSync(tempOutput);
             console.log('-f- Finished downloading song to:', audioOutput);
+            UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
+              EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
+            });
             this.filename = audioFilename;
             this.finishedDownload();
           });

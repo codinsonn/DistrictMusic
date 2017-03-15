@@ -1,9 +1,14 @@
 require("rootpath")();
+var _ = require("lodash");
+
 var config = require(__base + "config");
 var authConfig = require(__base + "config/auth");
 var search = require('youtube-search');
 var ytDurationFormat = require('youtube-duration-format');
 var xhr = require('xhr');
+
+var UsersController = require(__base + "app/controllers/users/v1");
+
 var baseUrlUser = "youtube/";
 
 if (!xhr.open) xhr = require('request');
@@ -30,7 +35,7 @@ module.exports = (app) => {
    *
    * @apiUse messageNotFound
    */
-  app.route("/api/youtube/search/:query").get((req, res, next) => {
+  app.route("/api/youtube/search/:query").get(UsersController.userSession.require, (req, res, next) => {
 
     var opts = {
       maxResults: 15,
@@ -47,7 +52,7 @@ module.exports = (app) => {
     this.searchSuggestions = [];
     this.videoDetails = [];
     this.suggestions = [];
-    this.youtubeIds = ''; // comma separated
+    this.youtubeIds = ''; // build comma separated
     this.loopsLeft = 0;
 
     this.addSuggestion = suggestion => {
@@ -78,21 +83,28 @@ module.exports = (app) => {
 
           var i = 0;
           this.loopsLeft = body.items.length;
-          body.items.forEach((vid) => {
 
-            var duration = this.normalizeDuration(vid.contentDetails.duration);
+          _.forEach(body.items, (vid) => {
+          //body.items.forEach((vid) => {
 
-            if(duration < '00:08:00'){
-              duration = duration.substring(3, 8);
-              this.searchSuggestions[i].duration = duration;
-              this.suggestions.push(this.searchSuggestions[i]);
-            }
+            if(this.searchSuggestions[i]){
 
-            i++;
-            this.loopsLeft--;
+              var duration = this.normalizeDuration(vid.contentDetails.duration);
 
-            if(this.loopsLeft === 0){
-              this.respondSuggestions();
+              if(duration < '00:08:00'){
+                duration = duration.substring(3, 8);
+                //console.log('TEST:', i, ' | ', this.searchSuggestions[i]);
+                this.searchSuggestions[i].duration = duration;
+                this.suggestions.push(this.searchSuggestions[i]);
+              }
+
+              i++;
+              this.loopsLeft--;
+
+              if(this.loopsLeft === 0){
+                this.respondSuggestions();
+              }
+
             }
 
           });
@@ -108,6 +120,7 @@ module.exports = (app) => {
       //console.log('Suggestions', this.suggestions);
       res.statusCode = 200;
       return res.json(this.suggestions);
+      //res.json(this.suggestions);
       next();
 
     }
@@ -117,6 +130,7 @@ module.exports = (app) => {
       console.log(err);
       res.statusCode = 400;
       return res.json({ errors: [ 'No results, try again later' ] });
+      //res.json({ errors: [ 'No results, try again later' ] });
       next();
 
     }
@@ -128,7 +142,9 @@ module.exports = (app) => {
       }else if (results.length > 0) {
 
         this.loopsLeft = results.length;
-        results.forEach((suggestion) => {
+
+        _.forEach(results, (suggestion) => {
+        //results.forEach((suggestion) => {
 
           if(suggestion.kind === 'youtube#video'){
             this.addSuggestion(suggestion);

@@ -4,9 +4,8 @@ var passport = require("passport");
 var googleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 // Helpers
-var ResponseHelper = require(__base + "app/helpers/response");
-var PromiseHelper = require(__base + "app/helpers/promise");
-//var TranslateHelper = require("../../../app/helpers/translate");
+//var ResponseHelper = require(__base + "app/helpers/response");
+//var PromiseHelper = require(__base + "app/helpers/promise");
 var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 
 // Models
@@ -32,9 +31,9 @@ module.exports = (req, token, refreshToken, profile, done) => {
         user.save();
         /**/
 
-        //console.log('- Found user: - \n', user);
+        console.log('- Found user: - \n', user.general.fullName);
         req.session.profile = user;
-        console.log('UserSession', req.session.profile);
+        //console.log('UserSession', req.session.profile);
 
         // if a user is found, log them in
         return done(null, user);
@@ -47,8 +46,8 @@ module.exports = (req, token, refreshToken, profile, done) => {
         var user = new UserModel();
 
         // Add google id
-        user.general.id = profile.id;
-        console.log('set id:', user.meta.googleId);
+        //user.general.id = profile.id;
+        //console.log('set id:', user.meta.googleId);
         // Set email
         user.general.email = profile.emails[0].value.toLowerCase();
         console.log('set email:', user.general.email);
@@ -100,13 +99,15 @@ module.exports = (req, token, refreshToken, profile, done) => {
         req.session.profile = user;
         console.log('Session user:', req.session.profile);
 
-        console.log('- Created new user: ', user.general.email, ' -');
-
         // Save the user
         return user.save((err) => {
+
           if (err)
             throw err;
+
+          console.log('- Created new user: ', user.general.email, ' -');
           return done(null, user);
+
         });
 
       }

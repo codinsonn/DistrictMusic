@@ -1,13 +1,33 @@
-const path = require(`path`);
+const path = require('path');
+//const fs = require(`fs`);
 
-const webpack = require(`webpack`);
+const webpack = require('webpack');
 const {UglifyJsPlugin} = webpack.optimize;
+
+//const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 const CopyWebpackPlugin = require(`copy-webpack-plugin`);
 const ExtractTextWebpackPlugin = require(`extract-text-webpack-plugin`);
 const configHtmls = require(`webpack-config-htmls`)();
 
 const extractCSS = new ExtractTextWebpackPlugin(`css/style.css`);
+/*const browserSync = new BrowserSyncPlugin(
+  {
+    // browse to http://localhost:3000/ during development
+    host: 'localhost',
+    port: 3000,
+    // proxy the Webpack Dev Server endpoint
+    // (which should be serving on http://localhost:3100/)
+    // through BrowserSync
+    proxy: 'http://localhost:3020/'
+  },
+  // plugin options
+  {
+    // prevent BrowserSync from reloading the page
+    // and let Webpack Dev Server take care of this
+    reload: false
+  }
+);/**/
 
 // change for production build on different server path
 const publicPath = `/`;
@@ -16,6 +36,16 @@ const publicPath = `/`;
 // - srcset images (not loaded through html-loader )
 // - json files (through fetch)
 // - fonts via WebFontLoader
+
+/*var nodeModules = {};
+fs.readdirSync('node_modules')
+  .filter(function(x) {
+    return ['.bin'].indexOf(x) === -1;
+  })
+  .forEach(function(mod) {
+    nodeModules[mod] = 'commonjs ' + mod;
+  })
+;*/
 
 const copyAssets = new CopyWebpackPlugin([{
   from: `./src/assets`,
@@ -38,9 +68,11 @@ const config = {
     `./src/js/script.js`
   ],
 
+  //externals: nodeModules,
+
   externals: {
     "googleapi": "gapi"
-  },
+  },/**/
 
   resolve: {
     // import files without extension import ... from './Test'
@@ -125,11 +157,14 @@ const config = {
 
   plugins: [
     extractCSS,
-    copyAssets,
-    copySongs
+    copyAssets
+    //browserSync,
+    //copySongs
   ]
 
 };
+
+//config.externals.googleapi = "gapi";
 
 if (process.env.NODE_ENV === `production`) {
 

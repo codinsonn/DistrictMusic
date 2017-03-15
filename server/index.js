@@ -16,7 +16,7 @@ require("rootpath")();
 const path = require(`path`);
 
 // CORS Middleware
-var allowCrossDomain = (req, res, next) => {
+/*var allowCrossDomain = (req, res, next) => {
 
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -31,27 +31,25 @@ var allowCrossDomain = (req, res, next) => {
     next();
   }
 
-}
+}*/
 
 var express = require('express'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'),
     morgan = require('morgan'),
     passport = require('passport'),
-    session = require('express-session'),
-    cors = require('cors'),
+    //session = require('express-session'),
+    //cors = require('cors'),
     errorHandler = require('errorhandler');
-
 var app = express();
+var session = require("./app/middleware/session");
+var config = require("./config");
+
 //app.use(allowCrossDomain);
 //app.use(cors({credentials: true, origin: true}));
 app.use(morgan('dev'));
 app.use(errorHandler({dumpExceptions: true, showStack: true}));
-app.use(session({
-  secret: 'd1str1ctO1Mus1c1sGr3@t',
-  resave: true,
-  saveUninitialized: true
-}));
+app.use(session);
 app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type:'application/vnd.api+json'}));
@@ -61,13 +59,19 @@ app.use(methodOverride());
 app.use(express.static(path.join(__dirname, './public/')));
 
 var server = require("http").Server(app);
-var config = require("./config");
+var io = require("socket.io")(server);
 var port = process.env.PORT || config.server.port;
 
 /* --- Start Loading... -------------------------------------------------------------------- */
 
 // Load DB config
 require("./app/middleware/db");
+
+// Load extra socket configuration
+require("./app/middleware/io")(app, io);
+
+// Start io helper
+require("./app/helpers/io")(io);
 
 // Load all routes
 require("./app/routes")(app);
@@ -81,12 +85,25 @@ server.listen(port, function() {
   //require("app/middleware/start")();
 });
 
-process.on('uncaughtException', () => {
-  server.close();
+process.on('uncaughtException', (err) => {
+
+  if(err && err.code != 'EADDRINUSE' && err != "Error: Can't set headers after they are sent." && err != "Can't set headers after they are sent."){
+    console.log('-!- Uncaught exception -!-', err);
+    io.close();
+    server.close();
+  }else if(err) {
+    //console.log('-!- Uncaught exception -!-', err.code);
+  }
+
 });
 
 process.on('SIGTERM', () => {
+
+  console.log('-/- Closing server -/-');
+
+  io.close();
   server.close();
+
 });
 
 exports = module.exports = server;

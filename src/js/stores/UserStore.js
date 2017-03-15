@@ -1,5 +1,6 @@
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
+import SocketStore from './SocketStore';
 import {users} from '../api/';
 
 class UserStore extends EventEmitter {
@@ -20,6 +21,27 @@ class UserStore extends EventEmitter {
 
   }
 
+  updateSessionSocketId(socketId) {
+
+    users.updateSessionSocketId(socketId)
+      .then(res => {
+
+        console.log(`Updated session socketId`, res.meta.socketIds);
+
+        this.isLoggedIn = true;
+        this.userProfile = res;
+
+        //this.emit(`USER_PROFILE_CHANGED`);
+
+      }, failData => {
+
+        console.log(`-!- Could not update session -!- \n`, failData, `\n-!-`);
+
+      })
+    ;
+
+  }
+
   setProfileSession() {
 
     users.getSessionProfile()
@@ -27,6 +49,9 @@ class UserStore extends EventEmitter {
 
         this.isLoggedIn = true;
         this.userProfile = res;
+
+        const socket = SocketStore.getSocket();
+        socket.emit(`SET_SESSION_SOCKET_ID`);
 
         this.emit(`USER_PROFILE_CHANGED`);
 

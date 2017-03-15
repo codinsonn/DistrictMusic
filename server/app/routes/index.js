@@ -30,10 +30,8 @@ module.exports = function(app) {
     // Fallback & non api routes -> React Router routes or 404
     app.route(["/", "/*"]).all( (req, res) => {
 
-      var sess = req.session;
-
-      if(sess.profile){
-        console.log('Session Profile', sess.profile);
+      if(req.session.profile){
+        console.log('- Session User : ', req.session.profile.general.fullName, ' -');
       }
 
       res.sendFile(path.join(__dirname, "../../" + config.server.frontendPath + "index.html"));

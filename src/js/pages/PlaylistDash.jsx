@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail} from '../components';
+import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail, DownloadProgress} from '../components';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
@@ -97,6 +97,7 @@ export default class PlaylistDash extends Component {
 
     return (
       <div className='dashboard-wrapper'>
+        <DownloadProgress />
         <div className='logo'>&nbsp;</div>
         <Profile />
         <Notification />

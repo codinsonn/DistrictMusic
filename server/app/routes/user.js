@@ -88,4 +88,19 @@ module.exports = (app) => {
   app.route("/auth/user/logout").get(PassportHelper.logout);
   app.route("/logout").get(PassportHelper.logout);
 
+  /** --- Update User SocketId -----------------------------------------------------------------
+   * @api {post} /api/sess/profile/socketid Update the socketId for the user in session
+   */
+  app.post("/api/sess/profile/socketid", UsersController.userSession.require, (req, res, next) => {
+
+    //console.log('-----------------', req.body.socketId.socketId);
+    req.session.profile.meta.socketIds = [req.body.socketId.socketId];
+
+    //console.log('- Updated session profile with new socket id -', req.session.profile.meta.socketIds);
+
+    res.statusCode = 200;
+    return res.json(req.session.profile);
+
+  });;
+
 }

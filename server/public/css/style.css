@@ -139,6 +139,17 @@ body {
   z-index: 50;
 }
 
+.progress {
+  position: fixed;
+  display: block;
+  width: 0;
+  height: 3px;
+  top: 0;
+  left: 0;
+  background-color: #60ac7b;
+  z-index: 70;
+}
+
 /* --- Suggestion Detail ----------------------------------------------------------------- */
 
 .suggestion-detail-modal {
