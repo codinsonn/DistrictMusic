@@ -24,3 +24,15 @@ export function hideSuggestionDetail() {
     type: `HIDE_SUGGESTION_DETAIL`
   });
 }
+
+export function resetSearchbar() {
+  dispatcher.dispatch({
+    type: `RESET_SEARCH_BAR`
+  });
+}
+
+export function updateQueue() {
+  dispatcher.dispatch({
+    type: `UPDATE_QUEUE`
+  });
+}

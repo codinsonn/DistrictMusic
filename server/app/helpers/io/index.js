@@ -11,12 +11,12 @@ module.exports = function(io) {
 
   io.on("connection", (socket) => {
 
-    console.log('-?- [IO][Index] Attempting to connect user... -?-');
+    //console.log('-?- [IO][Index] Attempting to connect user... -?-');
 
     // Check if user is logged in
     if (!socket.handshake.session.profile) {
 
-      console.log('-!- [IO][Index] User not logged in, aborting... -!-');
+      //console.log('-!- [IO][Index] User not logged in, aborting... -!-');
 
       // Set unauthorized message
       socket.emit("unauthorized", {
@@ -29,17 +29,17 @@ module.exports = function(io) {
 
       if (socket.handshake.session.profile.hasOwnProperty("_id")) {
 
-        console.log('[IO][Index] Socket id: ', socket.id);
+        //console.log('[IO][Index] Socket id: ', socket.id);
 
         // Assign socket id to user
         UserHelper.setSocketId(socket.handshake.session.profile, socket.id);
         //UserHelper.setSocketId(socket.handshake.session.profile._id.toString(), socket.id);
-        console.log('[IO][Index] Set socket id for user: ', socket.id, ' | old: ', socket.handshake.session.profile.meta.socketIds[0]);
+        //console.log('[IO][Index] Set socket id for user: ', socket.id, ' | old: ', socket.handshake.session.profile.meta.socketIds[0]);
 
         // Set wildcard method on the socket
         socket.on("*", (event) => {
 
-          console.log('[IO][Index] new event: ', event.data[0], event.data[1]);
+          //console.log('[IO][Index] new event: ', event.data[0], event.data[1]);
 
           ListenerHelper(socket, event.data[0], event.data[1]);
 

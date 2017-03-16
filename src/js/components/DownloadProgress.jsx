@@ -35,7 +35,7 @@ export default class DownloadProgress extends Component {
     let {downloadProgress} = this.state;
 
     downloadProgress = SocketStore.getDownloadProgress();
-    console.log(`New downloadProgress: `, downloadProgress);
+    //console.log('New downloadProgress: ', downloadProgress);
 
     this.setState({downloadProgress});
 
@@ -47,8 +47,14 @@ export default class DownloadProgress extends Component {
 
     let progressClasses = `progress hidden`;
     let progressStyle = {width: `0px`};
-    if (downloadProgress > 0) {
-      progressClasses = `progress show`;
+    if (downloadProgress > 0 && downloadProgress < .99) {
+      if (downloadProgress < .33) {
+        progressClasses = `progress red show`;
+      } else if (downloadProgress >= .33 && downloadProgress < .66) {
+        progressClasses = `progress blue show`;
+      } else if (downloadProgress >= .66) {
+        progressClasses = `progress green show`;
+      }
       progressStyle = {width: `${window.innerWidth * downloadProgress}px`};
     }
 

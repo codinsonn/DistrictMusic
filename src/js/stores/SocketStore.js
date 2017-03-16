@@ -18,12 +18,11 @@ class SocketStore extends EventEmitter {
     this.socket.on(`UPDATED_SOCKET_ID`, socketId => UserStore.updateSessionSocketId(socketId));
     this.socket.on(`DOWNLOAD_PROGRESS`, data => this.updateDownloadProgress(data));
     this.socket.on(`DOWNLOAD_DONE`, data => this.updateDownloadProgress(data));
+    this.socket.on(`QUEUE_UPDATED`, () => this.emit(`QUEUE_UPDATED`));
 
   }
 
   updateDownloadProgress(downloadData) {
-
-    //console.log(`DownloadData`, downloadData);
 
     this.downloadProgress = downloadData.percent;
 

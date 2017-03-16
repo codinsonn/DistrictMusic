@@ -10,29 +10,38 @@ var SongSchema = new Schema({
     general: {
       id: {
         type: String,
-        index: true
+        index: true,
+        required: true
       },
       title: {
         type: String,
-        index: true
+        index: true,
+        required: true
       },
       channel: {
         type: String,
-        index: false
+        index: false,
+        required: false
       },
       duration: {
         type: String,
-        index: false
+        index: true,
+        required: true
       },
       filename: {
         type: String,
-        index: true
+        index: true,
+        required: true
       }
     },
     queue: {
       inQueue: {
         type: Boolean,
         default: true
+      },
+      isVetoed: {
+        type: Boolean,
+        default: false
       },
       lastAddedBy: {
         googleId: {
@@ -84,7 +93,8 @@ var SongSchema = new Schema({
     thumbs: {
       default: {
         url: {
-          type: String
+          type: String,
+          required: true
         },
         width: {
           type: Number
@@ -95,7 +105,8 @@ var SongSchema = new Schema({
       },
       medium: {
         url: {
-          type: String
+          type: String,
+          required: true
         },
         width: {
           type: Number
@@ -106,7 +117,8 @@ var SongSchema = new Schema({
       },
       high: {
         url: {
-          type: String
+          type: String,
+          required: true
         },
         width: {
           type: Number

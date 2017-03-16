@@ -26,10 +26,10 @@ module.exports = (req, res, done) => {
     if (err){
 
       console.log('-!- Error occured while searching for song: -!-\n', err, '\n-!-');
-      res.statusCode = 500;
+      res.statusCode = 400;
       return res.json({
         errors: [
-          'Could not search for song'
+          'Could not search for song in db'
         ]
       });
 
@@ -41,13 +41,7 @@ module.exports = (req, res, done) => {
 
       if(song.queue.inQueue){ // song still in queue
 
-        console.log('-!- Song already in queue -!-');
-        res.statusCode = 412;
-        return res.json({
-          errors: [
-            'Song already in queue'
-          ]
-        });
+        this.respondInQueue();
 
       }else{ // song no longer in queue
 
@@ -135,6 +129,18 @@ module.exports = (req, res, done) => {
 
   });
 
+  this.respondInQueue = () => {
+
+    console.log('-!- Song already in queue -!-');
+    res.statusCode = 412;
+    return res.json({
+      errors: [
+        'Song already in queue'
+      ]
+    });
+
+  }
+
   this.finishedDownload = () => {
 
     console.log('Download finished');
@@ -173,8 +179,8 @@ module.exports = (req, res, done) => {
 
     // -- queue info ------------
     console.log('Setting user to original uploader');
-    newSong.queue.originallyAddedBy.userId = this.profile._id;
-    console.log('userId', this.profile._id);
+    newSong.queue.originallyAddedBy.googleId = this.profile.meta.googleId;
+    //newSong.queue.originallyAddedBy.userId = this.profile._id;
     newSong.queue.originallyAddedBy.userName = this.profile.general.fullName;
     newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
     newSong.queue.originallyAddedBy.added = (new Date()).getTime();
@@ -192,16 +198,13 @@ module.exports = (req, res, done) => {
     console.log('Adding to queue');
     newSong.queue.inQueue = true;
 
-    res.statusCode = 200;
-    return res.json({newSong});/**/
-
     // Save the song to put back in queue
-    /*return newSong.save((err) => {
+    return newSong.save((err) => {
 
       if (err) {
 
         console.log('-!- Error occured while saving new song: -!-\n', err, '\n-!-');
-        res.statusCode = 500;
+        res.statusCode = 400;
         return res.json({
           errors: [
             'Could not save song'
@@ -210,9 +213,28 @@ module.exports = (req, res, done) => {
 
       }
 
+      EmitHelper.broadcast('QUEUE_UPDATED', newSong);
+
       console.log('- New song added to queue -');
       res.statusCode = 200;
       return res.json(newSong);
+
+      // Emit io event to all logged in user
+      /*UserModel.
+        find().
+        where('meta.socketIds.length').equals(1).
+        exec((err, loggedInUsers) => {
+
+          _.forEach((loggedInUser) => {
+            EmitHelper.emit('QUEUE_UPDATED', loggedInUser.meta.socketIds);
+          });
+
+          console.log('- New song added to queue -');
+          res.statusCode = 200;
+          return res.json(newSong);
+
+        })
+      ;*/
 
     });/**/
 

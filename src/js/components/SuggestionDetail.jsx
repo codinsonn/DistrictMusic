@@ -52,20 +52,26 @@ export default class SuggestionDetail extends Component {
 
     const {suggestion} = this.state;
 
-    NotifActions.addNotification(`Waiting to add song to queue...`);
+    NotifActions.addNotification(`Uploading song to queue...`);
     PlaylistActions.hideSuggestionDetail();
     //PlaylistActions.hideSearchModal();
 
     songs.addToQueue(suggestion)
       .then(res => {
 
-        NotifActions.addSuccess(`Song added to queue!`);
+        NotifActions.addSuccess(`Submission added to queue!`);
+
+        PlaylistActions.resetSearchbar();
 
         console.log(`Success!`, res);
 
       }, failData => {
 
-        NotifActions.addSuccess(`Could not add song to queue`);
+        if (failData.errors[0] === `Song already in queue`) {
+          NotifActions.addError(failData.errors[0]);
+        } else {
+          NotifActions.addError(`Couldn't add song to queue`);
+        }
 
         console.log(`Failed`, failData);
 

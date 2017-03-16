@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
-//import {songs} from '../api/';
+import {songs} from '../api/';
 import UserStore from '../stores/UserStore';
 
 class PlaylistStore extends EventEmitter {
@@ -16,6 +16,34 @@ class PlaylistStore extends EventEmitter {
     this.defaultSuggestion = {id: ``, title: ``}; // { id: '', title: '', channel: '', thumbs: {}, duration: '' };
 
     this.queue = [];
+
+  }
+
+  updateQueue() {
+
+    console.log(`Fetching queue from server`);
+
+    songs.getAllQueued()
+      .then(res => {
+
+        this.queue = res;
+
+        console.log(`New queue`, this.queue);
+
+        this.emit(`QUEUE_CHANGED`);
+
+      }, failData => {
+
+        console.log(`-!- Update queue error -!- \n`, failData, `\n-!-`);
+
+        if (failData.errors && failData.errors.length > 0) {
+          failData.errors.forEach(error => {
+            console.log(`Error Msg:`, error);
+          });
+        }
+
+      })
+    ;
 
   }
 
@@ -51,6 +79,14 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  resetSearchbar() {
+
+    this.currentSuggestion = this.defaultSuggestion;
+
+    this.emit(`RESET_SEARCH_BAR`);
+
+  }
+
   getCurrentSuggestion() {
 
     return this.currentSuggestion;
@@ -69,6 +105,12 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  getCurrentQueue() {
+
+    return this.queue;
+
+  }
+
   handleActions(action) {
 
     switch (action.type) {
@@ -81,12 +123,20 @@ class PlaylistStore extends EventEmitter {
       this.setShowSearchModal(false);
       break;
 
+    case `RESET_SEARCH_BAR`:
+      this.resetSearchbar();
+      break;
+
     case `SHOW_SUGGESTION_DETAIL`:
       this.setCurrentSuggestion(action.data);
       break;
 
     case `HIDE_SUGGESTION_DETAIL`:
       this.setShowSuggestionDetail();
+      break;
+
+    case `UPDATE_QUEUE`:
+      this.updateQueue();
       break;
 
     }

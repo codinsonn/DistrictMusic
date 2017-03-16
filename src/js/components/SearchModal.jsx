@@ -31,6 +31,7 @@ export default class SearchModal extends Component {
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateLoggedIn());
     NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.enableSearch());
+    PlaylistStore.on(`RESET_SEARCH_BAR`, () => this.resetSearchbar());
   }
 
   componentWillUnmount() {
@@ -54,6 +55,18 @@ export default class SearchModal extends Component {
     }
 
     this.setState({isLoggedIn, searchEnabled});
+
+  }
+
+  resetSearchbar() {
+
+    let {currentSuggestions} = this.state;
+
+    currentSuggestions = [];
+
+    document.querySelector(`.search-query`).value = ``;
+
+    this.setState({currentSuggestions});
 
   }
 

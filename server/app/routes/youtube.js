@@ -38,7 +38,7 @@ module.exports = (app) => {
   app.route("/api/youtube/search/:query").get(UsersController.userSession.require, (req, res, next) => {
 
     var opts = {
-      maxResults: 15,
+      maxResults: 30,
       key: authConfig.googleAuth.apiKey,
       safeSearch: 'moderate',
       topicId: '/m/04rlf', // music general

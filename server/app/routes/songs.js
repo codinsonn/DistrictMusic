@@ -12,6 +12,24 @@ var baseUrlUser = "songs/";
 
 module.exports = (app) => {
 
+  /** --- Get current playlist queue -----------------------------------------------------------------------------
+   * @api {get} /api/songs/queue/ Search youtube videos
+   * @apiDescription Return search results
+   * @apiGroup Authentication
+   * @apiVersion 1.0.0
+   *
+   * @apiSuccessExample {json} Request-Example:
+   *     {
+   *       "id": "youtube id",
+   *       "title": "youtube title",
+   *       "channel": "youtube channel",
+   *       "thumbs": {},
+   *       "duration": "MM:SS",
+   *     }
+   *
+   */
+  app.route("/api/songs/queue/").get(SongsController.getAllQueued);
+
   /** --- Add Song to Queue -----------------------------------------------------------------------------
    * @api {post} /api/songs/queue/ Search youtube videos
    * @apiDescription Return search results
@@ -76,7 +94,7 @@ module.exports = (app) => {
    * @apiUse messageBadRequest
    *
    * @apiUse messageNotFound
-   */
+   **/
   app.post("/api/songs/queue/", UsersController.userSession.require, SongsController.addSongToQueue);
 
 }

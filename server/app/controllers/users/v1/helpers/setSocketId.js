@@ -28,7 +28,7 @@ module.exports = function(profile, socketId) {
 
       if(user.meta.socketIds[0] !== socketId){
 
-        console.log('- [DB][setSocketId] Old user SID in database: ', user.meta.socketIds, ' | new: ', socketId,' -');
+        //console.log('- [DB][setSocketId] Old user SID in database: ', user.meta.socketIds, ' | new: ', socketId,' -');
 
         //console.log('--- USER: ---\n', user, '\n --- / USER ---');
 
@@ -40,7 +40,7 @@ module.exports = function(profile, socketId) {
           if (err)
             throw err;
 
-          console.log('- [DB][setSocketId] Updated to new SID in database: ', user.meta.socketIds, ' -');
+          //console.log('- [DB][setSocketId] Updated to new SID in database: ', user.meta.socketIds, ' -');
           EmitHelper.emit('UPDATED_SOCKET_ID', user.meta.socketIds, {socketId: user.meta.socketIds[0]});
 
           UserModel.findOne({ 'general.email': profile.general.email, 'meta.googleId': profile.meta.googleId, 'meta.googleAuthToken': profile.meta.googleAuthToken }, (err, user) => {

@@ -12,8 +12,16 @@ var set = module.exports.set = (type) => {
         return "DOWNLOAD_PROGRESS";
         break;
 
+      case "DOWNLOAD_DONE":
+        return "DOWNLOAD_DONE";
+        break;
+
       case "UPDATED_SOCKET_ID":
         return "UPDATED_SOCKET_ID";
+        break;
+
+      case "QUEUE_UPDATED":
+        return "QUEUE_UPDATED";
         break;
 
       default:
@@ -27,7 +35,6 @@ var set = module.exports.set = (type) => {
 var sendAll = (socketIds, type, data) => {
 
   _.forEach(socketIds, (socketId) => {
-    console.log('-- [IO][Emitter] Emitting to: ', socketId, '--');
     this.io.to(socketId).emit(set(type), data);
   });
 
@@ -42,6 +49,12 @@ module.exports.emit = (type, tokens, data) => {
   }
 
 };
+
+module.exports.broadcast = (type, data) => {
+
+  this.io.sockets.emit(set(type), data);
+
+}
 
 // Init io in the listener
 module.exports.init = (_io) => {

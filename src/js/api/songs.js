@@ -30,6 +30,14 @@ export const youtubeSearch = query => {
 
 };
 
+export const getAllQueued = () => {
+
+  return fetch(`${base}/api/songs/queue/`, getOptions)
+    .then(checkStatus)
+  ;
+
+};
+
 export const addToQueue = song => {
 
   const postRequest = {body: JSON.stringify({...song}), ...postOptions};
@@ -42,5 +50,6 @@ export const addToQueue = song => {
 
 export default {
   youtubeSearch,
+  getAllQueued,
   addToQueue
 };

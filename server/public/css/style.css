@@ -135,7 +135,7 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: rgba(33, 33, 33, .4);
+  background-color: rgba(33, 33, 33, .7);
   z-index: 50;
 }
 
@@ -146,8 +146,149 @@ body {
   height: 3px;
   top: 0;
   left: 0;
-  background-color: #60ac7b;
   z-index: 70;
+  -webkit-transition: background 2s ease-out 0;
+  transition: background 2s ease-out 0;
+}
+
+.red {
+  background-color: #fb624a;
+}
+
+.blue {
+  background-color: #299cbb;
+}
+
+.green {
+  background-color: #60ac7b;
+}
+
+/* --- Playlist Queue -------------------------------------------------------------------- */
+
+.playlist-queue {
+  position: relative;
+  display: block;
+  width: 90vw;
+  height: auto;
+  left: 5vw;
+  top: 110px;
+}
+
+.playlist-header {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 40px;
+  top: 0;
+  left: 0;
+}
+
+.playlist-header h2 {
+  position: relative;
+  display: inline-block;
+  width: auto;
+  height: 40px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  color: rgba(200, 200, 200, 1);
+  font-family: Oswald, sans-serif;
+  font-size: 3em;
+  font-weight: bold;
+}
+
+.playlist-header .active {
+  color: #1a1a1a;
+}
+
+.current-queue {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: auto;
+  top: 40px;
+  left: 0;
+}
+
+.song-summary {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 60px;
+  padding: 5px;
+  margin: 7px 0;
+  border-radius: 3px;
+  background-color: gainsboro;
+}
+
+.song-summary section {
+  position: absolute;
+  display: inline-block;
+}
+
+.song-score-wrapper {
+  width: 65px;
+  height: calc(100% - 10px);
+  left: 0;
+}
+
+.btn-upvote,
+.btn-downvote {
+  position: absolute;
+  display: block;
+  width: 15px;
+  height: 14px;
+  left: calc(50% - 7.5px);
+  border: 7.5px solid transparent;
+  cursor: pointer;
+}
+
+.btn-upvote {
+  top: 0;
+  border-top: 0;
+  border-bottom: 10px solid #c6c6c6;
+}
+
+.btn-downvote {
+  bottom: 0;
+  border-bottom: 0;
+  border-top: 10px solid #c6c6c6;
+}
+
+.queue-score {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 14px;
+  top: calc(50% - 7px);
+  left: 0;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.song-thumb {
+  width: 80px;
+  height: 60px;
+  top: 0;
+  left: 65px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.song-duration {
+  position: absolute;
+  display: block;
+  padding: 5px;
+  color: white;
+  font-size: 1.3em;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.song-info {
+  width: auto;
+  left: 150px;
 }
 
 /* --- Suggestion Detail ----------------------------------------------------------------- */
@@ -317,6 +458,7 @@ body {
   left: 0;
 }
 
+.song-duration,
 .suggestion-duration {
   bottom: 0;
   right: 0;
