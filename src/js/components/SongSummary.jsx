@@ -37,10 +37,10 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
+    const {/*order, */title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
-    const fromNow = moment(lastAddedBy.date).fromNow();
+    const fromNow = moment(lastAddedBy.added).fromNow();
 
     return (
       <article className='song-summary'>
@@ -53,7 +53,6 @@ export default class SongSummary extends Component {
           <span className='song-duration'>{duration}</span>
         </section>
         <section className='song-info'>
-          <span className='queue-order'>{order}</span>
           <span className='song-title'>{title}</span>
           <div className='submitter-info'>Submitted <span>{fromNow}</span> by <span>{lastAddedBy.userName}</span></div>
         </section>
@@ -70,3 +69,9 @@ SongSummary.propTypes = {
   queue: PropTypes.object,
   thumbs: PropTypes.object
 };
+
+/*
+<section className='queue-order-wrapper'>
+  <span className='queue-order'>{order}</span>
+</section>
+*/

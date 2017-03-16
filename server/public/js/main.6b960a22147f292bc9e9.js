@@ -50395,7 +50395,6 @@ var SongSummary = function (_Component) {
 
   SongSummary.prototype.render = function render() {
     var _state = this.state,
-        order = _state.order,
         title = _state.title,
         duration = _state.duration,
         currentQueueScore = _state.currentQueueScore,
@@ -50404,7 +50403,7 @@ var SongSummary = function (_Component) {
 
 
     var thumbStyle = { backgroundImage: 'url(' + thumbs.default.url + ')' };
-    var fromNow = __WEBPACK_IMPORTED_MODULE_1_moment___default()(lastAddedBy.date).fromNow();
+    var fromNow = __WEBPACK_IMPORTED_MODULE_1_moment___default()(lastAddedBy.added).fromNow();
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'article',
@@ -50474,18 +50473,9 @@ var SongSummary = function (_Component) {
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
-          { className: 'queue-order', __source: {
-              fileName: _jsxFileName,
-              lineNumber: 56
-            }
-          },
-          order
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
           { className: 'song-title', __source: {
               fileName: _jsxFileName,
-              lineNumber: 57
+              lineNumber: 56
             }
           },
           title
@@ -50494,7 +50484,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 58
+              lineNumber: 57
             }
           },
           'Submitted ',
@@ -50503,7 +50493,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 58
+                lineNumber: 57
               }
             },
             fromNow
@@ -50514,7 +50504,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 58
+                lineNumber: 57
               }
             },
             lastAddedBy.userName
@@ -50536,6 +50526,12 @@ SongSummary.propTypes = {
   queue: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   thumbs: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object
 };
+
+/*
+<section className='queue-order-wrapper'>
+  <span className='queue-order'>{order}</span>
+</section>
+*/
 
 /***/ }),
 /* 311 */
@@ -77376,4 +77372,4 @@ module.exports = __webpack_require__(299);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.3cb934ea2850eec11233.js.map
+//# sourceMappingURL=main.6b960a22147f292bc9e9.js.map

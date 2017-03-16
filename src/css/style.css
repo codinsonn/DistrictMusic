@@ -61,9 +61,9 @@ body {
 .playlist-queue {
   position: relative;
   display: block;
-  width: 90vw;
+  /*width: 90vw;*/
   height: auto;
-  left: 5vw;
+  /*left: 5vw;*/
   top: 110px;
 }
 
@@ -119,7 +119,7 @@ body {
 }
 
 .song-score-wrapper {
-  width: 65px;
+  /*width: 65px;*/
   height: calc(100% - 10px);
   left: 0;
 }
@@ -133,6 +133,7 @@ body {
   left: calc(50% - 7.5px);
   border: 7.5px solid transparent;
   cursor: pointer;
+  transition: background 2s ease-out 0;
 }
 
 .btn-upvote {
@@ -147,7 +148,16 @@ body {
   border-top: 10px solid #c6c6c6;
 }
 
-.queue-score {
+.btn-upvote:hover {
+  border-bottom: 10px solid #60ac7b;
+}
+
+.btn-downvote:hover {
+  border-top: 10px solid #fb624a;
+}
+
+.queue-score,
+.queue-order {
   position: absolute;
   display: block;
   width: 100%;
@@ -161,10 +171,10 @@ body {
 }
 
 .song-thumb {
-  width: 80px;
+  /*width: 80px;*/
   height: 60px;
   top: 0;
-  left: 65px;
+  /*left: 65px;*/
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -179,9 +189,101 @@ body {
   background-color: rgba(0, 0, 0, .5);
 }
 
-.song-info {
-  width: auto;
+.queue-order-wrapper {
+  width: 25px;
+  height: calc(50%);
+  top: 25%;
   left: 150px;
+  border-right: 1px solid rgb(200, 200, 200);
+}
+
+.song-info {
+  /*width: calc(100% - 150px);*/
+  height: calc(100% - 10px);
+  /*left: 150px;*/
+  padding: 10px;
+}
+
+.song-title {
+  position: absolute;
+  display: block;
+  top: 10px;
+  color: var(--dark);
+  font-family: Oswald, sans-serif;
+  /*font-size: 2em;*/
+  font-weight: bold;
+}
+
+.submitter-info {
+  position: absolute;
+  display: block;
+  bottom: 10px;
+  color: rgb(150, 150, 150);
+  font-family: Roboto, sans-serif;
+  /*font-size: 1.3em;*/
+  font-weight: bold;
+}
+
+@media (min-width: 751px) {
+
+  .playlist-queue {
+    width: 90vw;
+    left: 5vw;
+  }
+
+  .song-score-wrapper {
+    width: 65px;
+  }
+
+  .song-thumb {
+    width: 80px;
+    left: 65px;
+  }
+
+  .song-info {
+    width: calc(100% - 150px);
+    left: 150px;
+  }
+
+  .song-title {
+    font-size: 2em;
+  }
+
+  .submitter-info {
+    font-size: 1.3em;
+  }
+
+}
+
+@media (max-width: 750px) {
+
+  .playlist-queue {
+    width: 96vw;
+    left: 2vw;
+  }
+
+  .song-score-wrapper {
+    width: 40px;
+  }
+
+  .song-thumb {
+    width: 60px;
+    left: 40px;
+  }
+
+  .song-info {
+    width: calc(100% - 100px);
+    left: 100px;
+  }
+
+  .song-title {
+    font-size: 1.5em;
+  }
+
+  .submitter-info {
+    font-size: 1.1em;
+  }
+
 }
 
 /* --- Suggestion Detail ----------------------------------------------------------------- */

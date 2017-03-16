@@ -32,11 +32,9 @@ module.exports = (req, res, done) => {
 
     }
 
-    console.log('--- Current Queue: ---');
-
     if(playlistQueue){
 
-      console.log('playlistQueue:\n', playlistQueue, '\n----\n');
+      //console.log('playlistQueue:\n', playlistQueue, '\n----\n');
 
       res.statusCode = 200;
       return done(null, res.json(playlistQueue));
