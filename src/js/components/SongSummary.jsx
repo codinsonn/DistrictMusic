@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
+import UserStore from '../stores/UserStore';
+import * as UserActions from '../actions/UserActions';
 
 export default class SongSummary extends Component {
 
@@ -35,6 +37,30 @@ export default class SongSummary extends Component {
 
   }
 
+  upvote() {
+
+    const isLoggedIn = UserStore.getLoggedIn();
+
+    if (isLoggedIn) {
+      //code for upvoting
+    } else {
+      UserActions.showLoginModal();
+    }
+
+  }
+
+  downvote() {
+
+    const isLoggedIn = UserStore.getLoggedIn();
+
+    if (isLoggedIn) {
+      //code for downvoting
+    } else {
+      UserActions.showLoginModal();
+    }
+
+  }
+
   render() {
 
     const {/*order, */title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
@@ -45,9 +71,9 @@ export default class SongSummary extends Component {
     return (
       <article className='song-summary'>
         <section className='song-score-wrapper'>
-          <span className='btn-upvote'>&nbsp;</span>
+          <span className='btn-upvote' onClick={() => this.upvote()}>&nbsp;</span>
           <span className='queue-score'>{currentQueueScore}</span>
-          <span className='btn-downvote'>&nbsp;</span>
+          <span className='btn-downvote' onClick={() => this.downvote()}>&nbsp;</span>
         </section>
         <section className='song-thumb' style={thumbStyle}>
           <span className='song-duration'>{duration}</span>

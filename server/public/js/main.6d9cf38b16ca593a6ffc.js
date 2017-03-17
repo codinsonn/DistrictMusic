@@ -50375,6 +50375,8 @@ var SongSummary = function (_Component) {
   SongSummary.prototype.componentDidMount = function componentDidMount() {};
 
   SongSummary.prototype.render = function render() {
+    var _this2 = this;
+
     var _state = this.state,
         title = _state.title,
         duration = _state.duration,
@@ -50402,7 +50404,9 @@ var SongSummary = function (_Component) {
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
-          { className: 'btn-upvote', __source: {
+          { className: 'btn-upvote', onClick: function onClick() {
+              return _this2.upvote();
+            }, __source: {
               fileName: _jsxFileName,
               lineNumber: 48
             }
@@ -50420,7 +50424,9 @@ var SongSummary = function (_Component) {
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
-          { className: 'btn-downvote', __source: {
+          { className: 'btn-downvote', onClick: function onClick() {
+              return _this2.downvote();
+            }, __source: {
               fileName: _jsxFileName,
               lineNumber: 50
             }
@@ -77350,4 +77356,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.8128ee8774a1726231e3.js.map
+//# sourceMappingURL=main.6d9cf38b16ca593a6ffc.js.map
