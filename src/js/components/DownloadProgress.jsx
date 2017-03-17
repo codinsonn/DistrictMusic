@@ -1,9 +1,4 @@
-import React, {Component/*, PropTypes*/} from 'react';
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
+import React, {Component} from 'react';
 import SocketStore from '../stores/SocketStore';
 
 export default class DownloadProgress extends Component {
@@ -13,12 +8,14 @@ export default class DownloadProgress extends Component {
     super(props, context);
 
     this.state = {
+      appearBusy: SocketStore.getAppearBusy(),
       downloadProgress: SocketStore.getDownloadProgress()
     };
 
   }
 
   componentWillMount() {
+    SocketStore.on(`APPEAR_BUSY_CHANGED`, () => this.setAppearBusy());
     SocketStore.on(`DOWNLOAD_PROGRESS_UPDATED`, () => this.updateDownloadProgress());
   }
 
@@ -30,12 +27,21 @@ export default class DownloadProgress extends Component {
 
   }
 
+  setAppearBusy() {
+
+    let {appearBusy} = this.state;
+
+    appearBusy = SocketStore.getAppearBusy();
+
+    this.setState({appearBusy});
+
+  }
+
   updateDownloadProgress() {
 
     let {downloadProgress} = this.state;
 
     downloadProgress = SocketStore.getDownloadProgress();
-    //console.log('New downloadProgress: ', downloadProgress);
 
     this.setState({downloadProgress});
 
@@ -43,11 +49,19 @@ export default class DownloadProgress extends Component {
 
   render() {
 
-    const {downloadProgress} = this.state;
+    const {appearBusy, downloadProgress} = this.state;
 
     let progressClasses = `progress hidden`;
-    let progressStyle = {width: `0px`};
-    if (downloadProgress > 0 && downloadProgress < .99) {
+    let progressStyle = {};
+
+    if (appearBusy) {
+
+      console.log(`Appearing busy...`);
+      progressClasses = `progress blue show`;
+      setTimeout(() => { document.querySelector(`.progress`).className = `progress blue show appear-busy`; }, 1);
+
+    } else if (downloadProgress > 0 && downloadProgress < .99) {
+
       if (downloadProgress < .33) {
         progressClasses = `progress red show`;
       } else if (downloadProgress >= .33 && downloadProgress < .66) {
@@ -55,7 +69,9 @@ export default class DownloadProgress extends Component {
       } else if (downloadProgress >= .66) {
         progressClasses = `progress green show`;
       }
+
       progressStyle = {width: `${window.innerWidth * downloadProgress}px`};
+
     }
 
     return (
@@ -65,7 +81,3 @@ export default class DownloadProgress extends Component {
   }
 
 }
-
-/*Profile.propTypes = {
-
-};*/

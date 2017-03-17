@@ -63,7 +63,7 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {/*order, */title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
+    const {title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();

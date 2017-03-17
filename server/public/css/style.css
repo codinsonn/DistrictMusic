@@ -147,8 +147,12 @@ body {
   top: 0;
   left: 0;
   z-index: 70;
-  -webkit-transition: background 2s ease-out 0;
-  transition: background 2s ease-out 0;
+  -webkit-transition: all 2s ease-in-out;
+  transition: all 2s ease-in-out;
+}
+
+.progress.appear-busy {
+  width: 80%;
 }
 
 .red {

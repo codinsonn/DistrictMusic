@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component/*, PropTypes*/} from 'react';
 import {Suggestion} from '../components';
 import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';
@@ -7,7 +7,6 @@ import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import * as NotifActions from '../actions/NotifActions';
 import songs from '../api/songs';
-//import gapi from 'googleapi';
 
 export default class SearchModal extends Component {
 
@@ -20,9 +19,9 @@ export default class SearchModal extends Component {
     this.cancelDelayed = false;
 
     this.state = {
+      visible: PlaylistStore.getShowSearchModal(),
       isLoggedIn: UserStore.getLoggedIn(),
       searchEnabled: false,
-      //gapiLoaded: false,
       currentSuggestions: []
     };
 
@@ -30,8 +29,8 @@ export default class SearchModal extends Component {
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateLoggedIn());
-    //NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.enableSearch());
     PlaylistStore.on(`RESET_SEARCH_BAR`, () => this.resetSearchbar());
+    PlaylistStore.on(`SHOW_SEARCH_MODAL_CHANGED`, () => this.setVisible());
   }
 
   componentWillUnmount() {
@@ -40,6 +39,16 @@ export default class SearchModal extends Component {
 
   componentDidMount() {
     this.enableSearch();
+  }
+
+  setVisible() {
+
+    let {visible} = this.state;
+
+    visible = PlaylistStore.getShowSearchModal();
+
+    this.setState({visible});
+
   }
 
   updateLoggedIn() {
@@ -75,23 +84,16 @@ export default class SearchModal extends Component {
   enableSearch() {
 
     const {isLoggedIn} = this.state;
-    let {/*gapiLoaded, */searchEnabled} = this.state;
-
-    /*gapi.client.setApiKey(`AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU`);
-    gapi.client.load(`youtube`, `v3`, () => {
-
-      gapiLoaded = true;*/
+    let {searchEnabled} = this.state;
 
     if (isLoggedIn) {
       searchEnabled = true;
       document.querySelector(`.search-query`).disabled = false;
     }
 
-    this.setState({/*gapiLoaded, */searchEnabled});
+    this.setState({searchEnabled});
 
-    //});
-
-  }/**/
+  }
 
   endSearch() {
 
@@ -99,7 +101,7 @@ export default class SearchModal extends Component {
 
     currentSuggestions = [];
     //document.querySelector(`.search-query`).value = ``;
-    PlaylistActions.hideSearchModal();
+    setTimeout(() => PlaylistActions.hideSearchModal(), 10);
 
     this.setState({currentSuggestions});
 
@@ -135,7 +137,7 @@ export default class SearchModal extends Component {
 
       if (canSearch) {
 
-        if (query.length >= 4) {
+        if (query.length >= 3) {
 
           // filter out id if youtube url
           const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -152,6 +154,7 @@ export default class SearchModal extends Component {
 
               currentSuggestions = res;
 
+              NotifActions.setAppearBusy(false);
               if (currentSuggestions.length === 0) {
                 NotifActions.addNotification(`No results were found`);
               }
@@ -159,6 +162,8 @@ export default class SearchModal extends Component {
               this.setState({currentSuggestions});
 
             }, failData => {
+
+              NotifActions.setAppearBusy(false);
 
               console.log(`-!- Search error -!- \n`, failData, `\n-!-`);
 
@@ -180,7 +185,7 @@ export default class SearchModal extends Component {
             currentSuggestions = [];
             this.setState({currentSuggestions});
 
-            NotifActions.addError(`Please enter more than 3 characters`);
+            NotifActions.addError(`Please enter 3 or more characters`);
 
           }
 
@@ -204,14 +209,18 @@ export default class SearchModal extends Component {
       NotifActions.hideNotification();
     }
 
+    if (document.querySelector(`.search-query`).value.length >= 3) {
+      NotifActions.setAppearBusy(true);
+    }
+
     this.inputChanged = true;
     if (isLoggedIn && delay) {
-      setTimeout(() => { this.inputPaused = true; }, 1400);
-      setTimeout(() => { this.search(true); }, 1500);
+      setTimeout(() => { this.inputPaused = true; }, 1200);
+      setTimeout(() => { this.search(true); }, 1300);
       this.inputPaused = false;
     } else {
       this.cancelDelayed = true;
-      setTimeout(() => { this.cancelDelayed = false; }, 1600);
+      setTimeout(() => { this.cancelDelayed = false; }, 1300);
       this.inputPaused = true;
       this.search(false);
     }
@@ -234,18 +243,17 @@ export default class SearchModal extends Component {
 
   render() {
 
-    const {isLoggedIn, currentSuggestions} = this.state;
-    const {visible} = this.props;
-
-    const lightboxClasses = `lightbox ${visible}`;
+    const {visible, isLoggedIn, currentSuggestions} = this.state;
 
     let placeholder = `Login to add songs`;
     if (isLoggedIn) {
       placeholder = `Search or paste url`;
     }
 
+    let lightboxClasses = `lightbox hidden`;
     let suggestionsClasses = `suggestions-wrapper hidden`;
-    if (visible === `show` && currentSuggestions.length > 0) {
+    if (visible && currentSuggestions.length > 0) {
+      lightboxClasses = `lightbox show`;
       suggestionsClasses = `suggestions-wrapper show`;
     }
 
@@ -257,7 +265,6 @@ export default class SearchModal extends Component {
             onSubmit={() => this.onInputChanged(false)}
             onInput={() => this.onInputChanged(true)}
             onFocus={() => this.triggerLoginOrModal()}
-            //onBlur={() => setTimeout(() => { this.endSearch(); }, 50)}
           />
           <div className={suggestionsClasses}>
             {this.renderSuggestions()}
@@ -269,7 +276,3 @@ export default class SearchModal extends Component {
   }
 
 }
-
-SearchModal.propTypes = {
-  visible: PropTypes.string
-};

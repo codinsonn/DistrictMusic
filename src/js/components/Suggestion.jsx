@@ -43,9 +43,14 @@ export default class Suggestion extends Component {
 
     const {title, thumbs, duration} = this.state;
 
+    let thumbUrl = thumbs.high.url;
+    if (window.innerWidth <= 600) {
+      thumbUrl = thumbs.medium.url;
+    }
+
     return (
       <section className='search-suggestion' onClick={() => this.showSuggestionDetail()}>
-        <img src={thumbs.medium.url} alt={title} />
+        <img src={thumbUrl} alt={title} />
         <div className='suggestion-info'>
           <span className='btn-add-to-queue' onClick={() => this.showSuggestionDetail()}>+ Add to queue</span>
           <span className='suggestion-title'>{title}</span>

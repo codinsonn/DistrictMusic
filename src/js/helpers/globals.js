@@ -3,7 +3,19 @@
 export const host = (() => {
 
   if (location.hostname === `localhost` || location.hostname === `127.0.0.1`) {
-    return `http://localhost:3000`;
+    return `http://localhost:3020`;
+    //return `http://10.71.0.79:3020`;
+  } else {
+    return `https://districtmusic.herokuapp.com`;
+  }
+
+})();
+
+export const api = (() => {
+
+  if (location.hostname === `localhost` || location.hostname === `127.0.0.1`) {
+    return `http://localhost:3020`;
+    //return `http://10.71.0.79:3020`;
   } else {
     return `https://districtmusic.herokuapp.com`;
   }

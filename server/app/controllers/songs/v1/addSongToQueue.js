@@ -211,7 +211,8 @@ module.exports = (req, res, done) => {
 
   this.respondSong = (song) => {
 
-    EmitHelper.broadcast('QUEUE_UPDATED', newSong);
+    console.log('Broadcasting for update');
+    EmitHelper.broadcast('QUEUE_UPDATED', song);
 
     console.log('- New song added to queue -');
     res.statusCode = 200;

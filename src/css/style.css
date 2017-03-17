@@ -41,7 +41,11 @@ body {
   top: 0;
   left: 0;
   z-index: 70;
-  transition: background 2s ease-out 0;
+  transition: all 2s ease-in-out;
+}
+
+.progress.appear-busy {
+  width: 80%;
 }
 
 .red {

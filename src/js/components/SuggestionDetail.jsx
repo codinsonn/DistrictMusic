@@ -12,6 +12,7 @@ export default class SuggestionDetail extends Component {
     super(props, context);
 
     this.state = {
+      visible: PlaylistStore.getShowSuggestionDetail(),
       id: ``,
       title: ``,
       suggestion: PlaylistStore.getCurrentSuggestion()
@@ -33,18 +34,18 @@ export default class SuggestionDetail extends Component {
 
   setSuggestionDetail() {
 
-    let {id, title, suggestion} = this.state;
+    let {visible, id, title, suggestion} = this.state;
 
     suggestion = PlaylistStore.getCurrentSuggestion();
     id = suggestion.id;
     title = suggestion.title;
 
-    const visible = PlaylistStore.getShowSuggestionDetail();
+    visible = PlaylistStore.getShowSuggestionDetail();
     if (!visible) {
-      setTimeout(() => PlaylistActions.hideSearchModal(), 200);
+      setTimeout(() => PlaylistActions.hideSearchModal(), 10);
     }
 
-    this.setState({id, title, suggestion});
+    this.setState({visible, id, title, suggestion});
 
   }
 
@@ -54,7 +55,6 @@ export default class SuggestionDetail extends Component {
 
     NotifActions.addNotification(`Uploading song to queue...`);
     PlaylistActions.hideSuggestionDetail();
-    //PlaylistActions.hideSearchModal();
 
     songs.addToQueue(suggestion)
       .then(res => {
@@ -119,9 +119,12 @@ export default class SuggestionDetail extends Component {
 
   render() {
 
-    const {visible} = this.props;
+    const {visible} = this.state;
 
-    const suggestionModalClasses = `suggestion-modal-wrapper ${visible}`;
+    let suggestionModalClasses = `suggestion-modal-wrapper hidden`;
+    if (visible) {
+      suggestionModalClasses = `suggestion-modal-wrapper show`;
+    }
 
     return (
       <article className={suggestionModalClasses}>
@@ -147,7 +150,6 @@ export default class SuggestionDetail extends Component {
 }
 
 SuggestionDetail.propTypes = {
-  visible: PropTypes.string,
   id: PropTypes.string,
   suggestion: PropTypes.object
 };

@@ -12,6 +12,7 @@ class SocketStore extends EventEmitter {
     this.socket = io();
 
     // -- Vars ---------
+    this.appearBusy = false;
     this.downloadProgress = 0;
 
     // -- Events -------
@@ -24,9 +25,22 @@ class SocketStore extends EventEmitter {
 
   updateDownloadProgress(downloadData) {
 
-    this.downloadProgress = downloadData.percent;
+    if (this.appearBusy === true) {
+      this.appearBusy = false;
+      this.emit(`APPEAR_BUSY_CHANGED`);
+    }
 
+    this.downloadProgress = downloadData.percent;
     this.emit(`DOWNLOAD_PROGRESS_UPDATED`);
+
+  }
+
+  setAppearBusy(busy) {
+
+    if (this.downloadProgress === 0 || this.downloadProgress === 1) {
+      this.appearBusy = busy;
+      this.emit(`APPEAR_BUSY_CHANGED`);
+    }
 
   }
 
@@ -42,12 +56,22 @@ class SocketStore extends EventEmitter {
 
   }
 
+  getAppearBusy() {
+
+    return this.appearBusy;
+
+  }
+
   handleActions(action) {
 
     switch (action.type) {
 
     case `RESET_DOWNLOAD_PROGRESS`:
       this.resetDownloadProgress();
+      break;
+
+    case `SET_APPEAR_BUSY`:
+      this.setAppearBusy(action.data);
       break;
 
     }

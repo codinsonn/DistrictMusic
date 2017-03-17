@@ -38,3 +38,10 @@ export function hideNotification() {
     type: `HIDE_NOTIFICATION`
   });
 }
+
+export function setAppearBusy(busy) {
+  dispatcher.dispatch({
+    type: `SET_APPEAR_BUSY`,
+    data: busy
+  });
+}

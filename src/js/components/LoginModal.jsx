@@ -1,8 +1,7 @@
-import React, {Component, PropTypes} from 'react';
-//import NotificationsStore from '../stores/NotificationsStore';
+import React, {Component/*, PropTypes*/} from 'react';
+import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
-//import gapi from 'googleapi';
 
 export default class LoginModal extends Component {
 
@@ -10,13 +9,13 @@ export default class LoginModal extends Component {
     super(props, context);
 
     this.state = {
-      isLoggedIn: 0
+      visible: UserStore.getShowLoginModal()
     };
 
   }
 
   componentWillMount() {
-    //NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.initOauth());
+
   }
 
   componentWillUnmount() {
@@ -24,57 +23,39 @@ export default class LoginModal extends Component {
   }
 
   componentDidMount() {
+    UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setVisible());
+  }
+
+  setVisible() {
+
+    let {visible} = this.state;
+
+    visible = UserStore.getShowLoginModal();
+
+    this.setState({visible});
 
   }
 
-  /*initOauth() {
-
-    this.auth2 = gapi.auth2.getAuthInstance();
-
-    this.attachSignin(document.querySelector(`.google-signin`));
-
-  }
-
-  attachSignin($element) {
-
-    this.auth2.attachClickHandler($element, {},
-      googleUser => this.onSignIn(googleUser),
-      error => {
-        console.log(JSON.stringify(error, undefined, 2));
-      }
-    );
-
-  }/**/
-
-  onSignIn(/*googleUser*/) {
-
-    /*// Useful data for your client-side scripts:
-    const profile = googleUser.getBasicProfile();
-
-    // The ID token you need to pass to your backend:
-    const idToken = googleUser.getAuthResponse().id_token;
-
-    const postData = {};
-    postData.email = profile.getEmail();
-    postData.googleToken = idToken;*/
+  onSignIn() {
 
     // -- Redirect user to google callback on auth result --
     const base = `http://localhost:3020`;
     window.location = `${base}/auth/user/google`;
 
-  }/**/
+  }
 
   render() {
 
-    const {visible} = this.props;
+    const {visible} = this.state;
 
-    if (visible === `show`) {
-      setTimeout(() => NotifActions.addNotification(`Please login with District01 account`), 10);
-    } else {
-      setTimeout(() => NotifActions.hideNotification(), 10);
+    if (visible) {
+      NotifActions.addNotification(`Please login with District01 account`);
     }
 
-    const loginModalClasses = `login-modal-wrapper ${visible}`;
+    let loginModalClasses = `login-modal-wrapper hidden`;
+    if (visible) {
+      loginModalClasses = `login-modal-wrapper show`;
+    }
 
     return (
       <article className={loginModalClasses}>
@@ -97,8 +78,6 @@ export default class LoginModal extends Component {
 
 }
 
-LoginModal.propTypes = {
+/*LoginModal.propTypes = {
   visible: PropTypes.string
-};
-
-// <span className='buttonText'><a href="/auth/user/google">Sign in with Google+</a></span>
+};*/
