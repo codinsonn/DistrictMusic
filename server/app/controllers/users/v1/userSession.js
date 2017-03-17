@@ -29,11 +29,13 @@ module.exports.require = (req, res, next) => {
 
         console.log('Error occured while searching user:', err);
         res.statusCode = 500;
-        return res.json({
+        res.json({
           errors: [
             'Could not search for user'
           ]
         });
+
+        next();
 
       }
 
@@ -48,11 +50,13 @@ module.exports.require = (req, res, next) => {
         console.log('- Unknown user -');
 
         res.statusCode = 401;
-        return res.json({
+        res.json({
           errors: [
             'Unknown user'
           ]
         });
+
+        next();
 
       }
 
@@ -63,11 +67,13 @@ module.exports.require = (req, res, next) => {
     console.log('- Profile not in session -');
 
     res.statusCode = 401;
-    return res.json({
+    res.json({
       errors: [
         'No user in session'
       ]
     });
+
+    next();
 
   }
 

@@ -168,9 +168,7 @@ body {
 .playlist-queue {
   position: relative;
   display: block;
-  /*width: 90vw;*/
   height: auto;
-  /*left: 5vw;*/
   top: 110px;
 }
 
@@ -226,7 +224,6 @@ body {
 }
 
 .song-score-wrapper {
-  /*width: 65px;*/
   height: calc(100% - 10px);
   left: 0;
 }
@@ -240,8 +237,8 @@ body {
   left: calc(50% - 7.5px);
   border: 7.5px solid transparent;
   cursor: pointer;
-  -webkit-transition: background 2s ease-out 0;
-  transition: background 2s ease-out 0;
+  -webkit-transition: all .3s ease-in-out .1;
+  transition: all .3s ease-in-out .1;
 }
 
 .btn-upvote {
@@ -279,10 +276,8 @@ body {
 }
 
 .song-thumb {
-  /*width: 80px;*/
   height: 60px;
   top: 0;
-  /*left: 65px;*/
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -306,9 +301,7 @@ body {
 }
 
 .song-info {
-  /*width: calc(100% - 150px);*/
   height: calc(100% - 10px);
-  /*left: 150px;*/
   padding: 10px;
 }
 
@@ -318,7 +311,6 @@ body {
   top: 10px;
   color: #1a1a1a;
   font-family: Oswald, sans-serif;
-  /*font-size: 2em;*/
   font-weight: bold;
 }
 
@@ -328,7 +320,6 @@ body {
   bottom: 10px;
   color: rgb(150, 150, 150);
   font-family: Roboto, sans-serif;
-  /*font-size: 1.3em;*/
   font-weight: bold;
 }
 

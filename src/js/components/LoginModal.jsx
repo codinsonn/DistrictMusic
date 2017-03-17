@@ -44,11 +44,11 @@ export default class LoginModal extends Component {
       }
     );
 
-  }
+  }/**/
 
-  onSignIn(googleUser) {
+  onSignIn(/*googleUser*/) {
 
-    // Useful data for your client-side scripts:
+    /*// Useful data for your client-side scripts:
     const profile = googleUser.getBasicProfile();
 
     // The ID token you need to pass to your backend:
@@ -56,7 +56,7 @@ export default class LoginModal extends Component {
 
     const postData = {};
     postData.email = profile.getEmail();
-    postData.googleToken = idToken;
+    postData.googleToken = idToken;*/
 
     // -- Redirect user to google callback on auth result --
     const base = `http://localhost:3020`;
@@ -81,7 +81,7 @@ export default class LoginModal extends Component {
         <div className='lightbox' onClick={() => UserActions.hideLoginModal()}>&nbsp;</div>
         <section className='login-modal'>
           <div className='login-modal--logo'>&nbsp;</div>
-          <div className='google-signin'>
+          <div className='google-signin' onClick={() => this.onSignIn()}>
             <span className='icon'>&nbsp;</span>
             <span className='buttonText'><a href='/auth/user/google'>Sign in with Google+</a></span>
           </div>

@@ -89,8 +89,8 @@ process.on('uncaughtException', (err) => {
 
   if(err && err.code != 'EADDRINUSE' && err != "Error: Can't set headers after they are sent." && err != "Can't set headers after they are sent."){
     console.log('-!- Uncaught exception -!-', err);
-    io.close();
-    server.close();
+    //io.close();
+    //server.close();
   }else if(err) {
     //console.log('-!- Uncaught exception -!-', err.code);
   }

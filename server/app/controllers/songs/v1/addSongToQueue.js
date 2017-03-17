@@ -37,7 +37,7 @@ module.exports = (req, res, done) => {
 
     if (song) { // song exists in db
 
-      console.log('- Found Song: - \n', song);
+      //console.log('- Found Song: - \n', song);
 
       if(song.queue.inQueue){ // song still in queue
 
@@ -73,9 +73,7 @@ module.exports = (req, res, done) => {
 
           }
 
-          console.log('- Song re added to queue -');
-          res.statusCode = 200;
-          return res.json(song);
+          this.respondSong(song);
 
         });
 
@@ -145,14 +143,6 @@ module.exports = (req, res, done) => {
 
     console.log('Download finished');
 
-    /*res.statusCode = 200;
-    return res.json({
-      success: [
-        'Saved the song',
-        this.filename
-      ]
-    });*/
-
     this.saveToDb();
 
   }
@@ -213,30 +203,19 @@ module.exports = (req, res, done) => {
 
       }
 
-      EmitHelper.broadcast('QUEUE_UPDATED', newSong);
-
-      console.log('- New song added to queue -');
-      res.statusCode = 200;
-      return res.json(newSong);
-
-      // Emit io event to all logged in user
-      /*UserModel.
-        find().
-        where('meta.socketIds.length').equals(1).
-        exec((err, loggedInUsers) => {
-
-          _.forEach((loggedInUser) => {
-            EmitHelper.emit('QUEUE_UPDATED', loggedInUser.meta.socketIds);
-          });
-
-          console.log('- New song added to queue -');
-          res.statusCode = 200;
-          return res.json(newSong);
-
-        })
-      ;*/
+      this.respondSong(newSong);
 
     });/**/
+
+  }
+
+  this.respondSong = (song) => {
+
+    EmitHelper.broadcast('QUEUE_UPDATED', newSong);
+
+    console.log('- New song added to queue -');
+    res.statusCode = 200;
+    return res.json(song);
 
   }
 
