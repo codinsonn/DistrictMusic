@@ -147,8 +147,8 @@ body {
   top: 0;
   left: 0;
   z-index: 70;
-  -webkit-transition: all 2s ease-in-out;
-  transition: all 2s ease-in-out;
+  -webkit-transition: all 2s ease-in-out 0s;
+  transition: all 2s ease-in-out 0s;
 }
 
 .progress.appear-busy {
@@ -241,8 +241,8 @@ body {
   left: calc(50% - 7.5px);
   border: 7.5px solid transparent;
   cursor: pointer;
-  -webkit-transition: all .3s ease-in-out .1;
-  transition: all .3s ease-in-out .1;
+  -webkit-transition: all .3s ease-in-out 0s;
+  transition: all .3s ease-in-out 0s;
 }
 
 .btn-upvote {
@@ -721,7 +721,7 @@ body {
 /* --- Profile ----------------------------------------------------------------------- */
 
 .profile {
-  position: fixed;
+  position: absolute;
   display: block;
   width: 70px;
   height: 70px;

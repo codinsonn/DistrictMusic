@@ -34,7 +34,23 @@ module.exports = (req, res, done) => {
 
     if(playlistQueue){
 
-      //console.log('playlistQueue:\n', playlistQueue, '\n----\n');
+      playlistQueue.sort((song1, song2) => {
+
+        var s1 = 0;
+        if(song1.queue.isVetoed) s1 = 10; // sort by veto
+        if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+        if(song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+        if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+        var s2 = 0;
+        if(song2.queue.isVetoed) s2 = 10;
+        if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+        if(song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+        if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+        return s2 - s1;
+
+      });
 
       res.statusCode = 200;
       return done(null, res.json(playlistQueue));

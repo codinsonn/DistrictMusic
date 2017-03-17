@@ -35,6 +35,31 @@ export default class SongSummary extends Component {
 
   componentDidMount() {
 
+    const {originallyAddedBy} = this.state;
+    const strMomentFromNow = moment(originallyAddedBy.added).fromNow();
+
+    console.log(`Set update time to once every hour`);
+    let intervalTime = 60 * 60 * 1000; // once an hour
+    if (strMomentFromNow.indexOf(`seconds`) > - 1) {
+      console.log(`Set update time to once every second`);
+      intervalTime = 1000; // once a second
+    } else if (strMomentFromNow.indexOf(`minutes`) > - 1) {
+      console.log(`Set update time to once every minute`);
+      intervalTime = 60 * 1000; // once a minute
+    }
+
+    setInterval(() => this.updateTimeFromThen(), intervalTime);
+
+  }
+
+  updateTimeFromThen() {
+
+    const {originallyAddedBy, title} = this.state;
+
+    console.log(`Updating time for `, title);
+
+    document.querySelector(`.from-then`).value = moment(originallyAddedBy.added).fromNow();
+
   }
 
   upvote() {
@@ -80,7 +105,7 @@ export default class SongSummary extends Component {
         </section>
         <section className='song-info'>
           <span className='song-title'>{title}</span>
-          <div className='submitter-info'>Submitted <span>{fromNow}</span> by <span>{lastAddedBy.userName}</span></div>
+          <div className='submitter-info'>Submitted <span className='from-then'>{fromNow}</span> by <span>{lastAddedBy.userName}</span></div>
         </section>
       </article>
     );

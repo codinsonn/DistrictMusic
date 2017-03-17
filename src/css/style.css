@@ -41,7 +41,7 @@ body {
   top: 0;
   left: 0;
   z-index: 70;
-  transition: all 2s ease-in-out;
+  transition: all 2s ease-in-out 0s;
 }
 
 .progress.appear-busy {
@@ -134,7 +134,7 @@ body {
   left: calc(50% - 7.5px);
   border: 7.5px solid transparent;
   cursor: pointer;
-  transition: all .3s ease-in-out .1;
+  transition: all .3s ease-in-out 0s;
 }
 
 .btn-upvote {
@@ -611,7 +611,7 @@ body {
 /* --- Profile ----------------------------------------------------------------------- */
 
 .profile {
-  position: fixed;
+  position: absolute;
   display: block;
   width: 70px;
   height: 70px;
