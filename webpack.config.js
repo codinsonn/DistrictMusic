@@ -70,7 +70,7 @@ const config = {
 
   //externals: nodeModules,
 
-  externals: {
+  /*externals: {
     "googleapi": "gapi"
   },/**/
 

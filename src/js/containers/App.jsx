@@ -1,8 +1,8 @@
 import {Router, Route, /*Redirect,*/ browserHistory} from 'react-router';
 import {PlaylistDash, NoMatch} from '../pages';
 import React, {Component} from 'react';
-import * as NotifActions from '../actions/NotifActions';
-import gapi from 'googleapi';
+//import * as NotifActions from '../actions/NotifActions';
+//import gapi from 'googleapi';
 
 export default class App extends Component {
 
@@ -18,7 +18,7 @@ export default class App extends Component {
 
   componentWillMount() {
 
-    gapi.load(`client`, this.onGapiClientLoad);
+    //gapi.load(`client`, this.onGapiClientLoad);
 
   }
 
@@ -26,7 +26,7 @@ export default class App extends Component {
 
   }
 
-  onGapiClientLoad() {
+  /*onGapiClientLoad() {
 
     gapi.client.init({
       apiKey: `AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU`,
@@ -37,7 +37,7 @@ export default class App extends Component {
       NotifActions.gapiClientLoaded();
     });
 
-  }
+  }*/
 
   render() {
 

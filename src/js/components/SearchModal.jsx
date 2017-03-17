@@ -7,7 +7,7 @@ import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import * as NotifActions from '../actions/NotifActions';
 import songs from '../api/songs';
-import gapi from 'googleapi';
+//import gapi from 'googleapi';
 
 export default class SearchModal extends Component {
 
@@ -22,7 +22,7 @@ export default class SearchModal extends Component {
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
       searchEnabled: false,
-      gapiLoaded: false,
+      //gapiLoaded: false,
       currentSuggestions: []
     };
 
@@ -30,7 +30,7 @@ export default class SearchModal extends Component {
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateLoggedIn());
-    NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.enableSearch());
+    //NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.enableSearch());
     PlaylistStore.on(`RESET_SEARCH_BAR`, () => this.resetSearchbar());
   }
 
@@ -39,7 +39,7 @@ export default class SearchModal extends Component {
   }
 
   componentDidMount() {
-
+    this.enableSearch();
   }
 
   updateLoggedIn() {
@@ -55,6 +55,8 @@ export default class SearchModal extends Component {
     }
 
     this.setState({isLoggedIn, searchEnabled});
+
+    this.enableSearch();
 
   }
 
@@ -73,23 +75,23 @@ export default class SearchModal extends Component {
   enableSearch() {
 
     const {isLoggedIn} = this.state;
-    let {gapiLoaded, searchEnabled} = this.state;
+    let {/*gapiLoaded, */searchEnabled} = this.state;
 
-    gapi.client.setApiKey(`AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU`);
+    /*gapi.client.setApiKey(`AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU`);
     gapi.client.load(`youtube`, `v3`, () => {
 
-      gapiLoaded = true;
+      gapiLoaded = true;*/
 
-      if (isLoggedIn) {
-        searchEnabled = true;
-        document.querySelector(`.search-query`).disabled = false;
-      }
+    if (isLoggedIn) {
+      searchEnabled = true;
+      document.querySelector(`.search-query`).disabled = false;
+    }
 
-      this.setState({gapiLoaded, searchEnabled});
+    this.setState({/*gapiLoaded, */searchEnabled});
 
-    });
+    //});
 
-  }
+  }/**/
 
   endSearch() {
 

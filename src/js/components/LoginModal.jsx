@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import NotificationsStore from '../stores/NotificationsStore';
+//import NotificationsStore from '../stores/NotificationsStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
-import gapi from 'googleapi';
+//import gapi from 'googleapi';
 
 export default class LoginModal extends Component {
 
@@ -16,7 +16,7 @@ export default class LoginModal extends Component {
   }
 
   componentWillMount() {
-    NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.initOauth());
+    //NotificationsStore.on(`GAPI_CLIENT_READY`, () => this.initOauth());
   }
 
   componentWillUnmount() {
@@ -27,7 +27,7 @@ export default class LoginModal extends Component {
 
   }
 
-  initOauth() {
+  /*initOauth() {
 
     this.auth2 = gapi.auth2.getAuthInstance();
 
@@ -62,7 +62,7 @@ export default class LoginModal extends Component {
     const base = `http://localhost:3020`;
     window.location = `${base}/auth/user/google`;
 
-  }
+  }/**/
 
   render() {
 
@@ -83,7 +83,7 @@ export default class LoginModal extends Component {
           <div className='login-modal--logo'>&nbsp;</div>
           <div className='google-signin'>
             <span className='icon'>&nbsp;</span>
-            <span className='buttonText'>Sign in with Google+</span>
+            <span className='buttonText'><a href='/auth/user/google'>Sign in with Google+</a></span>
           </div>
           <div className='login-modal--btn-cancel' onClick={() => UserActions.hideLoginModal()}>
             <span className='icon'>&nbsp;</span>

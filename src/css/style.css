@@ -779,6 +779,11 @@ body {
   font-family: Roboto, sans-serif;
 }
 
+.buttonText a {
+  color: rgb(33, 33, 33);
+  text-decoration: none;
+}
+
 .login-modal--btn-cancel {
   bottom: 20px;
   background-color: rgb(240, 240, 240);
