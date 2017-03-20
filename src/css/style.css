@@ -47,11 +47,13 @@ body {
   top: 0;
   left: 0;
   z-index: 70;
-  transition: all 2s ease-in-out 0s;
+  opacity: 0;
+  transition: width 2s ease-in-out 0s, background .5s ease-in-out 0s;
 }
 
 .progress.appear-busy {
   width: 80%;
+  opacity: 1;
 }
 
 .red {
