@@ -39,13 +39,10 @@ export default class SongSummary extends Component {
     const {originallyAddedBy} = this.state;
     const strMomentFromNow = moment(originallyAddedBy.added).fromNow();
 
-    console.log(`Set update time to once every hour`);
     let intervalTime = 60 * 60 * 1000; // once an hour
     if (strMomentFromNow.indexOf(`seconds`) > - 1) {
-      console.log(`Set update time to once every second`);
       intervalTime = 1000; // once a second
     } else if (strMomentFromNow.indexOf(`minutes`) > - 1) {
-      console.log(`Set update time to once every minute`);
       intervalTime = 60 * 1000; // once a minute
     }
 

@@ -256,12 +256,22 @@ body {
   border-top: 10px solid #c6c6c6;
 }
 
-.btn-upvote:hover {
+.btn-upvote:hover,
+.btn-upvote.upvoted {
   border-bottom: 10px solid #60ac7b;
 }
 
-.btn-downvote:hover {
+.btn-downvote:hover,
+.btn-downvote.downvoted {
   border-top: 10px solid #fb624a;
+}
+
+.btn-upvote.disabled {
+  border-bottom: 10px solid #a8a8a8; /* #737373 */
+}
+
+.btn-downvote.disabled {
+  border-top: 10px solid #a8a8a8; /* #737373 */
 }
 
 .queue-score,
@@ -541,14 +551,14 @@ body {
   display: block;
   width: auto;
   color: white;
-  font-family: Roboto, sans-serif;
-  font-weight: bold;
+  font-family: Oswald, sans-serif;
   box-shadow: 1px 1px 3px rgba(125, 125, 125, .6);
 }
 
 .suggestion-title {
   top: 0;
   left: 0;
+  font-weight: bold;
 }
 
 .song-duration,
@@ -626,15 +636,15 @@ body {
   }
 
   .search-suggestion img {
-    width: 40%;
+    width: 30%;
     height: auto;
   }
 
   .suggestion-info {
-    width: calc(60% - 20px);
+    width: calc(65% - 20px);
     height: calc(100% - 20px);
     top: 10px;
-    left: calc(40% + 10px);
+    left: calc(35% + 10px);
   }
 
   .search-suggestion span {

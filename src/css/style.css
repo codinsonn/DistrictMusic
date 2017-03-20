@@ -3,6 +3,12 @@
 
 :root {
   --dark: #1a1a1a;
+  --dark-grey: #a8a8a8;
+  --light-grey: #c6c6c6;
+  --gainsboro: gainsboro;
+  --red: #fb624a;
+  --blue: #299cbb;
+  --green: #60ac7b;
 }
 
 body {
@@ -49,15 +55,15 @@ body {
 }
 
 .red {
-  background-color: #fb624a;
+  background-color: var(--red);
 }
 
 .blue {
-  background-color: #299cbb;
+  background-color: var(--blue);
 }
 
 .green {
-  background-color: #60ac7b;
+  background-color: var(--green);
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */
@@ -111,7 +117,7 @@ body {
   padding: 5px;
   margin: 7px 0;
   border-radius: 3px;
-  background-color: gainsboro;
+  background-color: var(--gainsboro);
 }
 
 .song-summary section {
@@ -139,21 +145,31 @@ body {
 .btn-upvote {
   top: 0;
   border-top: 0;
-  border-bottom: 10px solid #c6c6c6;
+  border-bottom: 10px solid var(--light-grey);
 }
 
 .btn-downvote {
   bottom: 0;
   border-bottom: 0;
-  border-top: 10px solid #c6c6c6;
+  border-top: 10px solid var(--light-grey);
 }
 
-.btn-upvote:hover {
-  border-bottom: 10px solid #60ac7b;
+.btn-upvote:hover,
+.btn-upvote.upvoted {
+  border-bottom: 10px solid var(--green);
 }
 
-.btn-downvote:hover {
-  border-top: 10px solid #fb624a;
+.btn-downvote:hover,
+.btn-downvote.downvoted {
+  border-top: 10px solid var(--red);
+}
+
+.btn-upvote.disabled {
+  border-bottom: 10px solid var(--dark-grey); /* #737373 */
+}
+
+.btn-downvote.disabled {
+  border-top: 10px solid var(--dark-grey); /* #737373 */
 }
 
 .queue-score,
@@ -330,12 +346,12 @@ body {
 
 .btn-cancel {
   left: 8%;
-  background-color: #fb624a;
+  background-color: var(--red);
 }
 
 .btn-confirm {
   right: 8%;
-  background-color: #60ac7b;
+  background-color: var(--green);
 }
 
 @media (max-width: 750px) {
@@ -387,7 +403,7 @@ body {
 }
 
 .search-query[disabled] {
-  background-color: gainsboro;
+  background-color: var(--gainsboro);
   z-index: 0;
 }
 
@@ -395,8 +411,8 @@ body {
   position: absolute;
   height: calc(100vh - 100px);
   display: none;
-  border: 10px solid gainsboro;
-  background-color: gainsboro;
+  border: 10px solid var(--gainsboro);
+  background-color: var(--gainsboro);
   overflow: scroll;
   opacity: 0;
   z-index: 60;
@@ -433,14 +449,14 @@ body {
   display: block;
   width: auto;
   color: white;
-  font-family: Roboto, sans-serif;
-  font-weight: bold;
+  font-family: Oswald, sans-serif;
   box-shadow: 1px 1px 3px rgb(125, 125, 125, .6);
 }
 
 .suggestion-title {
   top: 0;
   left: 0;
+  font-weight: bold;
 }
 
 .song-duration,
@@ -458,7 +474,7 @@ body {
   bottom: 0;
   left: 0;
   border-radius: 3px;
-  background-color: #60ac7b;
+  background-color: var(--green);
   transition: all .3s ease-in-out 0s;
 }
 
@@ -517,15 +533,15 @@ body {
   }
 
   .search-suggestion img {
-    width: 40%;
+    width: 30%;
     height: auto;
   }
 
   .suggestion-info {
-    width: calc(60% - 20px);
+    width: calc(65% - 20px);
     height: calc(100% - 20px);
     top: 10px;
-    left: calc(40% + 10px);
+    left: calc(35% + 10px);
   }
 
   .search-suggestion span {
@@ -587,7 +603,7 @@ body {
 
 .notification.info,
 .notification.info .icon {
-  background-color: #299cbb;
+  background-color: var(--blue);
 }
 
 .notification.info .icon {
@@ -596,7 +612,7 @@ body {
 
 .notification.error,
 .notification.error .icon {
-  background-color: #fb624a;
+  background-color: var(--red);
 }
 
 .notification.error .icon {
@@ -781,7 +797,7 @@ body {
 
 .login-modal--btn-cancel .icon {
   background: url(../assets/img/cancelButtonIcon.jpg) transparent 5px 50% no-repeat;
-  background-color: #fb624a;
+  background-color: var(--red);
 }
 
 .google-signin {

@@ -21,14 +21,14 @@ class PlaylistStore extends EventEmitter {
 
   updateQueue() {
 
-    console.log(`Fetching queue from server`);
+    //console.log(`Fetching queue from server`);
 
     songs.getAllQueued()
       .then(res => {
 
         this.queue = res;
 
-        console.log(`New queue`, this.queue);
+        //console.log(`New queue`, this.queue);
 
         this.emit(`QUEUE_CHANGED`);
 
