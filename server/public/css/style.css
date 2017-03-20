@@ -209,9 +209,10 @@ body {
   position: absolute;
   display: block;
   width: 100%;
-  height: auto;
+  height: calc(100vh - 250px);
   top: 40px;
   left: 0;
+  overflow: scroll;
 }
 
 .song-summary {

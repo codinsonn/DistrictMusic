@@ -64,21 +64,31 @@ module.exports = (req, res, done) => {
             var voteValueChange = (vote.voteValue - previousVoteValue);
 
             // update song score
-            this.updateSongScore(vote.voteType, voteValueChange);
+            this.updateSongScore(voteValueChange);
 
           });
 
         }else{
 
+          VoteModel.findOneAndRemove({ 'song.id': this.uservote.songId, 'user.googleId': this.profile.meta.googleId }, (err) => {
 
+            if (err) {
 
-          console.log('-!- [VoteSong] Can\'t vote with the same type on same song -!-');
-          res.statusCode = 412;
-          return res.json({
-            errors: [
-              'Already voted'
-            ]
-          });/**/
+              console.log('-!- Error occured while removing current vote: -!-\n', err, '\n-!-');
+              res.statusCode = 500;
+              return res.json({
+                errors: [
+                  'Could not remove previous vote'
+                ]
+              });
+
+            }
+
+            var changeValue = 0 - VoteHelper.getVoteValue(this.uservote.voteType);
+
+            this.updateSongScore(changeValue);
+
+          });
 
         }
 
@@ -128,7 +138,7 @@ module.exports = (req, res, done) => {
           }
 
           // update song score
-          this.updateSongScore(newVote.voteType, newVote.voteValue);
+          this.updateSongScore(newVote.voteValue);
 
         });
 
@@ -142,7 +152,7 @@ module.exports = (req, res, done) => {
 
   }
 
-  this.updateSongScore = (voteType, voteValue) => {
+  this.updateSongScore = (voteValue) => {
 
     SongModel.findOne({ 'general.id': this.uservote.songId, 'general.title': this.uservote.songTitle }, (err, song) => {
 
@@ -171,7 +181,7 @@ module.exports = (req, res, done) => {
 
           if (err) {
 
-            console.log('-!- Error occured while updating song score: -!-\n');
+            console.log('-!- Error occured while updating song score: -!-\n', err, '\n-!-');
             res.statusCode = 500;
             return res.json({
               errors: [

@@ -16,11 +16,5 @@ module.exports = {
     },
     session: {
         domain: ""
-    },
-    react: {
-        baseUrl: "http://hi-app-dev.district01.be/",
-        socketUrl: "http://hi-app-dev.district01.be:3020/",
-        path: "deploy/web/",
-        platforms: platforms
     }
 };

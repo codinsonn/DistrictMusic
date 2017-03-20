@@ -50449,12 +50449,17 @@ var SongSummary = function (_Component) {
     return _this;
   }
 
-  SongSummary.prototype.componentWillMount = function componentWillMount() {};
+  SongSummary.prototype.componentWillMount = function componentWillMount(props) {
+
+    this.updateFromProps(props);
+  };
 
   SongSummary.prototype.componentWillUnmount = function componentWillUnmount() {};
 
-  SongSummary.prototype.componentDidMount = function componentDidMount() {
+  SongSummary.prototype.componentDidMount = function componentDidMount(props) {
     var _this2 = this;
+
+    this.updateFromProps(props);
 
     var originallyAddedBy = this.state.originallyAddedBy;
 
@@ -50472,13 +50477,41 @@ var SongSummary = function (_Component) {
     }, intervalTime);
   };
 
-  SongSummary.prototype.updateTimeFromThen = function updateTimeFromThen() {
+  SongSummary.prototype.updateFromProps = function updateFromProps(props) {
     var _state = this.state,
+        order = _state.order,
+        id = _state.id,
+        title = _state.title,
+        duration = _state.duration,
+        filename = _state.filename,
+        currentQueueScore = _state.currentQueueScore,
+        legacyScore = _state.legacyScore,
+        isVetoed = _state.isVetoed,
+        thumbs = _state.thumbs,
+        lastAddedBy = _state.lastAddedBy,
         originallyAddedBy = _state.originallyAddedBy,
-        title = _state.title;
+        uservote = _state.uservote;
 
 
-    console.log('Updating time for ', title);
+    order = props.order;
+    id = props.general.id;
+    title = props.general.title;
+    duration = props.general.duration;
+    filename = props.general.filename;
+    currentQueueScore = props.queue.votes.currentQueueScore;
+    legacyScore = props.queue.votes.legacyScore;
+    isVetoed = props.queue.isVetoed;
+    thumbs = props.thumbs;
+    lastAddedBy = props.queue.lastAddedBy;
+    originallyAddedBy = props.queue.originallyAddedBy;
+    uservote = props.uservote;
+
+    this.setState({ order: order, id: id, title: title, duration: duration, filename: filename, currentQueueScore: currentQueueScore, legacyScore: legacyScore, isVetoed: isVetoed, thumbs: thumbs, lastAddedBy: lastAddedBy, originallyAddedBy: originallyAddedBy, uservote: uservote });
+  };
+
+  SongSummary.prototype.updateTimeFromThen = function updateTimeFromThen() {
+    var originallyAddedBy = this.state.originallyAddedBy;
+
 
     document.querySelector('.from-then').value = __WEBPACK_IMPORTED_MODULE_1_moment___default()(originallyAddedBy.added).fromNow();
   };
@@ -50487,10 +50520,8 @@ var SongSummary = function (_Component) {
 
     if (this.voteMode === 'normal') {
       return type;
-    } else if (this.voteMode === 'super') {
-      return 'super_' + type;
-    } else if (this.voteMode === 'veto') {
-      return 'veto_' + type;
+    } else {
+      return this.voteMode + '_' + type;
     }
   };
 
@@ -50597,14 +50628,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 175
+          lineNumber: 196
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'song-score-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 176
+            lineNumber: 197
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50613,7 +50644,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 177
+              lineNumber: 198
             }
           },
           '\xA0'
@@ -50622,7 +50653,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 178
+              lineNumber: 199
             }
           },
           currentQueueScore
@@ -50633,7 +50664,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 179
+              lineNumber: 200
             }
           },
           '\xA0'
@@ -50643,14 +50674,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 181
+            lineNumber: 202
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 182
+              lineNumber: 203
             }
           },
           duration
@@ -50660,14 +50691,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-info', __source: {
             fileName: _jsxFileName,
-            lineNumber: 184
+            lineNumber: 205
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 185
+              lineNumber: 206
             }
           },
           tags,
@@ -50677,7 +50708,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 186
+              lineNumber: 207
             }
           },
           'Submitted ',
@@ -50685,7 +50716,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 186
+                lineNumber: 207
               }
             },
             fromNow
@@ -50696,7 +50727,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 186
+                lineNumber: 207
               }
             },
             lastAddedBy.userName
@@ -50719,12 +50750,6 @@ SongSummary.propTypes = {
   thumbs: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   uservote: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object
 };
-
-/*
-<section className='queue-order-wrapper'>
-  <span className='queue-order'>{order}</span>
-</section>
-*/
 
 /***/ }),
 /* 310 */
@@ -77521,4 +77546,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.b275882e1865feb91962.js.map
+//# sourceMappingURL=main.8da59827f279f0e1a217.js.map

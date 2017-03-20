@@ -29,6 +29,14 @@ export default class SongSummary extends Component {
 
   }
 
+  componentWillReceiveProps(nextProps) {
+
+    if (this.props !== nextProps) {
+      this.updateFromProps(nextProps);
+    }
+
+  }
+
   componentWillMount() {
 
   }
@@ -53,11 +61,32 @@ export default class SongSummary extends Component {
 
   }
 
+  updateFromProps(props) {
+
+    let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote} = this.state;
+
+    order = props.order;
+    id = props.general.id;
+    title = props.general.title;
+    duration = props.general.duration;
+    filename = props.general.filename;
+    currentQueueScore = props.queue.votes.currentQueueScore;
+    legacyScore = props.queue.votes.legacyScore;
+    isVetoed = props.queue.isVetoed;
+    thumbs = props.thumbs;
+    lastAddedBy = props.queue.lastAddedBy;
+    originallyAddedBy = props.queue.originallyAddedBy;
+    uservote = props.uservote;
+
+    this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote});
+
+    console.log(`UPDATED STATE:`, this.state);
+
+  }
+
   updateTimeFromThen() {
 
-    const {originallyAddedBy, title} = this.state;
-
-    console.log(`Updating time for `, title);
+    const {originallyAddedBy} = this.state;
 
     document.querySelector(`.from-then`).value = moment(originallyAddedBy.added).fromNow();
 
@@ -197,9 +226,3 @@ SongSummary.propTypes = {
   thumbs: PropTypes.object,
   uservote: PropTypes.object
 };
-
-/*
-<section className='queue-order-wrapper'>
-  <span className='queue-order'>{order}</span>
-</section>
-*/

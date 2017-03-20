@@ -11,7 +11,7 @@ module.exports = {
         frontendPath: "public/"
     },
     mongo: {
-        db: "disctrict-music-local",
+        db: "district-music-local",
         url: "localhost" //"127.0.0.1:27017"
     },
     session: {
