@@ -43,6 +43,10 @@ var SongSchema = new Schema({
         type: Boolean,
         default: false
       },
+      isPlaying: {
+        type: Boolean,
+        default: false
+      },
       lastAddedBy: {
         googleId: {
           type: String,

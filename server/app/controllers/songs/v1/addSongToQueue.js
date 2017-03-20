@@ -56,6 +56,7 @@ module.exports = (req, res, done) => {
         song.queue.votes.currentQueueScore = 0;
 
         // put back in queue
+        song.queue.isPlaying = false;
         song.queue.isVetoed = false;
         song.queue.inQueue = true;
 
@@ -184,6 +185,10 @@ module.exports = (req, res, done) => {
     // -- thumbs info ---------
     console.log('Adding thumbnails');
     newSong.thumbs = this.suggestion.thumbs;
+
+    // -- Save to queue / db --
+    console.log('Setting vetoed');
+    newSong.queue.isPlaying = false;
 
     // -- Save to queue / db --
     console.log('Setting vetoed');

@@ -20,7 +20,8 @@ export default class SongSummary extends Component {
       isVetoed: props.queue.isVetoed,
       thumbs: props.thumbs,
       lastAddedBy: props.queue.lastAddedBy,
-      originallyAddedBy: props.queue.originallyAddedBy
+      originallyAddedBy: props.queue.originallyAddedBy,
+      uservote: props.uservote
     };
 
   }
@@ -88,23 +89,74 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {title, duration, currentQueueScore, thumbs, lastAddedBy} = this.state;
+    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isVetoed, uservote} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
 
+    let buttonsEnabled = `enabled`;
+    let upvotedClass = ``;
+    let downvotedClass = ``;
+    let scoreClasses = `queue-score`;
+    let titleClasses = `song-title`;
+    let tags = ``;
+
+    if (isVetoed) {
+      buttonsEnabled = `disabled`;
+      scoreClasses = `queue-score veto`;
+      titleClasses = `song-title veto`;
+      tags = `[VETO] `;
+    }
+
+    if (uservote.hasVoted) {
+
+      switch (uservote.voteType) {
+
+      case `upvote`:
+        upvotedClass = `upvoted `;
+        break;
+
+      case `downvote`:
+        downvotedClass = `downvoted `;
+        break;
+
+      case `super_upvote`:
+        upvotedClass = `super-upvoted `;
+        break;
+
+      case `super_downvote`:
+        upvotedClass = `super-downvoted `;
+        break;
+
+      case `veto_upvote`:
+        upvotedClass = `veto-upvoted `;
+        break;
+
+      }
+
+    }
+
+    if (order < 3) {
+      if (order === 1) tags = `${tags}[PLAYING] `;
+      if (order === 2) tags = `${tags}[UP NEXT] `;
+      buttonsEnabled = `disabled`;
+    }
+
+    const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;
+    const downvoteButtonClasses = `btn-downvote ${downvotedClass}${buttonsEnabled}`;
+
     return (
       <article className='song-summary'>
         <section className='song-score-wrapper'>
-          <span className='btn-upvote' onClick={() => this.upvote()}>&nbsp;</span>
-          <span className='queue-score'>{currentQueueScore}</span>
-          <span className='btn-downvote' onClick={() => this.downvote()}>&nbsp;</span>
+          <span className={upvoteButtonClasses} data-enabled={buttonsEnabled} onClick={() => this.upvote()}>&nbsp;</span>
+          <span className={scoreClasses}>{currentQueueScore}</span>
+          <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={() => this.downvote()}>&nbsp;</span>
         </section>
         <section className='song-thumb' style={thumbStyle}>
           <span className='song-duration'>{duration}</span>
         </section>
         <section className='song-info'>
-          <span className='song-title'>{title}</span>
+          <span className={titleClasses}>{tags}{title}</span>
           <div className='submitter-info'>Submitted <span className='from-then'>{fromNow}</span> by <span>{lastAddedBy.userName}</span></div>
         </section>
       </article>
@@ -118,7 +170,8 @@ SongSummary.propTypes = {
   order: PropTypes.number,
   general: PropTypes.object,
   queue: PropTypes.object,
-  thumbs: PropTypes.object
+  thumbs: PropTypes.object,
+  uservote: PropTypes.object
 };
 
 /*

@@ -215,7 +215,6 @@ body {
   position: relative;
   display: block;
   width: 100%;
-  height: 60px;
   padding: 5px;
   margin: 7px 0;
   border-radius: 3px;
@@ -280,7 +279,7 @@ body {
 }
 
 .song-thumb {
-  height: 60px;
+  height: 100%;
   top: 0;
   background-repeat: no-repeat;
   background-position: center;
@@ -296,14 +295,6 @@ body {
   background-color: rgba(0, 0, 0, .5);
 }
 
-.queue-order-wrapper {
-  width: 25px;
-  height: 50%;
-  top: 25%;
-  left: 150px;
-  border-right: 1px solid rgb(200, 200, 200);
-}
-
 .song-info {
   height: calc(100% - 10px);
   padding: 10px;
@@ -316,6 +307,7 @@ body {
   color: #1a1a1a;
   font-family: Oswald, sans-serif;
   font-weight: bold;
+  line-height: 13px;
 }
 
 .submitter-info {
@@ -332,6 +324,10 @@ body {
   .playlist-queue {
     width: 90vw;
     left: 5vw;
+  }
+
+  .song-summary {
+    height: 60px;
   }
 
   .song-score-wrapper {
@@ -365,6 +361,10 @@ body {
     left: 2vw;
   }
 
+  .song-summary {
+    height: 70px;
+  }
+
   .song-score-wrapper {
     width: 40px;
   }
@@ -394,10 +394,6 @@ body {
 .suggestion-detail-modal {
   position: fixed;
   display: block;
-  width: 90vw;
-  height: calc(90vw * .6 + 100px);
-  left: 5vw;
-  top: calc(50vh - (90vw * .6 + 100px) / 2);
   background-color: white;
   border-radius: 5px;
   z-index: 60;
@@ -413,7 +409,6 @@ body {
   padding: 14px;
   color: #1a1a1a;
   text-align: center;
-  /*text-transform: uppercase;*/
   vertical-align: middle;
   font-family: Oswald, sans-serif;
   font-size: 2.5em;
