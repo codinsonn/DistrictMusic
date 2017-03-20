@@ -31,7 +31,7 @@ module.exports = (app) => {
   app.route("/api/songs/queue/").get(SongsController.getAllQueued);
 
   /** --- Add Song to Queue -----------------------------------------------------------------------------
-   * @api {post} /api/songs/queue/ Search youtube videos
+   * @api {post} /api/songs/queue/ Add youtube song to queue
    * @apiDescription Return search results
    * @apiGroup Authentication
    * @apiVersion 1.0.0
@@ -96,5 +96,30 @@ module.exports = (app) => {
    * @apiUse messageNotFound
    **/
   app.post("/api/songs/queue/", UsersController.userSession.require, SongsController.addSongToQueue);
+
+  /** --- Vote for song (upvote / downvote / super votes) -----------------------------------------------------------------------------
+   * @api {post} /api/songs/queue/vote/ Vote for song to change ranking
+   * @apiDescription Up/Down vote song, return new score
+   * @apiGroup Authentication
+   * @apiVersion 1.0.0
+   *
+   * @apiSuccessExample {json} Request-Example:
+   *     {
+   *       "songId": "youtube id",
+   *       "songTitle": "youtube title",
+   *       "voteType": "vote type"
+   *     }
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *
+   *     }
+   *
+   * @apiUse messageBadRequest
+   *
+   * @apiUse messageNotFound
+   **/
+  app.post("/api/songs/queue/vote/", UsersController.userSession.require, SongsController.voteSong);
 
 }

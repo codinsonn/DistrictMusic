@@ -48,8 +48,25 @@ export const addToQueue = song => {
 
 };
 
+export const voteSong = (songId, songTitle, voteType) => {
+
+  const uservote = {
+    songId: songId,
+    songTitle: songTitle,
+    voteType: voteType
+  };
+
+  const postRequest = {body: JSON.stringify({...uservote}), ...postOptions};
+
+  return fetch(`${base}/api/songs/queue/vote`, postRequest)
+    .then(checkStatus)
+  ;
+
+};
+
 export default {
   youtubeSearch,
   getAllQueued,
-  addToQueue
+  addToQueue,
+  voteSong
 };

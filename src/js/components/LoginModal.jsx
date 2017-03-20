@@ -48,13 +48,13 @@ export default class LoginModal extends Component {
 
     const {visible} = this.state;
 
-    if (visible) {
-      NotifActions.addNotification(`Please login with District01 account`);
-    }
-
     let loginModalClasses = `login-modal-wrapper hidden`;
     if (visible) {
       loginModalClasses = `login-modal-wrapper show`;
+    }
+
+    if (visible) {
+      NotifActions.addNotification(`Please login with District01 account`);
     }
 
     return (

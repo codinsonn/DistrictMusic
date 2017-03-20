@@ -6,9 +6,9 @@
   --dark-grey: #a8a8a8;
   --light-grey: #c6c6c6;
   --gainsboro: gainsboro;
-  --red: #fb624a;
-  --blue: #299cbb;
-  --green: #60ac7b;
+  --red: #fb624a; /* error */
+  --blue: #299cbb; /* info, notify */
+  --green: #60ac7b; /* success */
 }
 
 body {
@@ -165,10 +165,12 @@ body {
 }
 
 .btn-upvote.disabled {
+  cursor: not-allowed;
   border-bottom: 10px solid var(--dark-grey); /* #737373 */
 }
 
 .btn-downvote.disabled {
+  cursor: not-allowed;
   border-top: 10px solid var(--dark-grey); /* #737373 */
 }
 

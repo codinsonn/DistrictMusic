@@ -111,6 +111,9 @@ html {
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
 }
+:root { /* error */ /* info, notify */ /* success */
+}
+
 body {
   font-size: 62.5%;
 }
@@ -267,10 +270,12 @@ body {
 }
 
 .btn-upvote.disabled {
+  cursor: not-allowed;
   border-bottom: 10px solid #a8a8a8; /* #737373 */
 }
 
 .btn-downvote.disabled {
+  cursor: not-allowed;
   border-top: 10px solid #a8a8a8; /* #737373 */
 }
 

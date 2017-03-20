@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
+import songs from '../api/songs';
 
 export default class SongSummary extends Component {
 
@@ -21,8 +22,10 @@ export default class SongSummary extends Component {
       thumbs: props.thumbs,
       lastAddedBy: props.queue.lastAddedBy,
       originallyAddedBy: props.queue.originallyAddedBy,
-      uservote: props.uservote
+      uservote: props.uservote,
     };
+
+    this.voteMode = `normal`;
 
   }
 
@@ -60,26 +63,50 @@ export default class SongSummary extends Component {
 
   }
 
-  upvote() {
+  getVoteType(type) {
 
-    const isLoggedIn = UserStore.getLoggedIn();
-
-    if (isLoggedIn) {
-      //code for upvoting
+    if (this.voteMode === `normal`) {
+      return type;
     } else {
-      UserActions.showLoginModal();
+      return `${this.voteMode}_${type}`;
     }
 
   }
 
-  downvote() {
+  vote(e, type) {
 
-    const isLoggedIn = UserStore.getLoggedIn();
+    const $target = e.currentTarget;
+    const enabled = $target.getAttribute(`data-enabled`);
 
-    if (isLoggedIn) {
-      //code for downvoting
-    } else {
-      UserActions.showLoginModal();
+    if (enabled === `enabled`) {
+
+      const isLoggedIn = UserStore.getLoggedIn();
+
+      if (isLoggedIn) {
+
+        const {id, title} = this.state;
+        const voteType = this.getVoteType(type);
+
+        songs.voteSong(id, title, voteType)
+          .then(res => {
+
+            // success!
+            console.log(`SUCCESS!`, res);
+
+          }, failData => {
+
+            // failed to vote
+            console.log(`FAILED:`, failData);
+
+          })
+        ;
+
+      } else {
+
+        UserActions.showLoginModal();
+
+      }
+
     }
 
   }
@@ -145,9 +172,9 @@ export default class SongSummary extends Component {
     return (
       <article className='song-summary'>
         <section className='song-score-wrapper'>
-          <span className={upvoteButtonClasses} data-enabled={buttonsEnabled} onClick={() => this.upvote()}>&nbsp;</span>
+          <span className={upvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `upvote`)}>&nbsp;</span>
           <span className={scoreClasses}>{currentQueueScore}</span>
-          <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={() => this.downvote()}>&nbsp;</span>
+          <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `downvote`)}>&nbsp;</span>
         </section>
         <section className='song-thumb' style={thumbStyle}>
           <span className='song-duration'>{duration}</span>

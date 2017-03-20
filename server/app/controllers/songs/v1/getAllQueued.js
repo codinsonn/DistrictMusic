@@ -39,7 +39,7 @@ module.exports = (req, res, done) => {
 
       if(req.session.profile){
 
-        console.log('[GetAllQueued] Profile in session');
+        //console.log('[GetAllQueued] Profile in session');
 
         this.currentQueue = playlistQueue;
 
@@ -97,9 +97,6 @@ module.exports = (req, res, done) => {
   }
 
   this.addUserVote = (index, songId) => {
-
-    console.log('Song ID:', songId);
-    console.log('User ID:', req.session.profile.meta.googleId);
 
     VoteModel.findOne({ 'user.googleId': req.session.profile.meta.googleId, 'song.id': songId }, (err, uservote) => {
 
