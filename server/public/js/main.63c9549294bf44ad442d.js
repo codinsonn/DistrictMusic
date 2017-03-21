@@ -50801,22 +50801,23 @@ var SongSummary = function (_Component) {
     var upvoteButtonClasses = 'btn-upvote ' + upvotedClass + buttonsEnabled;
     var downvoteButtonClasses = 'btn-downvote ' + downvotedClass + buttonsEnabled;
 
+    var scoreWrapperClasses = 'song-score-wrapper';
     if (buttonsEnabled === 'enabled') {
-      var _scoreWrapperClasses = 'song-score-wrapper vote-mode-' + voteMode;
+      scoreWrapperClasses = 'song-score-wrapper vote-mode-' + voteMode;
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 202
+          lineNumber: 203
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 203
+            lineNumber: 204
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50825,7 +50826,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 204
+              lineNumber: 205
             }
           },
           '\xA0'
@@ -50834,7 +50835,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 205
+              lineNumber: 206
             }
           },
           currentQueueScore
@@ -50845,7 +50846,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 206
+              lineNumber: 207
             }
           },
           '\xA0'
@@ -50855,14 +50856,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 208
+            lineNumber: 209
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 209
+              lineNumber: 210
             }
           },
           duration
@@ -50872,14 +50873,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-info', __source: {
             fileName: _jsxFileName,
-            lineNumber: 211
+            lineNumber: 212
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 212
+              lineNumber: 213
             }
           },
           tags,
@@ -50889,7 +50890,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 213
+              lineNumber: 214
             }
           },
           'Submitted ',
@@ -50897,7 +50898,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 213
+                lineNumber: 214
               }
             },
             fromNow
@@ -50908,7 +50909,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 213
+                lineNumber: 214
               }
             },
             lastAddedBy.userName
@@ -77728,4 +77729,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.ff8a0935f226a2ab1108.js.map
+//# sourceMappingURL=main.63c9549294bf44ad442d.js.map

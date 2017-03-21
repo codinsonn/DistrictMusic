@@ -50803,7 +50803,7 @@ var SongSummary = function (_Component) {
 
     var scoreWrapperClasses = 'song-score-wrapper';
     if (buttonsEnabled === 'enabled') {
-      var _scoreWrapperClasses = 'song-score-wrapper vote-mode-' + voteMode;
+      scoreWrapperClasses = 'song-score-wrapper vote-mode-' + voteMode;
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -77729,4 +77729,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.114078f66c15cf2d9676.js.map
+//# sourceMappingURL=main.32bb3223ad1b429bd5ae.js.map

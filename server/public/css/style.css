@@ -855,7 +855,7 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  bottom: 0;
+  margin-top: 76%;
   left: 0;
   color: white;
   text-align: center;
