@@ -18,6 +18,13 @@ export function hideLoginModal() {
   });
 }
 
+export function setVoteMode(voteMode) {
+  dispatcher.dispatch({
+    type: `SET_VOTE_MODE`,
+    data: voteMode
+  });
+}
+
 export function logoutUser() {
   dispatcher.dispatch({
     type: `LOGOUT_USER`

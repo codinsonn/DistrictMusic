@@ -9,6 +9,7 @@
   --red: #fb624a; /* error */
   --blue: #299cbb; /* info, notify */
   --green: #60ac7b; /* success */
+  --gold: #fecb58;
 }
 
 body {
@@ -51,9 +52,12 @@ body {
   transition: width 2s ease-in-out 0s, background .5s ease-in-out 0s;
 }
 
+.show {
+  opacity: 1;
+}
+
 .progress.appear-busy {
   width: 80%;
-  opacity: 1;
 }
 
 .red {
@@ -107,7 +111,7 @@ body {
   position: absolute;
   display: block;
   width: 100%;
-  height: calc(100vh - 250px);
+  height: calc(100vh - 200px);
   top: 40px;
   left: 0;
   overflow: scroll;
@@ -157,14 +161,30 @@ body {
   border-top: 10px solid var(--light-grey);
 }
 
-.btn-upvote:hover,
+.vote-mode-normal .btn-upvote:hover,
 .btn-upvote.upvoted {
   border-bottom: 10px solid var(--green);
 }
 
-.btn-downvote:hover,
+.vote-mode-normal .btn-downvote:hover,
 .btn-downvote.downvoted {
   border-top: 10px solid var(--red);
+}
+
+.vote-mode-veto .btn-upvote:hover {
+  border-bottom: 10px solid var(--gold);
+}
+
+.vote-mode-veto .btn-downvote:hover {
+  border-top: 10px solid var(--gold);
+}
+
+.vote-mode-super .btn-upvote:hover {
+  border-bottom: 10px solid var(--blue);
+}
+
+.vote-mode-super .btn-downvote:hover {
+  border-top: 10px solid var(--blue);
 }
 
 .btn-upvote.disabled {
@@ -646,9 +666,18 @@ body {
   /*border: none;*/
 }
 
+.profile.logged-out:hover,
+.profile.logged-out:focus {
+  height: 120px;
+}
+
+.profile.logged-in:hover,
+.profile.logged-in:focus {
+  height: 220px;
+}
+
 .profile:hover,
 .profile:focus {
-  height: 120px;
   background-color: rgba(66, 66, 66, 1);
   cursor: pointer;
 }
@@ -676,18 +705,17 @@ body {
 
 .profile:hover .profile-options,
 .profile-options.show {
-  /*display: block;*/
   opacity: 1;
 }
 
 .profile-options {
   position: absolute;
-  /*display: none;*/
   width: 50px;
   height: auto;
   top: 65px;
   right: 10px;
   opacity: 0;
+  transition: opacity .2s ease-in-out 0s;
 }
 
 .profile-options ul li {
@@ -715,21 +743,39 @@ body {
 }
 
 .profile-options ul li .btn-login {
-  background-image: url(../assets/img/loginButton.svg);
+  background-image: url(../assets/svg/loginButton.svg);
 }
 
 .profile:focus .profile-options ul li .btn-login,
 .profile-options ul li .btn-login:hover {
-  background-image: url(../assets/img/loginButtonHover.svg);
+  background-image: url(../assets/svg/loginButtonHover.svg);
+}
+
+.profile-options ul li .btn-toggle-veto {
+  background-image: url(../assets/svg/vetoMode.svg);
+}
+
+.profile:focus .profile-options ul li .btn-toggle-veto.active,
+.profile-options ul li .btn-toggle-veto:hover {
+  background-image: url(../assets/svg/vetoModeHover.svg);
+}
+
+.profile-options ul li .btn-toggle-super {
+  background-image: url(../assets/svg/superMode.svg);
+}
+
+.profile:focus .profile-options ul li .btn-toggle-super.active,
+.profile-options ul li .btn-toggle-super:hover {
+  background-image: url(../assets/svg/superModeHover.svg);
 }
 
 .profile-options ul li .btn-logout {
-  background-image: url(../assets/img/logoutButton.svg);
+  background-image: url(../assets/svg/logoutButton.svg);
 }
 
 .profile:focus .profile-options ul li .btn-logout,
 .profile-options ul li .btn-logout:hover {
-  background-image: url(../assets/img/logoutButtonHover.svg);
+  background-image: url(../assets/svg/logoutButtonHover.svg);
 }
 
 /* --- Login Modal -------------------------------------------------------------------------- */

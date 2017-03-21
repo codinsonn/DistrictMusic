@@ -23,22 +23,38 @@ export default class SongSummary extends Component {
       lastAddedBy: props.queue.lastAddedBy,
       originallyAddedBy: props.queue.originallyAddedBy,
       uservote: props.uservote,
+      voteMode: UserStore.getVoteMode()
     };
-
-    this.voteMode = `normal`;
 
   }
 
   componentWillReceiveProps(nextProps) {
 
     if (this.props !== nextProps) {
-      this.updateFromProps(nextProps);
+
+      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote} = this.state;
+
+      order = nextProps.order;
+      id = nextProps.general.id;
+      title = nextProps.general.title;
+      duration = nextProps.general.duration;
+      filename = nextProps.general.filename;
+      currentQueueScore = nextProps.queue.votes.currentQueueScore;
+      legacyScore = nextProps.queue.votes.legacyScore;
+      isVetoed = nextProps.queue.isVetoed;
+      thumbs = nextProps.thumbs;
+      lastAddedBy = nextProps.queue.lastAddedBy;
+      originallyAddedBy = nextProps.queue.originallyAddedBy;
+      uservote = nextProps.uservote;
+
+      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote});
+
     }
 
   }
 
   componentWillMount() {
-
+    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
   }
 
   componentWillUnmount() {
@@ -61,26 +77,13 @@ export default class SongSummary extends Component {
 
   }
 
-  updateFromProps(props) {
+  updateVoteMode() {
 
-    let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote} = this.state;
+    let {voteMode} = this.state;
 
-    order = props.order;
-    id = props.general.id;
-    title = props.general.title;
-    duration = props.general.duration;
-    filename = props.general.filename;
-    currentQueueScore = props.queue.votes.currentQueueScore;
-    legacyScore = props.queue.votes.legacyScore;
-    isVetoed = props.queue.isVetoed;
-    thumbs = props.thumbs;
-    lastAddedBy = props.queue.lastAddedBy;
-    originallyAddedBy = props.queue.originallyAddedBy;
-    uservote = props.uservote;
+    voteMode = UserStore.getVoteMode();
 
-    this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote});
-
-    console.log(`UPDATED STATE:`, this.state);
+    this.setState({voteMode});
 
   }
 
@@ -94,10 +97,12 @@ export default class SongSummary extends Component {
 
   getVoteType(type) {
 
-    if (this.voteMode === `normal`) {
+    const {voteMode} = this.state;
+
+    if (voteMode === `normal`) {
       return type;
     } else {
-      return `${this.voteMode}_${type}`;
+      return `${voteMode}_${type}`;
     }
 
   }
@@ -142,7 +147,7 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isVetoed, uservote} = this.state;
+    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isVetoed, uservote, voteMode} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
@@ -198,9 +203,11 @@ export default class SongSummary extends Component {
     const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;
     const downvoteButtonClasses = `btn-downvote ${downvotedClass}${buttonsEnabled}`;
 
+    const scoreWrapperClasses = `song-score-wrapper vote-mode-${voteMode}`;
+
     return (
       <article className='song-summary'>
-        <section className='song-score-wrapper'>
+        <section className={scoreWrapperClasses}>
           <span className={upvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `upvote`)}>&nbsp;</span>
           <span className={scoreClasses}>{currentQueueScore}</span>
           <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `downvote`)}>&nbsp;</span>

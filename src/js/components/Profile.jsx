@@ -1,11 +1,7 @@
-import React, {Component/*, PropTypes*/} from 'react';
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
+import React, {Component} from 'react';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
+import * as NotifActions from '../actions/NotifActions';
 
 export default class Profile extends Component {
 
@@ -15,14 +11,19 @@ export default class Profile extends Component {
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
+      voteMode: UserStore.getVoteMode(),
+      prevVoteMode: `normal`,
       userProfile: UserStore.getProfile(),
       showProfileOptions: false
     };
+
+    this.hasChangedVoteMode = false;
 
   }
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
+    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
   }
 
   componentWillUnmount() {
@@ -42,6 +43,19 @@ export default class Profile extends Component {
       showProfileOptions = false;
       this.setState({showProfileOptions});
     }
+
+  }
+
+  updateVoteMode() {
+
+    let {voteMode, prevVoteMode} = this.state;
+
+    prevVoteMode = voteMode;
+    voteMode = UserStore.getVoteMode();
+
+    this.hasChangedVoteMode = true;
+
+    this.setState({voteMode, prevVoteMode});
 
   }
 
@@ -74,19 +88,31 @@ export default class Profile extends Component {
 
   renderProfileOptions() {
 
-    const {isLoggedIn, showProfileOptions} = this.state;
+    const {isLoggedIn, voteMode, showProfileOptions} = this.state;
 
-    let optionsClasses = `profile-options`;
+    const optionsClasses = `profile-options show`;
     if (showProfileOptions) {
-      optionsClasses = `profile-options show`;
+      //optionsClasses = `profile-options show`;
       const $profile = document.querySelector(`.profile`);
       $profile.focus();
+    }
+
+    let vetoModeClasses = `btn-toggle-veto`;
+    if (voteMode === `veto`) {
+      vetoModeClasses = `btn-toggle-veto active`;
+    }
+
+    let superModeClasses = `btn-toggle-super`;
+    if (voteMode === `super`) {
+      superModeClasses = `btn-toggle-super active`;
     }
 
     if (isLoggedIn) {
       return (
         <div className={optionsClasses}>
           <ul>
+            <li onClick={() => UserActions.setVoteMode(`veto`)}><span className={vetoModeClasses}>&nbsp;</span></li>
+            <li onClick={() => UserActions.setVoteMode(`super`)}><span className={superModeClasses}>&nbsp;</span></li>
             <li onClick={() => UserActions.logoutUser()}><span className='btn-logout'>&nbsp;</span></li>
           </ul>
         </div>
@@ -105,12 +131,31 @@ export default class Profile extends Component {
 
   render() {
 
-    const {userProfile} = this.state;
+    const {isLoggedIn, userProfile} = this.state;
     const profileImage = userProfile.general.profileImage;
     const style = {backgroundImage: `url(${  profileImage  })`};
 
+    if (this.hasChangedVoteMode) {
+
+      const {voteMode, prevVoteMode} = this.state;
+
+      if (voteMode === `veto` || voteMode === `super`) {
+        setTimeout(NotifActions.addNotification(`Entered ${voteMode} mode`), 0);
+      } else {
+        setTimeout(NotifActions.addNotification(`Exited ${prevVoteMode} mode`), 0);
+      }
+
+      this.hasChangedVoteMode = false;
+
+    }
+
+    let profileClasses = `profile logged-out`;
+    if (isLoggedIn) {
+      profileClasses = `profile logged-in`;
+    }
+
     return (
-      <article className='profile' tabIndex='0' onBlur={() => this.hideProfileOptions()}>
+      <article className={profileClasses} tabIndex='0' onBlur={() => this.hideProfileOptions()}>
         <div className='profile-img' style={style} onClick={() => this.checkProfileActions()}>&nbsp;</div>
         { this.renderProfileOptions() }
       </article>
@@ -119,7 +164,3 @@ export default class Profile extends Component {
   }
 
 }
-
-/*Profile.propTypes = {
-
-};*/

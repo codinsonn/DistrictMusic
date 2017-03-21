@@ -9025,8 +9025,8 @@ function setAppearBusy(busy) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(25);
 /* harmony export (immutable) */ __webpack_exports__["a"] = fetchProfile;
 /* harmony export (immutable) */ __webpack_exports__["b"] = showLoginModal;
-/* harmony export (immutable) */ __webpack_exports__["d"] = hideLoginModal;
-/* harmony export (immutable) */ __webpack_exports__["c"] = logoutUser;
+/* harmony export (immutable) */ __webpack_exports__["e"] = hideLoginModal;
+/* harmony export (immutable) */ __webpack_exports__["d"] = logoutUser;
 
 
 function fetchProfile() {
@@ -49371,7 +49371,7 @@ var LoginModal = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lightbox', onClick: function onClick() {
-            return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
+            return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* hideLoginModal */]();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 62
@@ -49434,7 +49434,7 @@ var LoginModal = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'login-modal--btn-cancel', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* hideLoginModal */]();
+              return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* hideLoginModal */]();
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 69
@@ -49829,11 +49829,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
-//import {Link} from 'react-router';
-//import Parallax from '../vendor/parallax';
-//import Scrollchor from 'react-scrollchor';
-//import PlaylistStore from '../stores/PlaylistStore';
-//import {users} from '../api/';
 
 
 
@@ -49847,6 +49842,7 @@ var Profile = function (_Component) {
 
     _this.state = {
       isLoggedIn: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getLoggedIn(),
+      voteMode: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getVoteMode(),
       userProfile: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getProfile(),
       showProfileOptions: false
     };
@@ -49859,6 +49855,9 @@ var Profile = function (_Component) {
 
     __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('USER_PROFILE_CHANGED', function () {
       return _this2.updateUserProfile();
+    });
+    __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('VOTE_MODE_CHANGED', function () {
+      return _this2.updateVoteModes();
     });
   };
 
@@ -49875,6 +49874,15 @@ var Profile = function (_Component) {
       showProfileOptions = false;
       this.setState({ showProfileOptions: showProfileOptions });
     }
+  };
+
+  Profile.prototype.updateVoteModes = function updateVoteModes() {
+    var voteMode = this.state.voteMode;
+
+
+    voteMode = __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getVoteMode();
+
+    this.setState({ voteMode: voteMode });
   };
 
   Profile.prototype.updateUserProfile = function updateUserProfile() {
@@ -49909,6 +49917,7 @@ var Profile = function (_Component) {
 
     var _state2 = this.state,
         isLoggedIn = _state2.isLoggedIn,
+        voteMode = _state2.voteMode,
         showProfileOptions = _state2.showProfileOptions;
 
 
@@ -49919,12 +49928,22 @@ var Profile = function (_Component) {
       $profile.focus();
     }
 
+    var vetoModeClasses = 'btn-toggle-veto';
+    if (voteMode === 'veto') {
+      vetoModeClasses = 'btn-toggle-veto active';
+    }
+
+    var superModeClasses = 'btn-toggle-super';
+    if (voteMode === 'super') {
+      superModeClasses = 'btn-toggle-super active';
+    }
+
     if (isLoggedIn) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 88
+            lineNumber: 105
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49932,23 +49951,61 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 89
+              lineNumber: 106
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'li',
             { onClick: function onClick() {
-                return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["c" /* logoutUser */]();
+                return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["setVoteMode"]('veto');
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 90
+                lineNumber: 107
+              }
+            },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'span',
+              { className: 'btn-toggle-veto', __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 107
+                }
+              },
+              '\xA0'
+            )
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'li',
+            { onClick: function onClick() {
+                return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["setVoteMode"]('super');
+              }, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 108
+              }
+            },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'span',
+              { className: 'btn-toggle-super', __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 108
+                }
+              },
+              '\xA0'
+            )
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'li',
+            { onClick: function onClick() {
+                return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* logoutUser */]();
+              }, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 109
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'span',
               { className: 'btn-logout', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 90
+                  lineNumber: 109
                 }
               },
               '\xA0'
@@ -49961,7 +50018,7 @@ var Profile = function (_Component) {
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 96
+            lineNumber: 115
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49969,7 +50026,7 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 97
+              lineNumber: 116
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49978,14 +50035,14 @@ var Profile = function (_Component) {
                 return _this3.checkProfileActions();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 98
+                lineNumber: 117
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'span',
               { className: 'btn-login', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 98
+                  lineNumber: 117
                 }
               },
               '\xA0'
@@ -49999,18 +50056,25 @@ var Profile = function (_Component) {
   Profile.prototype.render = function render() {
     var _this4 = this;
 
-    var userProfile = this.state.userProfile;
+    var _state3 = this.state,
+        isLoggedIn = _state3.isLoggedIn,
+        userProfile = _state3.userProfile;
 
     var profileImage = userProfile.general.profileImage;
     var style = { backgroundImage: 'url(' + profileImage + ')' };
 
+    var profileClasses = 'profile logged-out';
+    if (isLoggedIn) {
+      profileClasses = 'profile logged-in';
+    }
+
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'article',
-      { className: 'profile', tabIndex: '0', onBlur: function onBlur() {
+      { className: profileClasses, tabIndex: '0', onBlur: function onBlur() {
           return _this4.hideProfileOptions();
         }, __source: {
           fileName: _jsxFileName,
-          lineNumber: 113
+          lineNumber: 137
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50019,7 +50083,7 @@ var Profile = function (_Component) {
             return _this4.checkProfileActions();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 114
+            lineNumber: 138
           }
         },
         '\xA0'
@@ -50030,11 +50094,6 @@ var Profile = function (_Component) {
 
   return Profile;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/*Profile.propTypes = {
-
-};*/
-
 
 /* harmony default export */ __webpack_exports__["a"] = Profile;
 
@@ -50452,7 +50511,35 @@ var SongSummary = function (_Component) {
   SongSummary.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
 
     if (this.props !== nextProps) {
-      this.updateFromProps(nextProps);
+      var _state = this.state,
+          order = _state.order,
+          id = _state.id,
+          title = _state.title,
+          duration = _state.duration,
+          filename = _state.filename,
+          currentQueueScore = _state.currentQueueScore,
+          legacyScore = _state.legacyScore,
+          isVetoed = _state.isVetoed,
+          thumbs = _state.thumbs,
+          lastAddedBy = _state.lastAddedBy,
+          originallyAddedBy = _state.originallyAddedBy,
+          uservote = _state.uservote;
+
+
+      order = nextProps.order;
+      id = nextProps.general.id;
+      title = nextProps.general.title;
+      duration = nextProps.general.duration;
+      filename = nextProps.general.filename;
+      currentQueueScore = nextProps.queue.votes.currentQueueScore;
+      legacyScore = nextProps.queue.votes.legacyScore;
+      isVetoed = nextProps.queue.isVetoed;
+      thumbs = nextProps.thumbs;
+      lastAddedBy = nextProps.queue.lastAddedBy;
+      originallyAddedBy = nextProps.queue.originallyAddedBy;
+      uservote = nextProps.uservote;
+
+      this.setState({ order: order, id: id, title: title, duration: duration, filename: filename, currentQueueScore: currentQueueScore, legacyScore: legacyScore, isVetoed: isVetoed, thumbs: thumbs, lastAddedBy: lastAddedBy, originallyAddedBy: originallyAddedBy, uservote: uservote });
     }
   };
 
@@ -50477,40 +50564,6 @@ var SongSummary = function (_Component) {
     setInterval(function () {
       return _this2.updateTimeFromThen();
     }, intervalTime);
-  };
-
-  SongSummary.prototype.updateFromProps = function updateFromProps(props) {
-    var _state = this.state,
-        order = _state.order,
-        id = _state.id,
-        title = _state.title,
-        duration = _state.duration,
-        filename = _state.filename,
-        currentQueueScore = _state.currentQueueScore,
-        legacyScore = _state.legacyScore,
-        isVetoed = _state.isVetoed,
-        thumbs = _state.thumbs,
-        lastAddedBy = _state.lastAddedBy,
-        originallyAddedBy = _state.originallyAddedBy,
-        uservote = _state.uservote;
-
-
-    order = props.order;
-    id = props.general.id;
-    title = props.general.title;
-    duration = props.general.duration;
-    filename = props.general.filename;
-    currentQueueScore = props.queue.votes.currentQueueScore;
-    legacyScore = props.queue.votes.legacyScore;
-    isVetoed = props.queue.isVetoed;
-    thumbs = props.thumbs;
-    lastAddedBy = props.queue.lastAddedBy;
-    originallyAddedBy = props.queue.originallyAddedBy;
-    uservote = props.uservote;
-
-    this.setState({ order: order, id: id, title: title, duration: duration, filename: filename, currentQueueScore: currentQueueScore, legacyScore: legacyScore, isVetoed: isVetoed, thumbs: thumbs, lastAddedBy: lastAddedBy, originallyAddedBy: originallyAddedBy, uservote: uservote });
-
-    console.log('UPDATED STATE:', this.state);
   };
 
   SongSummary.prototype.updateTimeFromThen = function updateTimeFromThen() {
@@ -50632,14 +50685,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 202
+          lineNumber: 196
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'song-score-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 203
+            lineNumber: 197
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50648,7 +50701,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 204
+              lineNumber: 198
             }
           },
           '\xA0'
@@ -50657,7 +50710,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 205
+              lineNumber: 199
             }
           },
           currentQueueScore
@@ -50668,7 +50721,7 @@ var SongSummary = function (_Component) {
               return _this3.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 206
+              lineNumber: 200
             }
           },
           '\xA0'
@@ -50678,14 +50731,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 208
+            lineNumber: 202
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 209
+              lineNumber: 203
             }
           },
           duration
@@ -50695,14 +50748,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-info', __source: {
             fileName: _jsxFileName,
-            lineNumber: 211
+            lineNumber: 205
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 212
+              lineNumber: 206
             }
           },
           tags,
@@ -50712,7 +50765,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 213
+              lineNumber: 207
             }
           },
           'Submitted ',
@@ -50720,7 +50773,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 213
+                lineNumber: 207
               }
             },
             fromNow
@@ -50731,7 +50784,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 213
+                lineNumber: 207
               }
             },
             lastAddedBy.userName
@@ -77550,4 +77603,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.53f80c0ac9d4ed0cfcd1.js.map
+//# sourceMappingURL=main.6dc28b4c020537ffe159.js.map

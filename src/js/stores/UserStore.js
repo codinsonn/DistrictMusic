@@ -12,6 +12,8 @@ class UserStore extends EventEmitter {
     this.isLoggedIn = false;
     this.showLoginModal = false;
 
+    this.voteMode = `normal`;
+
     this.userProfile = {};
     this.defaultProfile = {
       general: {
@@ -64,6 +66,29 @@ class UserStore extends EventEmitter {
 
   }
 
+  setVoteMode(voteMode) {
+
+    switch (voteMode) {
+
+    case `veto`:
+    case `super`:
+      if (voteMode !== this.voteMode) {
+        this.voteMode = voteMode;
+      } else {
+        this.voteMode = `normal`;
+      }
+      break;
+
+    default:
+      this.voteMode = `normal`;
+      break;
+
+    }
+
+    this.emit(`VOTE_MODE_CHANGED`);
+
+  }
+
   setShowLoginModal(visible) {
 
     let blnShowModal = false;
@@ -113,6 +138,12 @@ class UserStore extends EventEmitter {
 
   }
 
+  getVoteMode() {
+
+    return this.voteMode;
+
+  }
+
   getShowLoginModal() {
 
     return this.showLoginModal;
@@ -133,6 +164,10 @@ class UserStore extends EventEmitter {
 
     case `HIDE_LOGIN_MODAL`:
       this.setShowLoginModal(false);
+      break;
+
+    case `SET_VOTE_MODE`:
+      this.setVoteMode(action.data);
       break;
 
     case `LOGOUT_USER`:
