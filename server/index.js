@@ -76,6 +76,9 @@ require("./app/helpers/io")(io);
 // Load all routes
 require("./app/routes")(app);
 
+// Load all cron jobs
+require("./app/middleware/cron")(process.env.TZ);
+
 /* --- Start server ------------------------------------------------------------------------ */
 
 server.listen(port, function() {
