@@ -120,6 +120,6 @@ module.exports = (app) => {
    *
    * @apiUse messageNotFound
    **/
-  app.post("/api/songs/queue/vote/", UsersController.userSession.require, SongsController.voteSong);
+  app.post("/api/songs/queue/vote/", UsersController.userSession.require, UsersController.permissions.checkVotesLeft, SongsController.voteSong);
 
 }

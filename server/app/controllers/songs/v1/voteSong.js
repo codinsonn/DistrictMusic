@@ -176,6 +176,14 @@ module.exports = (req, res, done) => {
         // update legacy score
         song.queue.votes.legacyQueueScore += voteValue;
 
+        // -- check if veto ----
+        if(this.uservote.voteType === 'veto_downvote'){
+          song.queue.currentQueueScore = 0;
+          song.queue.inQueue = false;
+        }else if(this.uservote.voteType === 'veto_upvote'){
+          song.queue.isVetoed = true;
+        }
+
         // -- save to db -------
         song.save((err) => {
 

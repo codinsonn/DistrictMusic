@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
+import * as NotifActions from '../actions/NotifActions';
 import songs from '../api/songs';
 
 export default class SongSummary extends Component {
@@ -113,17 +114,27 @@ export default class SongSummary extends Component {
         const voteType = this.getVoteType(type);
 
         songs.voteSong(id, title, voteType)
-          /*.then(res => {
+          .then(res => {
 
             // success!
             console.log(`SUCCESS!`, res);
+
+            if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+              const message = `${voteType} successfull!`;
+              NotifActions.addSuccess(message);
+            }
 
           }, failData => {
 
             // failed to vote
             console.log(`FAILED:`, failData);
 
-          })*/
+            if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+              const message = `${voteType} failed!`;
+              NotifActions.addError(message);
+            }
+
+          })
         ;
 
       } else {
@@ -174,7 +185,7 @@ export default class SongSummary extends Component {
         break;
 
       case `super_downvote`:
-        upvotedClass = `super-downvoted `;
+        downvotedClass = `super-downvoted `;
         break;
 
       case `veto_upvote`:

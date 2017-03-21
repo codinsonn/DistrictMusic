@@ -20,10 +20,12 @@ module.exports = function(voteType) {
       break;
 
     case "super_upvote":
+    case "veto_upvote":
       return 10;
       break;
 
     case "super_downvote":
+    case "veto_upvote":
       return -10;
       break;
 

@@ -15,6 +15,8 @@ module.exports = function(voteType) {
     case "downvote":
     case "super_upvote":
     case "super_downvote":
+    case "veto_upvote":
+    case "veto_downvote":
       return true;
       break;
 

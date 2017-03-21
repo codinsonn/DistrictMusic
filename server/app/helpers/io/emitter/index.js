@@ -24,6 +24,10 @@ var set = module.exports.set = (type) => {
         return "QUEUE_UPDATED";
         break;
 
+      case "PROFILE_UPDATED":
+        return "PROFILE_UPDATED";
+        break;
+
       default:
         return "default";
         break;

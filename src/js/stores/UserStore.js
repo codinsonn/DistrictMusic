@@ -44,6 +44,14 @@ class UserStore extends EventEmitter {
 
   }
 
+  updateUserProfile(user) {
+
+    this.userProfile = user;
+
+    this.emit(`USER_PROFILE_CHANGED`);
+
+  }
+
   setProfileSession() {
 
     users.getSessionProfile()

@@ -111,7 +111,7 @@ html {
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
 }
-:root { /* error */ /* info, notify */ /* success */
+:root { /* error */ /* info, notify */ /* success */ /* veto */
 }
 
 body {
@@ -275,7 +275,8 @@ body {
   border-top: 10px solid #fb624a;
 }
 
-.vote-mode-veto .btn-upvote:hover {
+.vote-mode-veto .btn-upvote:hover,
+.btn-upvote.veto-upvoted {
   border-bottom: 10px solid #fecb58;
 }
 
@@ -283,11 +284,13 @@ body {
   border-top: 10px solid #fecb58;
 }
 
-.vote-mode-super .btn-upvote:hover {
+.vote-mode-super .btn-upvote:hover,
+.btn-upvote.super-upvoted {
   border-bottom: 10px solid #299cbb;
 }
 
-.vote-mode-super .btn-downvote:hover {
+.vote-mode-super .btn-downvote:hover,
+.btn-downvote.super-downvoted {
   border-top: 10px solid #299cbb;
 }
 
@@ -881,7 +884,7 @@ body {
   background-image: url(/assets/svg/vetoMode.svg);
 }
 
-.profile:focus .profile-options ul li .btn-toggle-veto.active,
+.profile-options ul li .btn-toggle-veto.active,
 .profile-options ul li .btn-toggle-veto:hover {
   background-image: url(/assets/svg/vetoModeHover.svg);
 }
@@ -890,7 +893,7 @@ body {
   background-image: url(/assets/svg/superMode.svg);
 }
 
-.profile:focus .profile-options ul li .btn-toggle-super.active,
+.profile-options ul li .btn-toggle-super.active,
 .profile-options ul li .btn-toggle-super:hover {
   background-image: url(/assets/svg/superModeHover.svg);
 }
