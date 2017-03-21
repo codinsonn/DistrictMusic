@@ -1,4 +1,4 @@
-import React, {Component/*, PropTypes*/} from 'react';
+import React, {Component} from 'react';
 import {SongSummary} from '../components';
 import PlaylistStore from '../stores/PlaylistStore';
 import UserStore from '../stores/UserStore';
@@ -12,7 +12,8 @@ export default class PlaylistQueue extends Component {
     super(props, context);
 
     this.state = {
-      currentQueue: PlaylistStore.getCurrentQueue()
+      currentQueue: PlaylistStore.getCurrentQueue(),
+      voteMode: UserStore.getVoteMode()
     };
 
     this.hasFetchedQueue = false;
@@ -24,6 +25,7 @@ export default class PlaylistQueue extends Component {
     // listeners
     SocketStore.on(`QUEUE_UPDATED`, () => PlaylistActions.updateQueue());
     PlaylistStore.on(`QUEUE_CHANGED`, () => this.updateQueue());
+    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
 
     // fetch queue from api
     PlaylistActions.updateQueue();
@@ -50,9 +52,21 @@ export default class PlaylistQueue extends Component {
 
   }
 
+  updateVoteMode() {
+
+    let {voteMode} = this.state;
+
+    voteMode = UserStore.getVoteMode();
+
+    this.setState({voteMode});
+
+  }
+
   renderCurrentQueue(currentQueue) {
 
     if (currentQueue.length > 0) {
+
+      const {voteMode} = this.state;
 
       const isLoggedIn = UserStore.getLoggedIn();
 
@@ -60,7 +74,7 @@ export default class PlaylistQueue extends Component {
       return currentQueue.map(song => {
         i ++;
         if (!isLoggedIn) { song.uservote = {hasVoted: false}; }
-        return <SongSummary {...song} order={i} key={song.general.id} />;
+        return <SongSummary {...song} voteMode={voteMode} order={i} key={song.general.id} />;
       });
 
     } else if (this.hasFetchedQueue) {
@@ -92,7 +106,3 @@ export default class PlaylistQueue extends Component {
   }
 
 }
-
-/*Profile.propTypes = {
-
-};*/

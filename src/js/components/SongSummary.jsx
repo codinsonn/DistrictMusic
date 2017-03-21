@@ -23,7 +23,7 @@ export default class SongSummary extends Component {
       lastAddedBy: props.queue.lastAddedBy,
       originallyAddedBy: props.queue.originallyAddedBy,
       uservote: props.uservote,
-      voteMode: UserStore.getVoteMode()
+      voteMode: props.voteMode
     };
 
   }
@@ -32,7 +32,7 @@ export default class SongSummary extends Component {
 
     if (this.props !== nextProps) {
 
-      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote} = this.state;
+      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode} = this.state;
 
       order = nextProps.order;
       id = nextProps.general.id;
@@ -46,15 +46,16 @@ export default class SongSummary extends Component {
       lastAddedBy = nextProps.queue.lastAddedBy;
       originallyAddedBy = nextProps.queue.originallyAddedBy;
       uservote = nextProps.uservote;
+      voteMode = nextProps.voteMode;
 
-      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote});
+      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode});
 
     }
 
   }
 
   componentWillMount() {
-    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
+
   }
 
   componentWillUnmount() {
@@ -74,16 +75,6 @@ export default class SongSummary extends Component {
     }
 
     setInterval(() => this.updateTimeFromThen(), intervalTime);
-
-  }
-
-  updateVoteMode() {
-
-    let {voteMode} = this.state;
-
-    voteMode = UserStore.getVoteMode();
-
-    this.setState({voteMode});
 
   }
 
@@ -122,7 +113,7 @@ export default class SongSummary extends Component {
         const voteType = this.getVoteType(type);
 
         songs.voteSong(id, title, voteType)
-          .then(res => {
+          /*.then(res => {
 
             // success!
             console.log(`SUCCESS!`, res);
@@ -132,7 +123,7 @@ export default class SongSummary extends Component {
             // failed to vote
             console.log(`FAILED:`, failData);
 
-          })
+          })*/
         ;
 
       } else {
@@ -203,7 +194,10 @@ export default class SongSummary extends Component {
     const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;
     const downvoteButtonClasses = `btn-downvote ${downvotedClass}${buttonsEnabled}`;
 
-    const scoreWrapperClasses = `song-score-wrapper vote-mode-${voteMode}`;
+    let scoreWrapperClasses = `song-score-wrapper`;
+    if (buttonsEnabled === `enabled`) {
+      scoreWrapperClasses = `song-score-wrapper vote-mode-${voteMode}`;
+    }
 
     return (
       <article className='song-summary'>
@@ -231,5 +225,6 @@ SongSummary.propTypes = {
   general: PropTypes.object,
   queue: PropTypes.object,
   thumbs: PropTypes.object,
-  uservote: PropTypes.object
+  uservote: PropTypes.object,
+  voteMode: PropTypes.string
 };

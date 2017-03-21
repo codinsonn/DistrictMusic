@@ -88,7 +88,7 @@ export default class Profile extends Component {
 
   renderProfileOptions() {
 
-    const {isLoggedIn, voteMode, showProfileOptions} = this.state;
+    const {isLoggedIn, voteMode, userProfile, showProfileOptions} = this.state;
 
     const optionsClasses = `profile-options show`;
     if (showProfileOptions) {
@@ -111,9 +111,9 @@ export default class Profile extends Component {
       return (
         <div className={optionsClasses}>
           <ul>
-            <li onClick={() => UserActions.setVoteMode(`veto`)}><span className={vetoModeClasses}>&nbsp;</span></li>
-            <li onClick={() => UserActions.setVoteMode(`super`)}><span className={superModeClasses}>&nbsp;</span></li>
-            <li onClick={() => UserActions.logoutUser()}><span className='btn-logout'>&nbsp;</span></li>
+            <li onClick={() => UserActions.setVoteMode(`veto`)}><div className={vetoModeClasses}><span>x{userProfile.permissions.vetosLeft}</span></div></li>
+            <li onClick={() => UserActions.setVoteMode(`super`)}><div className={superModeClasses}><span>x{userProfile.permissions.superVotesLeft}</span></div></li>
+            <li onClick={() => UserActions.logoutUser()}><div className='btn-logout'><span>logout</span></div></li>
           </ul>
         </div>
       );
@@ -121,7 +121,7 @@ export default class Profile extends Component {
       return (
         <div className={optionsClasses}>
           <ul>
-            <li onClick={() => this.checkProfileActions()}><span className='btn-login'>&nbsp;</span></li>
+            <li onClick={() => this.checkProfileActions()}><div className='btn-login'><span>login</span></div></li>
           </ul>
         </div>
       );

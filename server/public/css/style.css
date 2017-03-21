@@ -840,7 +840,7 @@ body {
   background-size: cover;
 }
 
-.profile-options ul li span {
+.profile-options ul li div {
   display: inline-block;
   vertical-align: middle;
   width: 50px;
@@ -850,8 +850,21 @@ body {
   transition: all .5s ease-in .1s;
 }
 
-.profile:focus .profile-options ul li span,
-.profile:hover .profile-options ul li span {
+.profile-options ul li div span {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: auto;
+  bottom: 0;
+  left: 0;
+  color: white;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 1em;
+}
+
+.profile:focus .profile-options ul li div,
+.profile:hover .profile-options ul li div {
   opacity: 1;
 }
 
