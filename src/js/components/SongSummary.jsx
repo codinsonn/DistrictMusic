@@ -19,6 +19,7 @@ export default class SongSummary extends Component {
       filename: props.general.filename,
       currentQueueScore: props.queue.votes.currentQueueScore,
       legacyScore: props.queue.votes.legacyScore,
+      isPlaying: props.queue.isPlaying,
       isVetoed: props.queue.isVetoed,
       thumbs: props.thumbs,
       lastAddedBy: props.queue.lastAddedBy,
@@ -33,7 +34,7 @@ export default class SongSummary extends Component {
 
     if (this.props !== nextProps) {
 
-      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode} = this.state;
+      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode} = this.state;
 
       order = nextProps.order;
       id = nextProps.general.id;
@@ -42,6 +43,7 @@ export default class SongSummary extends Component {
       filename = nextProps.general.filename;
       currentQueueScore = nextProps.queue.votes.currentQueueScore;
       legacyScore = nextProps.queue.votes.legacyScore;
+      isPlaying = nextProps.queue.isPlaying;
       isVetoed = nextProps.queue.isVetoed;
       thumbs = nextProps.thumbs;
       lastAddedBy = nextProps.queue.lastAddedBy;
@@ -49,7 +51,7 @@ export default class SongSummary extends Component {
       uservote = nextProps.uservote;
       voteMode = nextProps.voteMode;
 
-      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode});
+      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode});
 
     }
 
@@ -149,7 +151,7 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isVetoed, uservote, voteMode} = this.state;
+    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
@@ -197,7 +199,7 @@ export default class SongSummary extends Component {
     }
 
     if (order < 3) {
-      if (order === 1) tags = `${tags}[PLAYING] `;
+      if (isPlaying) tags = `${tags}[PLAYING] `;
       if (order === 2) tags = `${tags}[UP NEXT] `;
       buttonsEnabled = `disabled`;
     }

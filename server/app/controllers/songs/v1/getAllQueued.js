@@ -81,10 +81,10 @@ module.exports = (req, res, done) => {
       if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
       var s2 = 0;
-      if(song1.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+      if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
       if(song2.queue.isVetoed) s2 += 10;
       if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-      if(!song1.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
       if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
       return s2 - s1;

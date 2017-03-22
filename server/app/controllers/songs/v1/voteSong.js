@@ -3,7 +3,7 @@ require("rootpath")();
 var _ = require("lodash");
 
 var EmitHelper = require(__base + "app/helpers/io/emitter");
-var VoteHelper = require(__base + "app/controllers/songs/v1/helpers");
+var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
 // Models
 var VoteModel = require(__base + "app/models/vote");
@@ -14,7 +14,7 @@ module.exports = (req, res, done) => {
   this.uservote = req.body;
   this.profile = req.session.profile;
 
-  if(VoteHelper.validateVoteType(this.uservote.voteType)){
+  if(SongHelper.validateVoteType(this.uservote.voteType)){
 
     // check if vote doesn't already exist in db
     VoteModel.findOne({ 'song.id': this.uservote.songId, 'user.googleId': this.profile.meta.googleId }, (err, vote) => {
@@ -38,13 +38,13 @@ module.exports = (req, res, done) => {
         if(vote.voteType != this.uservote.voteType){
 
           // keep previous vote value handy
-          var previousVoteValue = VoteHelper.getVoteValue(vote.voteType);
+          var previousVoteValue = SongHelper.getVoteValue(vote.voteType);
 
           // update vote type
           vote.voteType = this.uservote.voteType;
 
           // update vote value
-          vote.voteValue = VoteHelper.getVoteValue(vote.voteType);
+          vote.voteValue = SongHelper.getVoteValue(vote.voteType);
 
           // save new vote to db
           vote.save((err) => {
@@ -84,7 +84,7 @@ module.exports = (req, res, done) => {
 
             }
 
-            var changeValue = 0 - VoteHelper.getVoteValue(this.uservote.voteType);
+            var changeValue = 0 - SongHelper.getVoteValue(this.uservote.voteType);
 
             this.updateSongScore(changeValue);
 
@@ -103,7 +103,7 @@ module.exports = (req, res, done) => {
         newVote.voteType = this.uservote.voteType;
 
         console.log('[VoteSong] Setting vote value');
-        newVote.voteValue = VoteHelper.getVoteValue(this.uservote.voteType);
+        newVote.voteValue = SongHelper.getVoteValue(this.uservote.voteType);
 
         // -- user info --------
         console.log('[VoteSong] Setting user googleId');
@@ -177,11 +177,12 @@ module.exports = (req, res, done) => {
         song.queue.votes.legacyQueueScore += voteValue;
 
         // -- check if veto ----
-        if(this.uservote.voteType === 'veto_downvote'){
+        if(this.uservote.voteType === 'veto_upvote'){
+          song.queue.isVetoed = true;
+        }else if(this.uservote.voteType === 'veto_downvote'){
           song.queue.currentQueueScore = 0;
           song.queue.inQueue = false;
-        }else if(this.uservote.voteType === 'veto_upvote'){
-          song.queue.isVetoed = true;
+          SongHelper.removeVotesForSong(song.general.id);
         }
 
         // -- save to db -------

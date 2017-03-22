@@ -78,6 +78,7 @@ const config = {
     // import files without extension import ... from './Test'
     extensions: [`.js`, `.jsx`, `.css`],
     "alias": {
+      "wavesurfer": path.resolve(__dirname, './node_modules/wavesurfer.js/dist/wavesurfer.js'),
       "request$": "xhr"
     }
   },
@@ -150,6 +151,10 @@ const config = {
           context: `./src`,
           name: `[path][name].[ext]`
         }
+      },
+      {
+        test: require.resolve("wavesurfer.js"),
+        loader: "expose?WaveSurfer"
       }
     ]
 
