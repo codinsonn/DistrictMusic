@@ -13,7 +13,8 @@ if (process.env.NODE_ENV === "local") {
 process.env.TZ = "Etc/GMT";
 
 require("rootpath")();
-const path = require(`path`);
+var path = require('path');
+var fs = require('fs');
 
 // CORS Middleware
 /*var allowCrossDomain = (req, res, next) => {
@@ -79,13 +80,18 @@ require("./app/routes")(app);
 // Load all cron jobs
 require("./app/middleware/cron")(process.env.TZ);
 
+// Copy audio files
+require("./app/middleware/copyaudio")();
+
 /* --- Start server ------------------------------------------------------------------------ */
 
 server.listen(port, function() {
+
   console.log("-- DistrictMusic app listening on %s in %s mode. --", port, process.env.NODE_ENV); // eslint-disable-line no-console
 
   // Load config after server is booted
   //require("app/middleware/start")();
+
 });
 
 process.on('uncaughtException', (err) => {

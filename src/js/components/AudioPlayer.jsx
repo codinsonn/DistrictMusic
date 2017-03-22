@@ -12,7 +12,8 @@ export default class AudioPlayer extends Component {
     this.state = {
       currentSong: PlaylistStore.getCurrentSong(),
       playing: true,
-      pos: 0
+      pos: 0,
+      currentTimeString: `00:00`
     };
 
     this.waveOptions = {
@@ -61,11 +62,19 @@ export default class AudioPlayer extends Component {
 
   handlePosChange(e) {
 
-    let {pos} = this.state;
+    let {pos, currentTimeString} = this.state;
 
     pos = e.originalArgs[0];
 
-    this.setState({pos});
+    const currentMinutes = Math.floor(pos / 60);
+    const currentSeconds = Math.round(pos % 60);
+
+    currentTimeString = `0${currentMinutes}:${currentSeconds}`;
+    if (currentSeconds < 10) {
+      currentTimeString = `0${currentMinutes}:0${currentSeconds}`;
+    }
+
+    this.setState({pos, currentTimeString});
 
   }
 
@@ -74,8 +83,6 @@ export default class AudioPlayer extends Component {
     const {currentSong, playing, pos} = this.state;
 
     if (currentSong.general !== ``) {
-
-      console.log(`[AudioPlayer] Rendering current song:`, currentSong);
 
       const audioFile = `assets/audio/${currentSong.general.filename}`;
 
@@ -86,7 +93,7 @@ export default class AudioPlayer extends Component {
           onPosChange={e => this.handlePosChange(e)}
           playing={playing}
           options={this.waveOptions}
-          zoom='10'
+          zoom={10}
         />
       );
 
@@ -100,11 +107,15 @@ export default class AudioPlayer extends Component {
 
   render() {
 
+    const {currentSong, currentTimeString} = this.state;
+
     return (
       <article className='audio-player-wrapper'>
+        <div className='current-time'><span>{currentTimeString}</span></div>
         <div className='wave-pos-wrapper'>
           {this.renderPlayer()}
         </div>
+        <div className='total-duration'><span>{currentSong.general.duration}</span></div>
       </article>
     );
 

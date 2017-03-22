@@ -83,15 +83,49 @@ body {
   left: 0;
   background-color: #272822;
   overflow: hidden;
+  z-index: 60;
 }
 
 .wave-pos-wrapper {
   position: absolute;
   display: block;
-  width: 80vw;
+  width: calc(100vw - 100px);
   height: 40px;
   top: 5px;
-  left: 10vw;
+  left: 50px;
+  cursor: ew-resize;
+}
+
+.current-time,
+.total-duration {
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 100%;
+  top: 0;
+}
+
+.current-time span,
+.total-duration span {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 14px;
+  top: calc(50% - 7px);
+  left: 0;
+  color: white;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.current-time {
+  left: 0;
+}
+
+.total-duration {
+  right: 0;
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */

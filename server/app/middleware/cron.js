@@ -92,11 +92,16 @@ module.exports = function(timeZone) {
 
           _.forEach(songs, (song) => {
 
-            var audioFolder = `${__base}uploads/audio/`;
             var audioFilename = song.general.filename;
-            var audioFilePath = path.resolve(audioFolder, audioFilename);
 
-            fs.unlinkSync(audioFilePath);
+            var uploadsFolder = `${__base}uploads/audio/`;
+            var uploadedFilePath = path.resolve(uploadedFolder, audioFilename);
+
+            var publicFolder = `${__base}public/assets/audio/`;
+            var publicFilePath = path.resolve(publicFolder, audioFilename);
+
+            fs.unlinkSync(uploadedFilePath);
+            fs.unlinkSync(publicFilePath);
 
             console.log('[JOB] Removed file:', audioFilePath);
 
