@@ -89,20 +89,46 @@ body {
 .wave-pos-wrapper {
   position: absolute;
   display: block;
-  width: calc(100vw - 100px);
+  width: calc(100vw - 200px);
   height: 40px;
   top: 5px;
-  left: 50px;
+  left: 100px;
   cursor: ew-resize;
 }
 
+.btn-toggle-play,
 .current-time,
-.total-duration {
+.total-duration,
+.btn-toggle-view-mode {
   position: absolute;
   display: block;
   width: 50px;
   height: 100%;
   top: 0;
+}
+
+.btn-toggle-play {
+  left: 0;
+}
+
+.btn-toggle-play span {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 20px;
+  top: calc(50% - 10px);
+  left: calc(50% - 10px);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.btn-toggle-play.play span {
+  background-image: url(../assets/svg/playButton.svg);
+}
+
+.btn-toggle-play.pause span {
+  background-image: url(../assets/svg/pauseButton.svg);
 }
 
 .current-time span,
@@ -121,11 +147,11 @@ body {
 }
 
 .current-time {
-  left: 0;
+  left: 50px;
 }
 
 .total-duration {
-  right: 0;
+  right: 50px;
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */
@@ -819,7 +845,7 @@ body {
 }
 
 .profile:focus .profile-options ul li .btn-login,
-.profile-options ul li .btn-login:hover {
+.profile:hover .profile-options ul li .btn-login {
   background-image: url(../assets/svg/loginButtonHover.svg);
 }
 
@@ -846,7 +872,7 @@ body {
 }
 
 .profile:focus .profile-options ul li .btn-logout,
-.profile-options ul li .btn-logout:hover {
+.profile:hover .profile-options ul li .btn-logout {
   background-image: url(../assets/svg/logoutButtonHover.svg);
 }
 

@@ -49367,21 +49367,27 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.render = function render() {
     var _state3 = this.state,
         currentSong = _state3.currentSong,
+        playing = _state3.playing,
         currentTimeString = _state3.currentTimeString;
 
+
+    var togglePlayClasses = 'btn-toggle-play play';
+    if (playing) {
+      togglePlayClasses = 'btn-toggle-play pause';
+    }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 113
+          lineNumber: 118
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
-        { className: 'current-time', __source: {
+        { className: togglePlayClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 114
+            lineNumber: 119
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49389,7 +49395,25 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 114
+              lineNumber: 119
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 120
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 120
             }
           },
           currentTimeString
@@ -49399,7 +49423,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'wave-pos-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 115
+            lineNumber: 121
           }
         },
         this.renderPlayer()
@@ -49408,7 +49432,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 118
+            lineNumber: 124
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49416,7 +49440,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 118
+              lineNumber: 124
             }
           },
           currentSong.general.duration
@@ -78004,4 +78028,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.20f2b63f6a6ba943770f.js.map
+//# sourceMappingURL=main.8f2927b09f35729d194f.js.map

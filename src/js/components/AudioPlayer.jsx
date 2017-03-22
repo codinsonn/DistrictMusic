@@ -11,7 +11,7 @@ export default class AudioPlayer extends Component {
 
     this.state = {
       currentSong: PlaylistStore.getCurrentSong(),
-      playing: true,
+      playing: false,
       pos: 0,
       currentTimeString: `00:00`
     };
@@ -78,6 +78,16 @@ export default class AudioPlayer extends Component {
 
   }
 
+  togglePlay() {
+
+    let {playing} = this.state;
+
+    playing = !playing;
+
+    this.setState({playing});
+
+  }
+
   renderPlayer() {
 
     const {currentSong, playing, pos} = this.state;
@@ -107,10 +117,16 @@ export default class AudioPlayer extends Component {
 
   render() {
 
-    const {currentSong, currentTimeString} = this.state;
+    const {currentSong, playing, currentTimeString} = this.state;
+
+    let togglePlayClasses = `btn-toggle-play play`;
+    if (playing) {
+      togglePlayClasses = `btn-toggle-play pause`;
+    }
 
     return (
       <article className='audio-player-wrapper'>
+        <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
         <div className='wave-pos-wrapper'>
           {this.renderPlayer()}
