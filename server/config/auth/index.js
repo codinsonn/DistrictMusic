@@ -5,6 +5,11 @@ module.exports = {
     'clientSecret': "6RoBvh-aw5nUE4iOnNDHB2TE",
     'callbackURL': 'http://localhost:3020/auth/google/callback',
     'apiKey': 'AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU'
-  }
+  },
+
+  'whitelistedEmails': [
+    'thorrstevens@gmail.com',
+    'shaunie1993@msn.com'
+  ]
 
 };

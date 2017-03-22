@@ -1,11 +1,10 @@
 // Packages
 require("rootpath")();
+
 var passport = require("passport");
 var googleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 // Helpers
-//var ResponseHelper = require(__base + "app/helpers/response");
-//var PromiseHelper = require(__base + "app/helpers/promise");
 var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 
 // Models
@@ -13,9 +12,11 @@ var UserModel = require(__base + "app/models/user");
 
 module.exports = (req, token, refreshToken, profile, done) => {
 
-  //process.nextTick(() => {
+  var profileEmail = profile.emails[0].value.toLowerCase();
 
-    UserModel.findOne({ 'general.email': profile.emails[0].value.toLowerCase() }, (err, user) => {
+  if(UserHelper.allowedToLogin(profile)){
+
+    UserModel.findOne({ 'general.email': profileEmail }, (err, user) => {
 
       if (err){
 
@@ -26,14 +27,8 @@ module.exports = (req, token, refreshToken, profile, done) => {
 
       if (user) {
 
-        /*user.general.id = profile.id;
-        user.meta.googleId = profile.id;
-        user.save();
-        /**/
-
         console.log('- Found user: - \n', user.general.fullName);
         req.session.profile = user;
-        //console.log('UserSession', req.session.profile);
 
         // if a user is found, log them in
         return done(null, user);
@@ -45,11 +40,8 @@ module.exports = (req, token, refreshToken, profile, done) => {
         // Create new user if none was found (authorized anyway if domain matches Distric01)
         var user = new UserModel();
 
-        // Add google id
-        //user.general.id = profile.id;
-        //console.log('set id:', user.meta.googleId);
         // Set email
-        user.general.email = profile.emails[0].value.toLowerCase();
+        user.general.email = profileEmail;
         console.log('set email:', user.general.email);
         // Set fullName
         user.general.fullName = profile.displayName;
@@ -114,6 +106,10 @@ module.exports = (req, token, refreshToken, profile, done) => {
 
     });
 
-  //});
+  }else{
+
+    return done(null, null);
+
+  }
 
 }
