@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail, DownloadProgress, /*NowPlaying, UpNext,*/ PlaylistQueue} from '../components';
+import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail, DownloadProgress, PlaylistQueue, AudioPlayer} from '../components';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
@@ -66,6 +66,7 @@ export default class PlaylistDash extends Component {
         <SuggestionDetail />
         <PlaylistQueue />
         <Notification />
+        <AudioPlayer />
       </div>
     );
 

@@ -175,6 +175,28 @@ body {
   background-color: #60ac7b;
 }
 
+/* --- Audio Player ---------------------------------------------------------------------- */
+
+.audio-player-wrapper {
+  position: fixed;
+  display: block;
+  width: 100vw;
+  height: 50px;
+  bottom: 0;
+  left: 0;
+  background-color: #272822;
+  overflow: hidden;
+}
+
+.wave-pos-wrapper {
+  position: absolute;
+  display: block;
+  width: 80vw;
+  height: 40px;
+  top: 5px;
+  left: 10vw;
+}
+
 /* --- Playlist Queue -------------------------------------------------------------------- */
 
 .playlist-queue {
@@ -693,7 +715,7 @@ body {
   width: 100vw;
   height: 42px;
   left: 0;
-  bottom: 0;
+  bottom: 50px;
   overflow: hidden;
   z-index: 70;
 }

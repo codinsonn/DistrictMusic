@@ -21,6 +21,7 @@
     "cron": "^1.2.1",
     "dotenv": "^2.0.0",
     "errorhandler": "^1.5.0",
+    "expose-loader": "^0.7.3",
     "express": "^4.14.1",
     "express-session": "^1.15.1",
     "fluent-ffmpeg": "^2.1.0",

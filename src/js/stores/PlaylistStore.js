@@ -16,6 +16,7 @@ class PlaylistStore extends EventEmitter {
     this.defaultSuggestion = {id: ``, title: ``}; // { id: '', title: '', channel: '', thumbs: {}, duration: '' };
 
     this.queue = [];
+    this.defaultSong = {general: ``};
 
   }
 
@@ -108,6 +109,18 @@ class PlaylistStore extends EventEmitter {
   getCurrentQueue() {
 
     return this.queue;
+
+  }
+
+  getCurrentSong() {
+
+    if (this.queue[0]) {
+      console.log(`Returning first song`);
+      return this.queue[0];
+    } else {
+      console.log(`Returning default song`);
+      return this.defaultSong;
+    }
 
   }
 

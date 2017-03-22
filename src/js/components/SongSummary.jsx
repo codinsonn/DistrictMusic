@@ -199,9 +199,8 @@ export default class SongSummary extends Component {
     }
 
     if (order < 3) {
-      if (isPlaying) tags = `${tags}[PLAYING] `;
+      if (isPlaying) { tags = `${tags}[PLAYING] `;buttonsEnabled = `disabled`; }
       if (order === 2) tags = `${tags}[UP NEXT] `;
-      buttonsEnabled = `disabled`;
     }
 
     const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;

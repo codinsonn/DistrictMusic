@@ -154,7 +154,7 @@ const config = {
       },
       {
         test: require.resolve("wavesurfer.js"),
-        loader: "expose?WaveSurfer"
+        loader: "expose-loader?WaveSurfer"
       }
     ]
 

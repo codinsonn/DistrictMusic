@@ -7,5 +7,4 @@ export SuggestionDetail from './SuggestionDetail';
 export DownloadProgress from './DownloadProgress';
 export PlaylistQueue from './PlaylistQueue.jsx';
 export SongSummary from './SongSummary';
-//export NowPlaying from './NowPlaying';
-//export UpNext from './UpNext';
+export AudioPlayer from './AudioPlayer';

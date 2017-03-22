@@ -90,7 +90,7 @@ export default class Notification extends Component {
 
     return (
       <article className='notifications'>
-        <section className={notificationClasses}>
+        <section className={notificationClasses} onClick={() => this.hideNotification()}>
           <span className='icon' onClick={() => this.hideNotification()}>&nbsp;</span>
           <span className='notifText'>{message}</span>
         </section>
