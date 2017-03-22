@@ -6,7 +6,7 @@ var VoteModel = require(__base + "app/models/vote");
 
 module.exports = function(songId) {
 
-  var query = { general: { id: songId } };
+  var query = { 'song.id': songId };
 
   VoteModel.find(query).remove().exec((err, data) => {
 

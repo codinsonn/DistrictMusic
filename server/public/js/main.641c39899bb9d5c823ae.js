@@ -50624,6 +50624,7 @@ var SongSummary = function (_Component) {
       filename: props.general.filename,
       currentQueueScore: props.queue.votes.currentQueueScore,
       legacyScore: props.queue.votes.legacyScore,
+      isPlaying: props.queue.isPlaying,
       isVetoed: props.queue.isVetoed,
       thumbs: props.thumbs,
       lastAddedBy: props.queue.lastAddedBy,
@@ -50646,6 +50647,7 @@ var SongSummary = function (_Component) {
           filename = _state.filename,
           currentQueueScore = _state.currentQueueScore,
           legacyScore = _state.legacyScore,
+          isPlaying = _state.isPlaying,
           isVetoed = _state.isVetoed,
           thumbs = _state.thumbs,
           lastAddedBy = _state.lastAddedBy,
@@ -50661,6 +50663,7 @@ var SongSummary = function (_Component) {
       filename = nextProps.general.filename;
       currentQueueScore = nextProps.queue.votes.currentQueueScore;
       legacyScore = nextProps.queue.votes.legacyScore;
+      isPlaying = nextProps.queue.isPlaying;
       isVetoed = nextProps.queue.isVetoed;
       thumbs = nextProps.thumbs;
       lastAddedBy = nextProps.queue.lastAddedBy;
@@ -50668,7 +50671,7 @@ var SongSummary = function (_Component) {
       uservote = nextProps.uservote;
       voteMode = nextProps.voteMode;
 
-      this.setState({ order: order, id: id, title: title, duration: duration, filename: filename, currentQueueScore: currentQueueScore, legacyScore: legacyScore, isVetoed: isVetoed, thumbs: thumbs, lastAddedBy: lastAddedBy, originallyAddedBy: originallyAddedBy, uservote: uservote, voteMode: voteMode });
+      this.setState({ order: order, id: id, title: title, duration: duration, filename: filename, currentQueueScore: currentQueueScore, legacyScore: legacyScore, isPlaying: isPlaying, isVetoed: isVetoed, thumbs: thumbs, lastAddedBy: lastAddedBy, originallyAddedBy: originallyAddedBy, uservote: uservote, voteMode: voteMode });
     }
   };
 
@@ -50768,6 +50771,7 @@ var SongSummary = function (_Component) {
         currentQueueScore = _state3.currentQueueScore,
         thumbs = _state3.thumbs,
         lastAddedBy = _state3.lastAddedBy,
+        isPlaying = _state3.isPlaying,
         isVetoed = _state3.isVetoed,
         uservote = _state3.uservote,
         voteMode = _state3.voteMode;
@@ -50818,7 +50822,7 @@ var SongSummary = function (_Component) {
     }
 
     if (order < 3) {
-      if (order === 1) tags = tags + '[PLAYING] ';
+      if (isPlaying) tags = tags + '[PLAYING] ';
       if (order === 2) tags = tags + '[UP NEXT] ';
       buttonsEnabled = 'disabled';
     }
@@ -50835,14 +50839,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 214
+          lineNumber: 216
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 215
+            lineNumber: 217
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50851,7 +50855,7 @@ var SongSummary = function (_Component) {
               return _this4.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 216
+              lineNumber: 218
             }
           },
           '\xA0'
@@ -50860,7 +50864,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 217
+              lineNumber: 219
             }
           },
           currentQueueScore
@@ -50871,7 +50875,7 @@ var SongSummary = function (_Component) {
               return _this4.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 218
+              lineNumber: 220
             }
           },
           '\xA0'
@@ -50881,14 +50885,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 220
+            lineNumber: 222
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 221
+              lineNumber: 223
             }
           },
           duration
@@ -50898,14 +50902,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-info', __source: {
             fileName: _jsxFileName,
-            lineNumber: 223
+            lineNumber: 225
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 224
+              lineNumber: 226
             }
           },
           tags,
@@ -50915,7 +50919,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 225
+              lineNumber: 227
             }
           },
           'Submitted ',
@@ -50923,7 +50927,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 225
+                lineNumber: 227
               }
             },
             fromNow
@@ -50934,7 +50938,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 225
+                lineNumber: 227
               }
             },
             lastAddedBy.userName
@@ -77754,4 +77758,4 @@ module.exports = __webpack_require__(298);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.fb3006ff031a1973852c.js.map
+//# sourceMappingURL=main.641c39899bb9d5c823ae.js.map

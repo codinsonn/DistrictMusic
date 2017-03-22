@@ -32,6 +32,14 @@ var SongSchema = new Schema({
         type: String,
         index: true,
         required: true
+      },
+      isDownloaded: {
+        type: Boolean,
+        default: false
+      },
+      isFileAboutToBeRemoved: {
+        type: Boolean,
+        default: false
       }
     },
     queue: {
