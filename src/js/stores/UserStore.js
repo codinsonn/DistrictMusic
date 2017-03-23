@@ -13,6 +13,7 @@ class UserStore extends EventEmitter {
     this.showLoginModal = false;
 
     this.voteMode = `normal`;
+    this.isSynched = false;
 
     this.userProfile = {};
     this.defaultProfile = {
@@ -71,6 +72,18 @@ class UserStore extends EventEmitter {
 
       })
     ;
+
+  }
+
+  setSynched(synched) {
+
+    if (synched !== this.isSynched) {
+
+      this.isSynched = synched;
+
+      this.emit(`SYNCHED_CHANGED`);
+
+    }
 
   }
 
@@ -152,6 +165,12 @@ class UserStore extends EventEmitter {
 
   }
 
+  getSynched() {
+
+    return this.isSynched;
+
+  }
+
   getShowLoginModal() {
 
     return this.showLoginModal;
@@ -176,6 +195,10 @@ class UserStore extends EventEmitter {
 
     case `SET_VOTE_MODE`:
       this.setVoteMode(action.data);
+      break;
+
+    case `SET_SYNCHED`:
+      this.setSynched(action.data);
       break;
 
     case `LOGOUT_USER`:

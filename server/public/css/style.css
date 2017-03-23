@@ -192,38 +192,71 @@ body {
 .wave-pos-wrapper {
   position: absolute;
   display: block;
-  width: calc(100vw - 200px);
+  width: calc(100vw - 250px);
   height: 40px;
-  top: 5px;
-  left: 100px;
+  top: 6px;
+  left: 125px;
   cursor: ew-resize;
 }
 
+.btn-toggle-synch,
 .btn-toggle-play,
 .current-time,
 .total-duration,
 .btn-toggle-view-mode {
   position: absolute;
   display: block;
-  width: 50px;
+  width: 40px;
   height: 100%;
   top: 0;
 }
 
-.btn-toggle-play {
-  left: 0;
+.btn-toggle-synch {
+  left: 5px;
 }
 
+.btn-toggle-play {
+  left: 45px;
+}
+
+.btn-toggle-synch span,
 .btn-toggle-play span {
   position: absolute;
   display: block;
-  width: 20px;
-  height: 20px;
-  top: calc(50% - 10px);
-  left: calc(50% - 10px);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
+  background-size: contain;
+  cursor: pointer;
+}
+
+.btn-toggle-synch span {
+  width: 20px;
+  height: 20px;
+  top: calc(50% - 9px);
+  left: calc(50% - 10px);
+}
+
+.btn-toggle-play span {
+  width: 14px;
+  height: 14px;
+  top: calc(50% - 7px);
+  left: calc(50% - 7px);
+}
+
+.btn-toggle-synch.unsynched span {
+  background-image: url(/assets/svg/unsynchedMode.svg);
+}
+
+.btn-toggle-synch.unsynched span:hover {
+  background-image: url(/assets/svg/unsynchedModeHover.svg);
+}
+
+.btn-toggle-synch.synched span {
+  background-image: url(/assets/svg/synchMode.svg);
+}
+
+.btn-toggle-synch.synched span:hover {
+  background-image: url(/assets/svg/synchModeHover.svg);
 }
 
 .btn-toggle-play.play span {
@@ -239,22 +272,22 @@ body {
   position: absolute;
   display: block;
   width: 100%;
-  height: 14px;
-  top: calc(50% - 7px);
+  height: 10px;
+  top: calc(50% - 4px);
   left: 0;
   color: white;
   text-align: center;
   font-family: Roboto, sans-serif;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: bold;
 }
 
 .current-time {
-  left: 50px;
+  left: 85px;
 }
 
 .total-duration {
-  right: 50px;
+  right: 85px;
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */
@@ -263,7 +296,7 @@ body {
   position: relative;
   display: block;
   height: auto;
-  top: 110px;
+  top: 100px;
 }
 
 .playlist-header {
@@ -279,7 +312,7 @@ body {
   position: relative;
   display: inline-block;
   width: auto;
-  height: 40px;
+  height: 30px;
   padding: 5px 10px;
   margin: 0 5px;
   color: rgba(200, 200, 200, 1);
@@ -296,8 +329,8 @@ body {
   position: absolute;
   display: block;
   width: 100%;
-  height: calc(100vh - 200px);
-  top: 40px;
+  height: calc(100vh - 210px);
+  top: 30px;
   left: 0;
   overflow: scroll;
 }

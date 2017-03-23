@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import Wavesurfer from 'react-wavesurfer';
-//import SocketStore from '../stores/SocketStore';
+import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
+import * as UserActions from '../actions/UserActions';
 
 export default class AudioPlayer extends Component {
 
@@ -13,7 +14,8 @@ export default class AudioPlayer extends Component {
       currentSong: PlaylistStore.getCurrentSong(),
       playing: false,
       pos: 0,
-      currentTimeString: `00:00`
+      currentTimeString: `00:00`,
+      isSynched: UserStore.getSynched()
     };
 
     this.waveOptions = {
@@ -30,6 +32,7 @@ export default class AudioPlayer extends Component {
 
   componentWillMount() {
     PlaylistStore.on(`QUEUE_CHANGED`, () => this.checkUpdate());
+    UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
   }
 
   componentWillUnmount() {
@@ -60,6 +63,16 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateSynched() {
+
+    let {isSynched} = this.state;
+
+    isSynched = UserStore.getSynched();
+
+    this.setState({isSynched});
+
+  }
+
   handlePosChange(e) {
 
     let {pos, currentTimeString} = this.state;
@@ -75,6 +88,14 @@ export default class AudioPlayer extends Component {
     }
 
     this.setState({pos, currentTimeString});
+
+  }
+
+  toggleSynched() {
+
+    const {isSynched} = this.state;
+
+    UserActions.setSynched(!isSynched);
 
   }
 
@@ -117,7 +138,12 @@ export default class AudioPlayer extends Component {
 
   render() {
 
-    const {currentSong, playing, currentTimeString} = this.state;
+    const {currentSong, playing, currentTimeString, isSynched} = this.state;
+
+    let toggleSynchClasses = `btn-toggle-synch unsynched`;
+    if (isSynched) {
+      toggleSynchClasses = `btn-toggle-synch synched`;
+    }
 
     let togglePlayClasses = `btn-toggle-play play`;
     if (playing) {
@@ -126,6 +152,7 @@ export default class AudioPlayer extends Component {
 
     return (
       <article className='audio-player-wrapper'>
+        <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
         <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
         <div className='wave-pos-wrapper'>

@@ -9,7 +9,8 @@ module.exports = {
 
   'whitelistedEmails': [
     'thorrstevens@gmail.com',
-    'shaunie1993@msn.com'
+    'shaunie1993@msn.com',
+    'niels.bril@gmail.com'
   ]
 
 };

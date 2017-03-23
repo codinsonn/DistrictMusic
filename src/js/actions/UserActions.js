@@ -25,6 +25,13 @@ export function setVoteMode(voteMode) {
   });
 }
 
+export function setSynched(synched) {
+  dispatcher.dispatch({
+    type: `SET_SYNCHED`,
+    data: synched
+  });
+}
+
 export function logoutUser() {
   dispatcher.dispatch({
     type: `LOGOUT_USER`
