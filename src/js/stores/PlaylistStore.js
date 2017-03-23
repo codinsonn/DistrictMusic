@@ -82,8 +82,6 @@ class PlaylistStore extends EventEmitter {
 
     this.emit(`SONG_CHANGED`);
 
-    UserStore.setSynched(false);
-
   }
 
   setShowSuggestionDetail(visible) {

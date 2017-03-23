@@ -156,7 +156,9 @@ export default class SongSummary extends Component {
 
     const {song} = this.state;
 
-    PlaylistActions.setSong(song);
+    UserActions.setSynched(false);
+
+    setTimeout(() => PlaylistActions.setSong(song), 10);
 
   }
 
