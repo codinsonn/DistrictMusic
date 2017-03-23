@@ -68,8 +68,7 @@ export default class AudioPlayer extends Component {
 
     const {isSynched, playing} = this.state;
 
-    if (isSynched && playing === false) {
-      console.log(`Starting autoplay`);
+    if (isSynched && !playing) {
       this.togglePlay();
     }
 
@@ -103,9 +102,14 @@ export default class AudioPlayer extends Component {
 
   togglePlay() {
 
+    const {isSynched} = this.state;
     let {playing} = this.state;
 
     playing = !playing;
+
+    if (isSynched && !playing) {
+      this.toggleSynched();
+    }
 
     this.setState({playing});
 

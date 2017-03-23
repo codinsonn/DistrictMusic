@@ -62,8 +62,6 @@ module.exports = function(timeZone) {
 
     }, () => { /* Callback after job = done */
 
-
-
     },
     true, /* Start the job right now */
     timeZone /* Time zone of this job. */
@@ -95,7 +93,7 @@ module.exports = function(timeZone) {
             var audioFilename = song.general.filename;
 
             var uploadsFolder = `${__base}uploads/audio/`;
-            var uploadedFilePath = path.resolve(uploadedFolder, audioFilename);
+            var uploadedFilePath = path.resolve(uploadsFolder, audioFilename);
 
             var publicFolder = `${__base}public/assets/audio/`;
             var publicFilePath = path.resolve(publicFolder, audioFilename);
@@ -118,8 +116,6 @@ module.exports = function(timeZone) {
       });
 
     }, () => { /* Callback after job = done */
-
-
 
     },
     true, /* Start the job right now */
