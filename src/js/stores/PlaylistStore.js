@@ -12,11 +12,16 @@ class PlaylistStore extends EventEmitter {
     this.showSearchModal = false;
     this.showSuggestionDetail = false;
 
+    this.showYoutubeVideo = false;
+    this.videoLayoutMode = `side`;
+
     this.currentSuggestion = {};
     this.defaultSuggestion = {id: ``, title: ``}; // { id: '', title: '', channel: '', thumbs: {}, duration: '' };
 
     this.queue = [];
     this.defaultSong = {general: ``};
+    this.currentSong = this.defaultSong;
+    this.userChosenSong = this.defaultSong;
 
   }
 
@@ -29,9 +34,12 @@ class PlaylistStore extends EventEmitter {
 
         this.queue = res;
 
-        //console.log(`New queue`, this.queue);
-
         this.emit(`QUEUE_CHANGED`);
+
+        if (UserStore.getSynched() && this.queue[0] !== this.currentSong) {
+          this.currentSong = this.queue[0];
+          this.emit(`SONG_CHANGED`);
+        }
 
       }, failData => {
 
@@ -106,20 +114,32 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  getShowYoutubeVideo() {
+
+    return this.showYoutubeVideo;
+
+  }
+
+  getVideoLayoutMode() {
+
+    return this.videoLayoutMode;
+
+  }
+
   getCurrentQueue() {
 
     return this.queue;
 
   }
 
-  getCurrentSong() {
+  getSong(synched) {
 
-    if (this.queue[0]) {
+    if (synched && this.queue[0]) {
       console.log(`Returning first song`);
-      return this.queue[0];
+      return this.currentSong;
     } else {
-      console.log(`Returning default song`);
-      return this.defaultSong;
+      console.log(`Returning user chosen song`);
+      return this.userChosenSong;
     }
 
   }

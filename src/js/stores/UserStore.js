@@ -13,7 +13,7 @@ class UserStore extends EventEmitter {
     this.showLoginModal = false;
 
     this.voteMode = `normal`;
-    this.isSynched = false;
+    this.isSynched = true;
 
     this.userProfile = {};
     this.defaultProfile = {

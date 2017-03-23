@@ -11,7 +11,7 @@ export default class AudioPlayer extends Component {
     super(props, context);
 
     this.state = {
-      currentSong: PlaylistStore.getCurrentSong(),
+      song: PlaylistStore.getSong(UserStore.getSynched()),
       playing: false,
       pos: 0,
       currentTimeString: `00:00`,
@@ -31,7 +31,7 @@ export default class AudioPlayer extends Component {
   }
 
   componentWillMount() {
-    PlaylistStore.on(`QUEUE_CHANGED`, () => this.checkUpdate());
+    PlaylistStore.on(`SONG_CHANGED`, () => this.updateSong());
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
   }
 
@@ -43,23 +43,14 @@ export default class AudioPlayer extends Component {
 
   }
 
-  checkUpdate() {
+  updateSong() {
 
-    let {currentSong} = this.state;
+    const {isSynched} = this.state;
+    let {song} = this.state;
 
-    if (PlaylistStore.getCurrentSong() !== currentSong) {
+    song = PlaylistStore.getSong(isSynched);
 
-      currentSong = PlaylistStore.getCurrentSong();
-
-      this.setState({currentSong});
-
-      console.log(`[AudioPlayer] Updated current song:`, currentSong);
-
-    } else {
-
-      console.log(`[AudioPlayer] Didn't update current song:`, currentSong);
-
-    }
+    this.setState({song});
 
   }
 
@@ -70,6 +61,17 @@ export default class AudioPlayer extends Component {
     isSynched = UserStore.getSynched();
 
     this.setState({isSynched});
+
+  }
+
+  handleReadyToPlay() {
+
+    const {isSynched, playing} = this.state;
+
+    if (isSynched && playing === false) {
+      console.log(`Starting autoplay`);
+      this.togglePlay();
+    }
 
   }
 
@@ -111,16 +113,17 @@ export default class AudioPlayer extends Component {
 
   renderPlayer() {
 
-    const {currentSong, playing, pos} = this.state;
+    const {song, playing, pos} = this.state;
 
-    if (currentSong.general !== ``) {
+    if (song.general !== ``) {
 
-      const audioFile = `assets/audio/${currentSong.general.filename}`;
+      const audioFile = `assets/audio/${song.general.filename}`;
 
       return (
         <Wavesurfer
           audioFile={audioFile}
           pos={pos}
+          onReady={() => this.handleReadyToPlay()}
           onPosChange={e => this.handlePosChange(e)}
           playing={playing}
           options={this.waveOptions}
@@ -130,7 +133,7 @@ export default class AudioPlayer extends Component {
 
     } else {
 
-      console.log(`[AudioPlayer] No render:`, currentSong);
+      console.log(`[AudioPlayer] No render:`, song);
 
     }
 
@@ -138,7 +141,7 @@ export default class AudioPlayer extends Component {
 
   render() {
 
-    const {currentSong, playing, currentTimeString, isSynched} = this.state;
+    const {song, playing, currentTimeString, isSynched} = this.state;
 
     let toggleSynchClasses = `btn-toggle-synch unsynched`;
     if (isSynched) {
@@ -158,7 +161,7 @@ export default class AudioPlayer extends Component {
         <div className='wave-pos-wrapper'>
           {this.renderPlayer()}
         </div>
-        <div className='total-duration'><span>{currentSong.general.duration}</span></div>
+        <div className='total-duration'><span>{song.general.duration}</span></div>
       </article>
     );
 
