@@ -3,6 +3,7 @@ import moment from 'moment';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
+import * as PlaylistActions from '../actions/PlaylistActions';
 import songs from '../api/songs';
 
 export default class SongSummary extends Component {
@@ -24,6 +25,7 @@ export default class SongSummary extends Component {
       thumbs: props.thumbs,
       lastAddedBy: props.queue.lastAddedBy,
       originallyAddedBy: props.queue.originallyAddedBy,
+      song: props,
       uservote: props.uservote,
       voteMode: props.voteMode
     };
@@ -34,7 +36,7 @@ export default class SongSummary extends Component {
 
     if (this.props !== nextProps) {
 
-      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode} = this.state;
+      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode} = this.state;
 
       order = nextProps.order;
       id = nextProps.general.id;
@@ -48,10 +50,11 @@ export default class SongSummary extends Component {
       thumbs = nextProps.thumbs;
       lastAddedBy = nextProps.queue.lastAddedBy;
       originallyAddedBy = nextProps.queue.originallyAddedBy;
+      song = nextProps;
       uservote = nextProps.uservote;
       voteMode = nextProps.voteMode;
 
-      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, uservote, voteMode});
+      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode});
 
     }
 
@@ -149,6 +152,14 @@ export default class SongSummary extends Component {
 
   }
 
+  playSongHandler() {
+
+    const {song} = this.state;
+
+    PlaylistActions.setSong(song);
+
+  }
+
   render() {
 
     const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode} = this.state;
@@ -221,7 +232,7 @@ export default class SongSummary extends Component {
         <section className='song-thumb' style={thumbStyle}>
           <span className='song-duration'>{duration}</span>
         </section>
-        <section className='song-info'>
+        <section className='song-info' onClick={() => this.playSongHandler()}>
           <span className={titleClasses}>{tags}{title}</span>
           <div className='submitter-info'>Submitted <span className='from-then'>{fromNow}</span> by <span>{lastAddedBy.userName}</span></div>
         </section>

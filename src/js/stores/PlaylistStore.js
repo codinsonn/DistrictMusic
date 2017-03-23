@@ -76,6 +76,16 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  setUserChosenSong(song) {
+
+    this.userChosenSong = song;
+
+    this.emit(`SONG_CHANGED`);
+
+    UserStore.setSynched(false);
+
+  }
+
   setShowSuggestionDetail(visible) {
 
     this.showSuggestionDetail = visible;
@@ -170,6 +180,10 @@ class PlaylistStore extends EventEmitter {
 
     case `UPDATE_QUEUE`:
       this.updateQueue();
+      break;
+
+    case `SET_USER_CHOSEN_SONG`:
+      this.setUserChosenSong(action.data);
       break;
 
     }

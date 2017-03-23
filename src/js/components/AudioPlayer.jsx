@@ -46,11 +46,16 @@ export default class AudioPlayer extends Component {
   updateSong() {
 
     const {isSynched} = this.state;
-    let {song} = this.state;
+    let {song, pos, playing} = this.state;
 
     song = PlaylistStore.getSong(isSynched);
 
-    this.setState({song});
+    if (!isSynched) {
+      playing = false;
+      pos = 0;
+    }
+
+    this.setState({song, pos, playing});
 
   }
 
@@ -66,9 +71,9 @@ export default class AudioPlayer extends Component {
 
   handleReadyToPlay() {
 
-    const {isSynched, playing} = this.state;
+    const {playing} = this.state;
 
-    if (isSynched && !playing) {
+    if (!playing) {
       this.togglePlay();
     }
 
@@ -89,6 +94,16 @@ export default class AudioPlayer extends Component {
     }
 
     this.setState({pos, currentTimeString});
+
+  }
+
+  unSynch() {
+
+    const {isSynched} = this.state;
+
+    if (isSynched) {
+      this.toggleSynched();
+    }
 
   }
 
@@ -129,6 +144,7 @@ export default class AudioPlayer extends Component {
           pos={pos}
           onReady={() => this.handleReadyToPlay()}
           onPosChange={e => this.handlePosChange(e)}
+          onSeek={() => this.unSynch()}
           playing={playing}
           options={this.waveOptions}
           zoom={10}

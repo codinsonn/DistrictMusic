@@ -36,3 +36,10 @@ export function updateQueue() {
     type: `UPDATE_QUEUE`
   });
 }
+
+export function setSong(song) {
+  dispatcher.dispatch({
+    type: `SET_USER_CHOSEN_SONG`,
+    data: song
+  });
+}

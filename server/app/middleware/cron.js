@@ -22,8 +22,10 @@ module.exports = function(timeZone) {
 
   this.addRandomSongToQueue = () => {
 
+    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 10 } };
+
     // Find random unqueued song with legacy score greater than 10
-    SongModel.find({ 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 10 } }).exec((err, unqueuedSongs) => {
+    SongModel.find(query).exec((err, unqueuedSongs) => {
 
       if(err){
         console.log('-!- [CRON] An error occured while searching for random song -!-\n', err, '\n-!-');
@@ -34,7 +36,7 @@ module.exports = function(timeZone) {
         var rand = Math.floor(Math.random() * unqueuedSongs.length);
 
         // Requeue random unqueued song
-        SongModel.findOne({ 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 10 } }).skip(rand).exec((err, song) => {
+        SongModel.findOne(query).skip(rand).exec((err, song) => {
 
           if(err){
             console.log('-!- [CRON] An error occured while queueing random song -!-\n', err, '\n-!-');
@@ -76,7 +78,7 @@ module.exports = function(timeZone) {
 
   this.checkQueueEmpty = new CronJob(everyMinute, () => {
 
-    console.log('-CRON- Checking if queue is empty -CRON-');
+    //console.log('-CRON- Checking if queue is empty -CRON-');
 
       // If one or no song in queue
       SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
@@ -201,7 +203,7 @@ module.exports = function(timeZone) {
             fs.unlinkSync(uploadedFilePath);
             fs.unlinkSync(publicFilePath);
 
-            console.log('[CRON] Removed file:', audioFilePath);
+            console.log('[CRON] Removed file:', publicFilePath);
 
           });
 
