@@ -8,7 +8,7 @@ module.exports = {
         port: 3020,
         domain: "http://districtmusic.herokuapp.com/",
         frontend: "http://districtmusic.herokuapp.com/",
-        frontendPath: "deploy/web/www/"
+        frontendPath: "public/"
     },
     mongo: {
         db: "district-music-development",

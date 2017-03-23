@@ -1,4 +1,3 @@
-//var elastic = require("../elastic");
 
 module.exports = {
   api: "/api/",
@@ -24,7 +23,6 @@ module.exports = {
       // This is the default language
       default: "enGB"
   },
-  //elastic: elastic,
   contentTypes: [
 
   ],
@@ -33,34 +31,10 @@ module.exports = {
     "image/jpg",
     "image/png"
   ],
-  notifications: {
-
-  },
-  reports: {
-
-  },
-  strategies: {
-
-  },
   privacy: "<p class=\"u-text-center u-text-bold\">Introduction</p>" +
            "<p class=\"u-text-left\">Welcome to our application (the “App“). This App is published by or on behalf of District01 (“District01” or “We” or “Us“) a company registered in Belgium whose registered office at:</p>",
            // TODO: Privacy
   policy:  "<p class=\"u-text-center u-text-bold\">Your privacy is critically important to us.</p>" +
-           "<p class=\"u-text-left\">Welcome to our application (the “App“). This App is published by or on behalf of District01 (“District01” or “We” or “Us“) a company registered in Belgium whose registered office at:</p>",
+           "<p class=\"u-text-left\">Welcome to our application (the “App“). This App is published by or on behalf of District01 (“District01” or “We” or “Us“) a company registered in Belgium whose registered office at:</p>"
            // TODO: Policy
-  profile: {
-
-  },
-  locations: {
-    provinces: {
-      antwerp: [
-        4.747234,
-        51.259625
-      ],
-      eastFlanders: [
-        3.801376,
-        51.041622
-      ]
-    }
-  }
 };

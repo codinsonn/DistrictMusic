@@ -174,7 +174,7 @@ module.exports = (req, res, done) => {
         song.queue.votes.currentQueueScore += voteValue;
 
         // update legacy score
-        song.queue.votes.legacyQueueScore += voteValue;
+        song.queue.votes.legacyScore += voteValue;
 
         // -- check if veto ----
         if(this.uservote.voteType === 'veto_upvote'){

@@ -49747,8 +49747,7 @@ var AudioPlayer = function (_Component) {
         playing = _state.playing;
 
 
-    if (isSynched && playing === false) {
-      console.log('Starting autoplay');
+    if (isSynched && !playing) {
       this.togglePlay();
     }
   };
@@ -49780,10 +49779,15 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.togglePlay = function togglePlay() {
+    var isSynched = this.state.isSynched;
     var playing = this.state.playing;
 
 
     playing = !playing;
+
+    if (isSynched && !playing) {
+      this.toggleSynched();
+    }
 
     this.setState({ playing: playing });
   };
@@ -49815,7 +49819,7 @@ var AudioPlayer = function (_Component) {
         zoom: 10,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 123
+          lineNumber: 127
         }
       });
     } else {
@@ -49848,7 +49852,7 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 157
+          lineNumber: 161
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49857,7 +49861,7 @@ var AudioPlayer = function (_Component) {
             return _this4.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 158
+            lineNumber: 162
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49865,7 +49869,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 158
+              lineNumber: 162
             }
           },
           '\xA0'
@@ -49877,7 +49881,7 @@ var AudioPlayer = function (_Component) {
             return _this4.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 159
+            lineNumber: 163
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49885,7 +49889,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 159
+              lineNumber: 163
             }
           },
           '\xA0'
@@ -49894,33 +49898,6 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'current-time', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 160
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 160
-            }
-          },
-          currentTimeString
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'wave-pos-wrapper', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 161
-          }
-        },
-        this.renderPlayer()
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'total-duration', __source: {
             fileName: _jsxFileName,
             lineNumber: 164
           }
@@ -49931,6 +49908,33 @@ var AudioPlayer = function (_Component) {
             __source: {
               fileName: _jsxFileName,
               lineNumber: 164
+            }
+          },
+          currentTimeString
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'wave-pos-wrapper', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 165
+          }
+        },
+        this.renderPlayer()
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'total-duration', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 168
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 168
             }
           },
           song.general.duration
@@ -78317,4 +78321,4 @@ module.exports = __webpack_require__(299);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.62a92ccb52ea241977ba.js.map
+//# sourceMappingURL=main.33028a1f0fef84b61f81.js.map

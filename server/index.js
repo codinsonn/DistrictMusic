@@ -113,4 +113,13 @@ process.on('SIGTERM', () => {
 
 });
 
+process.on('SIGINT', () => {
+
+  console.log('-/- Closing server -/-');
+
+  io.close();
+  server.close();
+
+});
+
 exports = module.exports = server;

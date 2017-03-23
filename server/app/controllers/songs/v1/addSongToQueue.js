@@ -142,7 +142,7 @@ module.exports = (req, res, done) => {
     song = this.song;
 
     // update last submitter
-    song.queue.lastAddedBy.userId = this.profile._id;
+    song.queue.lastAddedBy.googleId = this.profile.meta.googleId;
     song.queue.lastAddedBy.userName = this.profile.general.fullName;
     song.queue.lastAddedBy.profileImage = this.profile.general.profileImage;
     song.queue.lastAddedBy.added = (new Date()).getTime();

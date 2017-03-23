@@ -10,7 +10,7 @@ module.exports = function() {
   SongModel.find({'general.isDownloaded': true}).exec((err, songs) => {
 
     if(err){
-      console.log('-!- An error occured while removing files -!-\n', err, '\n-!-');
+      console.log('-!- An error occured while copying audio files -!-\n', err, '\n-!-');
     }
 
     if(songs){
