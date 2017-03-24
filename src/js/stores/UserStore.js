@@ -120,6 +120,8 @@ class UserStore extends EventEmitter {
 
         const socket = SocketStore.getSocket();
 
+        console.log(`UNSETTING AS SPEAKER`);
+
         users.setSpeaker(false, socket.id)
           .then(res => {
 

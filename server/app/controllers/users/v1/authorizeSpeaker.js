@@ -11,9 +11,9 @@ module.exports = (req, res, done) => {
   this.setAsSpeaker = req.body.setAsSpeaker;
   this.socketId = req.body.socketId;
 
-  console.log('[Speaker] SOCKET ID:', this.socketId);
-
   this.setSpeaker = () => {
+
+    console.log('[SPEAKER] Setting as speaker');
 
     SpeakerModel.findOne().exec((err, speaker) => {
 
@@ -57,6 +57,8 @@ module.exports = (req, res, done) => {
 
   this.unsetSpeaker = () => {
 
+    console.log('[SPEAKER] Removing as speaker');
+
     SpeakerModel.findOne().exec((err, speaker) => {
 
       if(err){
@@ -67,7 +69,7 @@ module.exports = (req, res, done) => {
 
       if(speaker){
 
-        if(speaker.meta.socketIds.length === 0){
+        if(speaker.meta.socketIds.length >= 1){
 
           speaker.queue.currentSongPos = 0;
           speaker.meta.socketIds = [];
@@ -84,7 +86,7 @@ module.exports = (req, res, done) => {
 
   this.saveSpeaker = (speaker) => {
 
-    console.log('Text');
+    console.log('[SPEAKER] Saving speaker');
 
     // Save the speaker
     return speaker.save((err) => {

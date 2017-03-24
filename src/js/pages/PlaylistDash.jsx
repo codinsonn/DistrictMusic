@@ -23,8 +23,8 @@ export default class PlaylistDash extends Component {
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
-    UserStore.on(`SPEAKER_RESET`, () => this.setIsSpeaker(true));
-    UserStore.on(`SPEAKER_UNSET`, () => this.setIsSpeaker(false));
+    UserStore.on(`SET_AS_SPEAKER`, () => this.setSpeaker(true));
+    UserStore.on(`UNSET_AS_SPEAKER`, () => this.setSpeaker(false));
   }
 
   componentWillUnmount() {
@@ -45,11 +45,16 @@ export default class PlaylistDash extends Component {
 
   }
 
-  setIsSpeaker(blnIsSpeaker) {
+  setSpeaker(blnIsSpeaker) {
 
     let {isSpeaker} = this.state;
 
     isSpeaker = blnIsSpeaker;
+
+    if (!isSpeaker) {
+      NotifActions.addError(`Removed as speaker`);
+      setTimeout(() => { window.location = getBaseURL(); }, 4000);
+    }
 
     this.setState({isSpeaker});
 
@@ -107,8 +112,15 @@ export default class PlaylistDash extends Component {
 
   render() {
 
+    const {isSpeaker} = this.state;
+
+    let dashboardClasses = `dashboard-wrapper`;
+    if (isSpeaker) {
+      dashboardClasses = `dashboard-wrapper is-speaker`;
+    }
+
     return (
-      <div className='dashboard-wrapper'>
+      <div className={dashboardClasses}>
         <DownloadProgress />
         <div className='logo'>&nbsp;</div>
         <Profile />

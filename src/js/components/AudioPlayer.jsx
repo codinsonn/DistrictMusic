@@ -30,12 +30,14 @@ export default class AudioPlayer extends Component {
       progressColor: `#fecb58`
     };
 
+    this.songHasStarted = false;
+
   }
 
   componentWillMount() {
     PlaylistStore.on(`SONG_CHANGED`, () => this.updateSong());
-    UserStore.on(`SPEAKER_RESET`, () => this.updateSpeaker(true));
-    UserStore.on(`SPEAKER_UNSET`, () => this.updateSpeaker(false));
+    UserStore.on(`SET_AS_SPEAKER`, () => this.updateSpeaker(true));
+    UserStore.on(`UNSET_AS_SPEAKER`, () => this.updateSpeaker(false));
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
   }
 
@@ -59,17 +61,20 @@ export default class AudioPlayer extends Component {
       pos = 0;
     }
 
+    this.songHasStarted = false;
+
     this.setState({song, pos, playing});
 
   }
 
   updateSpeaker(blnIsSpeaker) {
 
-    let {isSpeaker} = this.state;
+    let {isSpeaker, isSynched} = this.state;
 
     isSpeaker = blnIsSpeaker;
+    isSynched = blnIsSpeaker;
 
-    this.setState({isSpeaker});
+    this.setState({isSpeaker, isSynched});
 
   }
 
@@ -118,25 +123,29 @@ export default class AudioPlayer extends Component {
 
   unSynch() {
 
-    const {isSynched} = this.state;
+    const {isSynched, isSpeaker} = this.state;
 
-    if (isSynched) {
+    if (!isSpeaker && isSynched) {
       this.toggleSynched();
+    } else {
+      UserActions.setSpeaker(false);
     }
 
   }
 
   toggleSynched() {
 
-    const {isSynched} = this.state;
+    const {isSynched, isSpeaker} = this.state;
 
-    UserActions.setSynched(!isSynched);
+    if (!isSpeaker) {
+      UserActions.setSynched(!isSynched);
+    }
 
   }
 
   togglePlay() {
 
-    const {isSynched} = this.state;
+    const {isSynched, isSpeaker} = this.state;
     let {playing} = this.state;
 
     playing = !playing;
@@ -145,7 +154,12 @@ export default class AudioPlayer extends Component {
       this.toggleSynched();
     }
 
-    this.setState({playing});
+    if (!isSpeaker) {
+      this.setState({playing});
+    } else if (isSpeaker && playing && !this.songHasStarted) {
+      this.setState({playing});
+      this.songHasStarted = true;
+    }
 
   }
 

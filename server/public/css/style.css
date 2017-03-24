@@ -199,6 +199,10 @@ body {
   cursor: ew-resize;
 }
 
+.is-speaker .wave-pos-wrapper {
+  cursor: not-allowed;
+}
+
 .btn-toggle-synch,
 .btn-toggle-play,
 .current-time,
@@ -227,6 +231,11 @@ body {
   background-position: center;
   background-size: contain;
   cursor: pointer;
+}
+
+.is-speaker .btn-toggle-synch span,
+.is-speaker .btn-toggle-play span {
+  cursor: not-allowed;
 }
 
 .btn-toggle-synch span {
