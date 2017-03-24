@@ -30,6 +30,16 @@ export const authenticateUser = () => {
 
 };
 
+export const setSpeaker = (asSpeaker, socketId) => {
+
+  const postRequest = {body: JSON.stringify({setAsSpeaker: asSpeaker, socketId: socketId}), ...postOptions};
+
+  return fetch(`${base}/auth/speaker`, postRequest)
+    .then(checkStatus)
+  ;
+
+};
+
 export const getSessionProfile = () => {
 
   return fetch(`${base}/api/sess/profile`, getOptions)
@@ -58,6 +68,7 @@ export const logout = () => {
 
 export default {
   authenticateUser,
+  setSpeaker,
   getSessionProfile,
   updateSessionSocketId,
   logout

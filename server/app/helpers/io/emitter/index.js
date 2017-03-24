@@ -8,6 +8,10 @@ var set = module.exports.set = (type) => {
 
     switch (type) {
 
+      case "CONNECTED":
+        return "CONNECTED";
+        break;
+
       case "DOWNLOAD_PROGRESS":
         return "DOWNLOAD_PROGRESS";
         break;
@@ -26,6 +30,14 @@ var set = module.exports.set = (type) => {
 
       case "PROFILE_UPDATED":
         return "PROFILE_UPDATED";
+        break;
+
+      case "SPEAKER_RESET":
+        return "SPEAKER_RESET";
+        break;
+
+      case "SPEAKER_UNSET":
+        return "SPEAKER_UNSET";
         break;
 
       default:

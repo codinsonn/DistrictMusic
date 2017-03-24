@@ -111,8 +111,8 @@ export default class Profile extends Component {
       return (
         <div className={optionsClasses}>
           <ul>
-            <li onClick={() => UserActions.setVoteMode(`veto`)}><div className={vetoModeClasses}><span>x{userProfile.permissions.vetosLeft}</span></div></li>
-            <li onClick={() => UserActions.setVoteMode(`super`)}><div className={superModeClasses}><span>x{userProfile.permissions.superVotesLeft}</span></div></li>
+            <li onClick={() => UserActions.setVoteMode(`veto`)}><div className={vetoModeClasses}><span>Vetos x{userProfile.permissions.vetosLeft}</span></div></li>
+            <li onClick={() => UserActions.setVoteMode(`super`)}><div className={superModeClasses}><span>Supers x{userProfile.permissions.superVotesLeft}</span></div></li>
             <li onClick={() => UserActions.logoutUser()}><div className='btn-logout'><span>logout</span></div></li>
           </ul>
         </div>

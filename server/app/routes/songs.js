@@ -2,13 +2,7 @@ require("rootpath")();
 var config = require(__base + "config");
 var UsersController = require(__base + "app/controllers/users/v1");
 var SongsController = require(__base + "app/controllers/songs/v1");
-//var authConfig = require(__base + "config/auth");
-//var search = require('youtube-search');
-//var ytDurationFormat = require('youtube-duration-format');
-//var xhr = require('xhr');
 var baseUrlUser = "songs/";
-
-//if (!xhr.open) xhr = require('request');
 
 module.exports = (app) => {
 

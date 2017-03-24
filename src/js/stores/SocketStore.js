@@ -10,17 +10,21 @@ class SocketStore extends EventEmitter {
     super();
 
     this.socket = io();
+    this.socketId = ``;
 
     // -- Vars ---------
     this.appearBusy = false;
     this.downloadProgress = 0;
 
     // -- Events -------
+    this.socket.on(`CONNECTED`, socketId => this.setSocketId(socketId));
     this.socket.on(`UPDATED_SOCKET_ID`, socketId => UserStore.updateSessionSocketId(socketId));
     this.socket.on(`DOWNLOAD_PROGRESS`, data => this.updateDownloadProgress(data));
     this.socket.on(`DOWNLOAD_DONE`, data => this.updateDownloadProgress(data));
     this.socket.on(`QUEUE_UPDATED`, () => this.emit(`QUEUE_UPDATED`));
     this.socket.on(`PROFILE_UPDATED`, user => UserStore.updateUserProfile(user));
+    this.socket.on(`SPEAKER_RESET`, () => UserStore.updateSpeakerConnected(true));
+    this.socket.on(`SPEAKER_UNSET`, () => UserStore.updateSpeakerConnected(false));
 
   }
 
@@ -33,6 +37,14 @@ class SocketStore extends EventEmitter {
 
     this.downloadProgress = downloadData.percent;
     this.emit(`DOWNLOAD_PROGRESS_UPDATED`);
+
+  }
+
+  setSocketId(socketId) {
+
+    //console.log(`[SocketStore] Connected to socket:`, socketId);
+
+    this.socketId = socketId;
 
   }
 
@@ -54,6 +66,12 @@ class SocketStore extends EventEmitter {
   getSocket() {
 
     return this.socket;
+
+  }
+
+  getSocketId() {
+
+    return this.socketId;
 
   }
 

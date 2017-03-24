@@ -23,6 +23,9 @@ class PlaylistStore extends EventEmitter {
     this.currentSong = this.defaultSong;
     this.userChosenSong = this.defaultSong;
 
+    this.audioPos = 0;
+    this.videoPos = 0;
+
   }
 
   updateQueue() {
@@ -81,6 +84,22 @@ class PlaylistStore extends EventEmitter {
     this.userChosenSong = song;
 
     this.emit(`SONG_CHANGED`);
+
+  }
+
+  setAudioPos(audioPos) {
+
+    this.audioPos = audioPos;
+
+    this.emit(`AUDIO_POS_CHANGED`);
+
+  }
+
+  setVideoPos(videoPos) {
+
+    this.videoPos = videoPos;
+
+    this.emit(`VIDEO_POS_CHANGED`);
 
   }
 
@@ -182,6 +201,14 @@ class PlaylistStore extends EventEmitter {
 
     case `SET_USER_CHOSEN_SONG`:
       this.setUserChosenSong(action.data);
+      break;
+
+    case `SET_AUDIO_POS`:
+      this.setAudioPos(action.data);
+      break;
+
+    case `SET_VIDEO_POS`:
+      this.setVideoPos(action.data);
       break;
 
     }

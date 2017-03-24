@@ -2,6 +2,7 @@ import React, {Component/*, PropTypes*/} from 'react';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
+import {getBaseURL} from '../util/';
 
 export default class LoginModal extends Component {
 
@@ -39,7 +40,7 @@ export default class LoginModal extends Component {
   onSignIn() {
 
     // -- Redirect user to google callback on auth result --
-    const base = `http://localhost:3020`;
+    const base = getBaseURL();
     window.location = `${base}/auth/user/google`;
 
   }

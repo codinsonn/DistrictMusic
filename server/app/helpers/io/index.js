@@ -13,6 +13,8 @@ module.exports = function(io) {
 
     //console.log('-?- [IO][Index] Attempting to connect user... -?-');
 
+    socket.emit("CONNECTED", socket.id);
+
     // Set wildcard method on the socket
     socket.on("*", (event) => {
 
@@ -21,7 +23,6 @@ module.exports = function(io) {
       ListenerHelper(socket, event.data[0], event.data[1]);
 
     });
-
 
     if (socket.handshake.session.profile) {
 
@@ -55,6 +56,9 @@ module.exports = function(io) {
       }else{
 
         console.log('-/- ------------------------------------ [IO] Non-User Disconnected: ', socket.id, '----------------------------------------------- -/-');
+
+        // Check if it was the speaker that disconnected
+        UserHelper.checkSpeakerDisconnect(socket.id);
 
       }
 

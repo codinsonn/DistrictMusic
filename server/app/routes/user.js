@@ -3,20 +3,18 @@ var config = require(__base + "config");
 var authConfig = require(__base + "config/auth");
 var passport = require("passport");
 var UsersController = require(__base + "app/controllers/users/v1");
+//var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-//var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var PassportHelper = require(__base + "app/helpers/passport");
 var baseUrlUser = "user/";
 
 module.exports = (app) => {
 
   passport.serializeUser((user, done) => {
-    //console.log('SerialisedUser', user);
     done(null, user);
   });
 
   passport.deserializeUser((user, done) => {
-    //console.log('DeserialisedUser', user);
     done(null, user);
   });
 
@@ -26,6 +24,12 @@ module.exports = (app) => {
     callbackURL: authConfig.googleAuth.callbackURL,
     passReqToCallback: true
   }, (req, token, refreshToken, profile, done) => PassportHelper.auth(req, token, refreshToken, profile, done)));/**/
+
+  /** --- Update Speaker SocketId -----------------------------------------------------------------
+   * @api {post} /auth/speaker Update the socketId for the speaker or unset as speaker
+   */
+  //app.post("/auth/speaker", UserHelper.authorizeSpeaker);
+  app.post("/auth/speaker", UsersController.authorizeSpeaker);
 
   /** --- Login User -----------------------------------------------------------------------------
    * @api {get} /auth/user/google Log user in
@@ -93,10 +97,7 @@ module.exports = (app) => {
    */
   app.post("/api/sess/profile/socketid", UsersController.userSession.require, (req, res, next) => {
 
-    //console.log('-----------------', req.body.socketId.socketId);
     req.session.profile.meta.socketIds = [req.body.socketId.socketId];
-
-    //console.log('- Updated session profile with new socket id -', req.session.profile.meta.socketIds);
 
     res.statusCode = 200;
     return res.json(req.session.profile);

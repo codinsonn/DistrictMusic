@@ -32,6 +32,13 @@ export function setSynched(synched) {
   });
 }
 
+export function setSpeaker(isSpeaker) {
+  dispatcher.dispatch({
+    type: `SET_SPEAKER`,
+    data: isSpeaker
+  });
+}
+
 export function logoutUser() {
   dispatcher.dispatch({
     type: `LOGOUT_USER`

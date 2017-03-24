@@ -15,6 +15,9 @@ class UserStore extends EventEmitter {
     this.voteMode = `normal`;
     this.isSynched = true;
 
+    this.isSpeaker = false;
+    this.speakerConnected = false;
+
     this.userProfile = {};
     this.defaultProfile = {
       general: {
@@ -34,8 +37,6 @@ class UserStore extends EventEmitter {
         this.isLoggedIn = true;
         this.userProfile = res;
 
-        //this.emit(`USER_PROFILE_CHANGED`);
-
       }, failData => {
 
         console.log(`-!- Could not update session -!- \n`, failData, `\n-!-`);
@@ -50,6 +51,24 @@ class UserStore extends EventEmitter {
     this.userProfile = user;
 
     this.emit(`USER_PROFILE_CHANGED`);
+
+  }
+
+  updateSpeakerConnected(speakerConnected) {
+
+    if (speakerConnected !== this.speakerConnected) {
+
+      this.speakerConnected = speakerConnected;
+
+      if (speakerConnected) {
+        console.log(`[SPEAKER] Updated connected speaker`);
+        this.emit(`SPEAKER_RESET`);
+      } else {
+        console.log(`[SPEAKER] Speaker disconnected`);
+        this.emit(`SPEAKER_UNSET`);
+      }
+
+    }
 
   }
 
@@ -82,6 +101,43 @@ class UserStore extends EventEmitter {
       this.isSynched = synched;
 
       this.emit(`SYNCHED_CHANGED`);
+
+    }
+
+  }
+
+  setSpeaker(isSpeaker) {
+
+    if (isSpeaker !== this.isSpeaker) {
+
+      if (isSpeaker) {
+
+        this.isSpeaker = isSpeaker;
+
+        this.emit(`SET_AS_SPEAKER`);
+
+      } else { // disconnect speaker on server side
+
+        const socket = SocketStore.getSocket();
+
+        users.setSpeaker(false, socket.id)
+          .then(res => {
+
+            // Success!
+            console.log(`[SPEAKER] UNSET AS SPEAKER`, res);
+
+            this.isSpeaker = false;
+            this.emit(`UNSET_AS_SPEAKER`);
+
+          }, failData => {
+
+            // Failed!
+            console.log(`[SPEAKER] COULD NOT UNSET AS SPEAKER!`, failData);
+
+          })
+        ;
+
+      }
 
     }
 
@@ -165,6 +221,12 @@ class UserStore extends EventEmitter {
 
   }
 
+  getIsSpeaker() {
+
+    return this.isSpeaker;
+
+  }
+
   getSynched() {
 
     return this.isSynched;
@@ -201,11 +263,16 @@ class UserStore extends EventEmitter {
       this.setSynched(action.data);
       break;
 
+    case `SET_SPEAKER`:
+      this.setSpeaker(action.data);
+      break;
+
     case `LOGOUT_USER`:
       this.logout();
       break;
 
     }
+
   }
 
 }

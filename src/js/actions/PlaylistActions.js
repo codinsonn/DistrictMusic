@@ -43,3 +43,17 @@ export function setSong(song) {
     data: song
   });
 }
+
+export function setAudioPos(audioPos) {
+  dispatcher.dispatch({
+    type: `SET_AUDIO_POS`,
+    data: audioPos
+  });
+}
+
+export function setVideoPos(videoPos) {
+  dispatcher.dispatch({
+    type: `SET_VIDEO_POS`,
+    data: videoPos
+  });
+}

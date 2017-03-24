@@ -3,6 +3,7 @@ import Wavesurfer from 'react-wavesurfer';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
+import * as PlaylistActions from '../actions/PlaylistActions';
 
 export default class AudioPlayer extends Component {
 
@@ -15,6 +16,7 @@ export default class AudioPlayer extends Component {
       playing: false,
       pos: 0,
       currentTimeString: `00:00`,
+      isSpeaker: UserStore.getIsSpeaker(),
       isSynched: UserStore.getSynched()
     };
 
@@ -32,6 +34,8 @@ export default class AudioPlayer extends Component {
 
   componentWillMount() {
     PlaylistStore.on(`SONG_CHANGED`, () => this.updateSong());
+    UserStore.on(`SPEAKER_RESET`, () => this.updateSpeaker(true));
+    UserStore.on(`SPEAKER_UNSET`, () => this.updateSpeaker(false));
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
   }
 
@@ -59,6 +63,16 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateSpeaker(blnIsSpeaker) {
+
+    let {isSpeaker} = this.state;
+
+    isSpeaker = blnIsSpeaker;
+
+    this.setState({isSpeaker});
+
+  }
+
   updateSynched() {
 
     let {isSynched} = this.state;
@@ -81,9 +95,14 @@ export default class AudioPlayer extends Component {
 
   handlePosChange(e) {
 
+    const {playing} = this.state;
     let {pos, currentTimeString} = this.state;
 
     pos = e.originalArgs[0];
+
+    if (playing) {
+      PlaylistActions.setAudioPos(pos);
+    }
 
     const currentMinutes = Math.floor(pos / 60);
     const currentSeconds = Math.round(pos % 60);
