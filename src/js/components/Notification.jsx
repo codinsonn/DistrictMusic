@@ -14,6 +14,7 @@ export default class Notification extends Component {
     };
 
     this.hidden = true;
+    this.cancelTimeout = false;
 
   }
 
@@ -46,7 +47,7 @@ export default class Notification extends Component {
 
     const $this = document.querySelector(`.notification`);
 
-    if (this.hidden) {
+    if (this.hidden && !this.cancelTimeout) {
 
       const {type} = this.state;
       const notificationClasses = `notification ${type} show`;
@@ -55,6 +56,10 @@ export default class Notification extends Component {
 
       this.hidden = false;
 
+    }
+
+    if (this.cancelTimeout) {
+      this.cancelTimeout = false;
     }
 
   }
@@ -84,8 +89,17 @@ export default class Notification extends Component {
     const notificationClasses = `notification ${type} hide`;
 
     if (type !== `` && message !== ``) {
-      setTimeout(() => this.showNotification(), 600);
+
+      const $notif = document.querySelector(`.notification`);
+
+      if ($notif.className.indexOf(`show`) > - 1) {
+        this.cancelTimeout = true;
+      } else {
+        setTimeout(() => this.showNotification(), 600);
+      }
+
       setTimeout(() => this.hideNotification(), 6000);
+
     }
 
     return (

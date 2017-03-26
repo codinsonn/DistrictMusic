@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 import SocketStore from './SocketStore';
+import PlaylistStore from './PlaylistStore';
 import {users} from '../api/';
 
 class UserStore extends EventEmitter {
@@ -13,10 +14,10 @@ class UserStore extends EventEmitter {
     this.showLoginModal = false;
 
     this.voteMode = `normal`;
-    this.isSynched = true;
 
+    this.isSynched = false;
     this.isSpeaker = false;
-    this.speakerConnected = false;
+    this.waitingForPosChange = false;
 
     this.userProfile = {};
     this.defaultProfile = {
@@ -54,24 +55,6 @@ class UserStore extends EventEmitter {
 
   }
 
-  updateSpeakerConnected(speakerConnected) {
-
-    if (speakerConnected !== this.speakerConnected) {
-
-      this.speakerConnected = speakerConnected;
-
-      if (speakerConnected) {
-        console.log(`[SPEAKER] Updated connected speaker`);
-        this.emit(`SPEAKER_RESET`);
-      } else {
-        console.log(`[SPEAKER] Speaker disconnected`);
-        this.emit(`SPEAKER_UNSET`);
-      }
-
-    }
-
-  }
-
   setProfileSession() {
 
     users.getSessionProfile()
@@ -98,10 +81,43 @@ class UserStore extends EventEmitter {
 
     if (synched !== this.isSynched) {
 
-      this.isSynched = synched;
+      if (synched) {
 
+        const speakerConnected = PlaylistStore.getSpeakerConnected();
+
+        if (this.isSpeaker) {
+
+          this.confirmSynched();
+
+        } else if (!this.isSpeaker && speakerConnected && !this.waitingForPosChange) {
+
+          PlaylistStore.updateSynchSong();
+
+          this.waitingForPosChange = true;
+
+        } else {
+
+          setTimeout(() => this.emit(`SPEAKER_NOT_CONNECTED`), 10);
+
+        }
+
+      } else {
+
+        this.isSynched = false;
+        this.waitingForPosChange = false;
+        this.emit(`SYNCHED_CHANGED`);
+      }
+
+    }
+
+  }
+
+  confirmSynched() {
+
+    if (this.waitingForPosChange || this.isSpeaker) {
+      this.waitingForPosChange = false;
+      this.isSynched = true;
       this.emit(`SYNCHED_CHANGED`);
-
     }
 
   }
@@ -112,15 +128,16 @@ class UserStore extends EventEmitter {
 
       if (isSpeaker) {
 
+        console.log(`SET AS SPEAKER`);
+
         this.isSpeaker = isSpeaker;
+        this.setSynched(true);
 
         this.emit(`SET_AS_SPEAKER`);
 
       } else { // disconnect speaker on server side
 
         const socket = SocketStore.getSocket();
-
-        console.log(`UNSETTING AS SPEAKER`);
 
         users.setSpeaker(false, socket.id)
           .then(res => {
@@ -232,6 +249,12 @@ class UserStore extends EventEmitter {
   getSynched() {
 
     return this.isSynched;
+
+  }
+
+  getWaitingForPosChange() {
+
+    return this.waitingForPosChange;
 
   }
 

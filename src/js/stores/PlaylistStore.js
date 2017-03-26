@@ -2,6 +2,7 @@ import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 import {songs} from '../api/';
 import UserStore from '../stores/UserStore';
+import SocketStore from '../stores/SocketStore';
 
 class PlaylistStore extends EventEmitter {
 
@@ -22,15 +23,18 @@ class PlaylistStore extends EventEmitter {
     this.defaultSong = {general: ``};
     this.currentSong = this.defaultSong;
     this.userChosenSong = this.defaultSong;
+    this.hasFetchedQueue = false;
 
     this.audioPos = 0;
     this.videoPos = 0;
 
+    this.speakerConnected = false;
+    this.hasSynchedToSpeaker = false;
+    this.speakerPos = 0;
+
   }
 
   updateQueue() {
-
-    //console.log(`Fetching queue from server`);
 
     songs.getAllQueued()
       .then(res => {
@@ -40,8 +44,15 @@ class PlaylistStore extends EventEmitter {
         this.emit(`QUEUE_CHANGED`);
 
         if (UserStore.getSynched() && this.queue[0] !== this.currentSong) {
-          this.currentSong = this.queue[0];
+
+          this.updateSynchSong();
+
+        } else if (!UserStore.getSynched() && this.queue[0] && !this.hasFetchedQueue) {
+
+          this.userChosenSong = this.queue[0];
+          this.hasFetchedQueue = true;
           this.emit(`SONG_CHANGED`);
+
         }
 
       }, failData => {
@@ -56,6 +67,44 @@ class PlaylistStore extends EventEmitter {
 
       })
     ;
+
+  }
+
+  updateSpeakerConnected(speakerConnected) {
+
+    if (speakerConnected !== this.speakerConnected) {
+
+      this.speakerConnected = speakerConnected;
+
+      if (this.speakerConnected) {
+        console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
+        this.emit(`SPEAKER_RESET`);
+      } else {
+        console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
+        this.emit(`SPEAKER_UNSET`);
+      }
+
+    }
+
+  }
+
+  updateSynchSong() {
+
+    this.currentSong = this.queue[0];
+    this.emit(`SONG_CHANGED`);
+
+  }
+
+  synchPosToSpeaker(speakerPos) {
+
+    this.speakerConnected = true;
+    this.speakerPos = speakerPos;
+
+    const waitingToSynch = UserStore.getWaitingForPosChange();
+    if (waitingToSynch) {
+      console.log(`[SYNCH] waiting to synch:`, waitingToSynch);
+      UserStore.confirmSynched();
+    }
 
   }
 
@@ -87,9 +136,13 @@ class PlaylistStore extends EventEmitter {
 
   }
 
-  setAudioPos(audioPos) {
+  setAudioPos(audioPos, sendSocketEvent) {
 
     this.audioPos = audioPos;
+
+    if (sendSocketEvent && UserStore.getIsSpeaker()) {
+      SocketStore.emitSpeakerPos(this.audioPos);
+    }
 
     this.emit(`AUDIO_POS_CHANGED`);
 
@@ -159,6 +212,18 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  getSpeakerConnected() {
+
+    return this.speakerConnected;
+
+  }
+
+  getSpeakerPos() {
+
+    return this.speakerPos;
+
+  }
+
   getSong(synched) {
 
     if (synched && this.queue[0]) {
@@ -204,7 +269,7 @@ class PlaylistStore extends EventEmitter {
       break;
 
     case `SET_AUDIO_POS`:
-      this.setAudioPos(action.data);
+      this.setAudioPos(action.audioPos, action.sendSocketEvent);
       break;
 
     case `SET_VIDEO_POS`:

@@ -40,6 +40,10 @@ var set = module.exports.set = (type) => {
         return "SPEAKER_UNSET";
         break;
 
+      case "SPEAKER_POS_UPDATED":
+        return "SPEAKER_POS_UPDATED";
+        break;
+
       default:
         return "default";
         break;

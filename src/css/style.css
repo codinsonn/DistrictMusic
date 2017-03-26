@@ -344,6 +344,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  cursor: pointer;
 }
 
 .song-duration {
@@ -358,6 +359,7 @@ body {
 .song-info {
   height: calc(100% - 10px);
   padding: 10px;
+  cursor: pointer;
 }
 
 .song-title {

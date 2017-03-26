@@ -87,10 +87,7 @@ require("./app/middleware/copyaudio")();
 
 server.listen(port, function() {
 
-  console.log("-- DistrictMusic app listening on %s in %s mode. --", port, process.env.NODE_ENV); // eslint-disable-line no-console
-
-  // Load config after server is booted
-  //require("app/middleware/start")();
+  console.log("-- DistrictMusic app listening on %s in %s mode. --", port, process.env.NODE_ENV);
 
 });
 

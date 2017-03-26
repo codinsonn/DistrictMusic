@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 import UserStore from './UserStore';
+import PlaylistStore from '../stores/PlaylistStore';
 
 class SocketStore extends EventEmitter {
 
@@ -23,8 +24,9 @@ class SocketStore extends EventEmitter {
     this.socket.on(`DOWNLOAD_DONE`, data => this.updateDownloadProgress(data));
     this.socket.on(`QUEUE_UPDATED`, () => this.emit(`QUEUE_UPDATED`));
     this.socket.on(`PROFILE_UPDATED`, user => UserStore.updateUserProfile(user));
-    this.socket.on(`SPEAKER_RESET`, () => UserStore.updateSpeakerConnected(true));
-    this.socket.on(`SPEAKER_UNSET`, () => UserStore.updateSpeakerConnected(false));
+    this.socket.on(`SPEAKER_RESET`, () => PlaylistStore.updateSpeakerConnected(true));
+    this.socket.on(`SPEAKER_UNSET`, () => PlaylistStore.updateSpeakerConnected(false));
+    this.socket.on(`SPEAKER_POS_UPDATED`, speakerPos => PlaylistStore.synchPosToSpeaker(speakerPos));
 
   }
 
@@ -54,6 +56,12 @@ class SocketStore extends EventEmitter {
       this.appearBusy = busy;
       this.emit(`APPEAR_BUSY_CHANGED`);
     }
+
+  }
+
+  emitSpeakerPos(speakerPos) {
+
+    this.socket.emit(`UPDATE_SPEAKER_POS`, speakerPos);
 
   }
 
