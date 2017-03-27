@@ -9,7 +9,7 @@ var SpeakerModel = require(__base + "app/models/speaker");
 
 module.exports.requireSpeaker = (req, res, next) => {
 
-  console.log('[CHECK] Session:', req.session);
+  /*console.log('[CHECK] Session:', req.session);
 
   if(req.session.speaker && req.session.speaker.meta.socketIds.length > 0){
 
@@ -58,7 +58,7 @@ module.exports.requireSpeaker = (req, res, next) => {
 
     next();
 
-  }
+  }*/
 
 }
 

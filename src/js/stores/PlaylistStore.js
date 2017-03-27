@@ -31,6 +31,7 @@ class PlaylistStore extends EventEmitter {
     this.speakerConnected = false;
     this.hasSynchedToSpeaker = false;
     this.speakerPos = 0;
+    this.lastSpeakerPosUpdate = 0;
 
   }
 
@@ -114,7 +115,8 @@ class PlaylistStore extends EventEmitter {
   synchPosToSpeaker(speakerPos) {
 
     this.speakerConnected = true;
-    this.speakerPos = speakerPos;
+    this.lastSpeakerPosUpdate = speakerPos.posUpdatedDate;
+    this.speakerPos = speakerPos.speakerPos;
 
     const waitingToSynch = UserStore.getWaitingForPosChange();
     if (waitingToSynch) {
@@ -152,12 +154,13 @@ class PlaylistStore extends EventEmitter {
 
   }
 
-  setAudioPos(audioPos, sendSocketEvent) {
+  setAudioPos(audioPos, sendSocketEvent, posUpdatedDate) {
 
     this.audioPos = audioPos;
 
     if (sendSocketEvent && UserStore.getIsSpeaker()) {
-      SocketStore.emitSpeakerPos(this.audioPos);
+      const posData = {speakerPos: this.audioPos, posUpdatedDate: posUpdatedDate};
+      SocketStore.emitSpeakerPos(posData);
     }
 
     this.emit(`AUDIO_POS_CHANGED`);
@@ -236,7 +239,7 @@ class PlaylistStore extends EventEmitter {
 
   getSpeakerPos() {
 
-    return this.speakerPos;
+    return {speakerPos: this.speakerPos, lastSpeakerPosUpdate: this.lastSpeakerPosUpdate};
 
   }
 
@@ -285,7 +288,7 @@ class PlaylistStore extends EventEmitter {
       break;
 
     case `SET_AUDIO_POS`:
-      this.setAudioPos(action.audioPos, action.sendSocketEvent);
+      this.setAudioPos(action.audioPos, action.sendSocketEvent, action.posUpdatedDate);
       break;
 
     case `SET_VIDEO_POS`:

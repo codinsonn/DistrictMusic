@@ -44,11 +44,12 @@ export function setSong(song) {
   });
 }
 
-export function setAudioPos(audioPos, sendSocketEvent) {
+export function setAudioPos(audioPos, sendSocketEvent, posUpdatedDate) {
   dispatcher.dispatch({
     type: `SET_AUDIO_POS`,
     audioPos: audioPos,
-    sendSocketEvent: sendSocketEvent
+    sendSocketEvent: sendSocketEvent,
+    posUpdatedDate: posUpdatedDate
   });
 }
 

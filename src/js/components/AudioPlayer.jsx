@@ -106,8 +106,13 @@ export default class AudioPlayer extends Component {
 
     let {playing, pos} = this.state;
 
+    const speakerPos = PlaylistStore.getSpeakerPos();
+
     playing = true;
-    pos = PlaylistStore.getSpeakerPos();
+    pos = speakerPos.speakerPos + 0.002 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
+    //pos = speakerPos.speakerPos;
+
+    console.log(`pos`, pos);
 
     this.setState({playing, pos});
 
@@ -149,7 +154,7 @@ export default class AudioPlayer extends Component {
     }
 
     if (playing) {
-      PlaylistActions.setAudioPos(pos, sendSocketEvent);
+      PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime());
     }
 
     this.setState({pos, currentTimeString});
