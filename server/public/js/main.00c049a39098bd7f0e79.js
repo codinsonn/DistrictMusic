@@ -50555,7 +50555,7 @@ var LoginModal = function (_Component) {
 
     // -- Redirect user to google callback on auth result --
     var base = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__util___["a" /* getBaseURL */])();
-    window.location = base + '/auth/user/google';
+    window.location = base + 'auth/user/google';
   };
 
   LoginModal.prototype.render = function render() {
@@ -78853,4 +78853,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.14a1313c2aa82ee0a229.js.map
+//# sourceMappingURL=main.00c049a39098bd7f0e79.js.map

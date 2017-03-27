@@ -323,6 +323,11 @@ body {
   border-bottom: 10px solid var(--dark-grey); /* #737373 */
 }
 
+.btn-upvote.disabled.veto-upvoted {
+  cursor: not-allowed;
+  border-bottom: 10px solid var(--gold);
+}
+
 .btn-downvote.disabled {
   cursor: not-allowed;
   border-top: 10px solid var(--dark-grey); /* #737373 */

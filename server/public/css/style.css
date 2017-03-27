@@ -427,6 +427,11 @@ body {
   border-bottom: 10px solid #a8a8a8; /* #737373 */
 }
 
+.btn-upvote.disabled.veto-upvoted {
+  cursor: not-allowed;
+  border-bottom: 10px solid #fecb58;
+}
+
 .btn-downvote.disabled {
   cursor: not-allowed;
   border-top: 10px solid #a8a8a8; /* #737373 */

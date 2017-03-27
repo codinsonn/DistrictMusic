@@ -41,7 +41,7 @@ export default class LoginModal extends Component {
 
     // -- Redirect user to google callback on auth result --
     const base = getBaseURL();
-    window.location = `${base}/auth/user/google`;
+    window.location = `${base}auth/user/google`;
 
   }
 

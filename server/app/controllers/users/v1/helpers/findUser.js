@@ -5,7 +5,6 @@ var _ = require("lodash");
 // Helpers
 var PromiseHelper = require(__base + "app/helpers/promise");
 var ObjectId = require(__base + "app/helpers/objectid");
-//var RolesHelper = require(__base + "app/helpers/roles");
 
 // Models
 var UserModel = require(__base + "app/models/user");

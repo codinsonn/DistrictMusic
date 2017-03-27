@@ -24,6 +24,7 @@ export default class PlaylistQueue extends Component {
 
     // listeners
     SocketStore.on(`QUEUE_UPDATED`, () => PlaylistActions.updateQueue());
+    UserStore.on(`USER_PROFILE_CHANGED`, () => PlaylistActions.updateQueue());
     PlaylistStore.on(`QUEUE_CHANGED`, () => this.updateQueue());
     UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
 

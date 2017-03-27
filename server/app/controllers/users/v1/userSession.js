@@ -13,7 +13,7 @@ module.exports.require = (req, res, next) => {
 
   if (req.session.profile) {
 
-    //console.log('- Profile in session -', req.session.profile.fullName, req.session.profile.meta.socketIds);
+    console.log('- Profile in session -', req.session.profile.fullName, req.session.profile.meta.socketIds);
 
     var profile = req.session.profile;
 
@@ -35,7 +35,7 @@ module.exports.require = (req, res, next) => {
 
       if (user) {
 
-        //console.log('- User in database: ', user.general.fullName, user.meta.socketIds, ' -');
+        console.log('- User in database: ', user.general.fullName, user.meta.socketIds, ' -');
 
         next();
 
@@ -77,7 +77,7 @@ module.exports.check = (req, res, next) => {
 
   if (req.session.profile) {
 
-    //console.log('- Profile in session -', req.session.profile.general.fullName, req.session.profile.meta.socketIds);
+    console.log('- Profile in session -', req.session.profile.general.fullName, req.session.profile.meta.socketIds);
     res.statusCode = 200;
     //return res.json(req.session.profile);
 
@@ -95,10 +95,10 @@ module.exports.returnProfile = (req, res, next) => {
 
   if (req.session.profile) {
 
-    //console.log('- Profile in session -', req.session.profile.general.fullName, req.session.profile.meta.socketIds);
+    console.log('- Profile in session -', req.session.profile.general.fullName, req.session.profile.meta.socketIds);
 
     res.statusCode = 200;
-    return res.json(req.session.profile);
+    res.json(req.session.profile);
 
   } else {
 

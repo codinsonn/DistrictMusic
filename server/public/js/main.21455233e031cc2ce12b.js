@@ -50555,7 +50555,7 @@ var LoginModal = function (_Component) {
 
     // -- Redirect user to google callback on auth result --
     var base = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__util___["a" /* getBaseURL */])();
-    window.location = base + '/auth/user/google';
+    window.location = base + 'auth/user/google';
   };
 
   LoginModal.prototype.render = function render() {
@@ -50918,6 +50918,9 @@ var PlaylistQueue = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__["a" /* default */].on('QUEUE_UPDATED', function () {
       return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["d" /* updateQueue */]();
     });
+    __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('USER_PROFILE_CHANGED', function () {
+      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["d" /* updateQueue */]();
+    });
     __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].on('QUEUE_CHANGED', function () {
       return _this2.updateQueue();
     });
@@ -50972,7 +50975,7 @@ var PlaylistQueue = function (_Component) {
             }
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["i" /* SongSummary */], _extends({}, song, { voteMode: voteMode, order: i, key: song.general.id, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 77
+                lineNumber: 78
               }
             }));
           })
@@ -50986,7 +50989,7 @@ var PlaylistQueue = function (_Component) {
         'div',
         { className: 'no-songs-notif', __source: {
             fileName: _jsxFileName,
-            lineNumber: 83
+            lineNumber: 84
           }
         },
         'No songs currently in queue'
@@ -51002,21 +51005,21 @@ var PlaylistQueue = function (_Component) {
       'article',
       { className: 'playlist-queue', __source: {
           fileName: _jsxFileName,
-          lineNumber: 95
+          lineNumber: 96
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'playlist-header', __source: {
             fileName: _jsxFileName,
-            lineNumber: 96
+            lineNumber: 97
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'h2',
           { className: 'active', __source: {
               fileName: _jsxFileName,
-              lineNumber: 97
+              lineNumber: 98
             }
           },
           'In Queue'
@@ -51026,7 +51029,7 @@ var PlaylistQueue = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 98
+              lineNumber: 99
             }
           },
           'Alltime best'
@@ -51036,7 +51039,7 @@ var PlaylistQueue = function (_Component) {
         'section',
         { className: 'current-queue', __source: {
             fileName: _jsxFileName,
-            lineNumber: 100
+            lineNumber: 101
           }
         },
         this.renderCurrentQueue(currentQueue)
@@ -52016,8 +52019,6 @@ var SongSummary = function (_Component) {
     if (order < 3) {
       if (isPlaying) {
         tags = tags + '[PLAYING] ';buttonsEnabled = 'disabled';
-      } else {
-        console.log('IsPlaying?', isPlaying);
       }
       if (order === 2) tags = tags + '[UP NEXT] ';
     }
@@ -78853,4 +78854,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.9bdedee89f725b01c961.js.map
+//# sourceMappingURL=main.21455233e031cc2ce12b.js.map
