@@ -26,7 +26,7 @@ module.exports = function(io) {
 
     if (socket.handshake.session.profile) {
 
-      console.log('-+- ------------------------------------ [IO] User CONNECTED:', socket.handshake.session.profile.general.fullName, '|', socket.id, '----------------------------------------- -+-');
+      //console.log('-+- ------------------------------------ [IO] User CONNECTED:', socket.handshake.session.profile.general.fullName, '|', socket.id, '----------------------------------------- -+-');
 
       if (socket.handshake.session.profile.hasOwnProperty("_id")) {
 
@@ -39,7 +39,7 @@ module.exports = function(io) {
 
     }else{
 
-      console.log('-+- ------------------------------------ [IO] Non-User Connected: ', socket.id, '----------------------------------------------- -+-');
+      //console.log('-+- ------------------------------------ [IO] Non-User Connected: ', socket.id, '----------------------------------------------- -+-');
 
     }
 
@@ -48,14 +48,14 @@ module.exports = function(io) {
       // Check if profile exists on the session
       if (socket.handshake.session.hasOwnProperty("profile") && socket.handshake.session.profile.hasOwnProperty("_id")) {
 
-        console.log('-/- ------------------------------------ [IO] User DISCONNECTED: ', socket.handshake.session.profile.general.fullName, '|', socket.id, '----------------------------------------------- -/-');
+        //console.log('-/- ------------------------------------ [IO] User DISCONNECTED: ', socket.handshake.session.profile.general.fullName, '|', socket.id, '----------------------------------------------- -/-');
 
         // Delete socket id
         UserHelper.unsetSocketId(socket.handshake.session.profile._id.toString(), socket.id);
 
       }else{
 
-        console.log('-/- ------------------------------------ [IO] Non-User Disconnected: ', socket.id, '----------------------------------------------- -/-');
+        //console.log('-/- ------------------------------------ [IO] Non-User Disconnected: ', socket.id, '----------------------------------------------- -/-');
 
         // Check if it was the speaker that disconnected
         UserHelper.checkSpeakerDisconnect(socket.id);

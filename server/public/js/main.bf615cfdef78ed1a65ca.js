@@ -7325,9 +7325,12 @@ var PlaylistStore = function (_EventEmitter) {
   };
 
   PlaylistStore.prototype.updateSynchSong = function updateSynchSong() {
+    var _this3 = this;
 
     this.currentSong = this.queue[0];
-    this.emit('SONG_CHANGED');
+    setTimeout(function () {
+      return _this3.emit('SONG_CHANGED');
+    }, 10);
   };
 
   PlaylistStore.prototype.synchPosToSpeaker = function synchPosToSpeaker(speakerPos) {
@@ -50148,10 +50151,10 @@ var AudioPlayer = function (_Component) {
 
 
     if (!isSpeaker && isSynched) {
-      this.toggleSynched();
+      //this.toggleSynched();
     } else {
-      __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__["b" /* setSpeaker */](false);
-    }
+        //UserActions.setSpeaker(false);
+      }
   };
 
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
@@ -78848,4 +78851,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.d23e0d2984898183a007.js.map
+//# sourceMappingURL=main.bf615cfdef78ed1a65ca.js.map
