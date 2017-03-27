@@ -5701,7 +5701,7 @@ var UserStore = function (_EventEmitter) {
           this.confirmSynched();
         } else if (!this.isSpeaker && speakerConnected && !this.waitingForPosChange) {
 
-          __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateSynchSong();
+          __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateSpeakerSong(true);
 
           this.waitingForPosChange = true;
         } else {
@@ -7253,7 +7253,7 @@ var PlaylistStore = function (_EventEmitter) {
 
     _this.queue = [];
     _this.defaultSong = { general: '' };
-    _this.currentSong = _this.defaultSong;
+    _this.speakerSong = _this.defaultSong;
     _this.userChosenSong = _this.defaultSong;
     _this.hasFetchedQueue = false;
 
@@ -7277,10 +7277,14 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.emit('QUEUE_CHANGED');
 
-      if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] !== _this2.currentSong) {
+      if (_this2.queue[0] !== _this2.speakerSong) {
 
-        _this2.updateSynchSong();
+        console.log('[PlaylistStore] About to update speakersong');
+
+        _this2.updateSpeakerSong();
       } else if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] && !_this2.hasFetchedQueue) {
+
+        console.log('[PlaylistStore] About to update user chosen song');
 
         _this2.userChosenSong = _this2.queue[0];
         _this2.hasFetchedQueue = true;
@@ -7325,13 +7329,19 @@ var PlaylistStore = function (_EventEmitter) {
     }
   };
 
-  PlaylistStore.prototype.updateSynchSong = function updateSynchSong() {
-    var _this3 = this;
+  PlaylistStore.prototype.updateSpeakerSong = function updateSpeakerSong() {
+    var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-    this.currentSong = this.queue[0];
-    setTimeout(function () {
-      return _this3.emit('SONG_CHANGED');
-    }, 10);
+
+    console.log('[PlaylistStore] Updating speakersong');
+
+    this.speakerSong = this.queue[0];
+
+    if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      this.emit('SPEAKER_SONG_CHANGED');
+    }
+
+    //setTimeout(() => this.emit(`SONG_CHANGED`), 10);
   };
 
   PlaylistStore.prototype.synchPosToSpeaker = function synchPosToSpeaker(speakerPos) {
@@ -7453,7 +7463,7 @@ var PlaylistStore = function (_EventEmitter) {
 
     if (synched && this.queue[0]) {
       console.log('Returning first song');
-      return this.currentSong;
+      return this.speakerSong;
     } else {
       console.log('Returning user chosen song');
       return this.userChosenSong;
@@ -50016,6 +50026,9 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SONG_CHANGED', function () {
       return _this2.updateSong();
     });
+    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_SONG_CHANGED', function () {
+      return _this2.checkSongUpdate();
+    });
     __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SET_AS_SPEAKER', function () {
       return _this2.updateSpeaker(true);
     });
@@ -50034,13 +50047,32 @@ var AudioPlayer = function (_Component) {
 
   AudioPlayer.prototype.componentDidMount = function componentDidMount() {};
 
-  AudioPlayer.prototype.updateSong = function updateSong() {
-    var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  AudioPlayer.prototype.checkSongUpdate = function checkSongUpdate() {
+    var _this3 = this;
+
     var isSynched = this.state.isSynched;
     var _state = this.state,
         song = _state.song,
-        pos = _state.pos,
-        playing = _state.playing;
+        pos = _state.pos;
+
+
+    if (isSynched) {
+      song = { general: '' };
+      pos = 0;
+      setTimeout(function () {
+        return _this3.updateSong(true);
+      }, 10);
+      this.setState({ song: song, pos: pos });
+    }
+  };
+
+  AudioPlayer.prototype.updateSong = function updateSong() {
+    var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var isSynched = this.state.isSynched;
+    var _state2 = this.state,
+        song = _state2.song,
+        pos = _state2.pos,
+        playing = _state2.playing;
 
 
     console.log('[AudioPlayer] UPDATING SONG');
@@ -50092,9 +50124,9 @@ var AudioPlayer = function (_Component) {
 
     console.log('[synchPosToSpeakerAndPlay]');
 
-    var _state2 = this.state,
-        playing = _state2.playing,
-        pos = _state2.pos;
+    var _state3 = this.state,
+        playing = _state3.playing,
+        pos = _state3.pos;
 
 
     var speakerPos = __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSpeakerPos();
@@ -50112,9 +50144,9 @@ var AudioPlayer = function (_Component) {
 
     console.log('[handleReadyToPlay]');
 
-    var _state3 = this.state,
-        isSynched = _state3.isSynched,
-        playing = _state3.playing;
+    var _state4 = this.state,
+        isSynched = _state4.isSynched,
+        playing = _state4.playing;
 
 
     console.log('[AudioPlayer] SPEAKER: synched =', isSynched, ', playing =', playing);
@@ -50126,12 +50158,12 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
-    var _state4 = this.state,
-        playing = _state4.playing,
-        isSpeaker = _state4.isSpeaker;
     var _state5 = this.state,
-        pos = _state5.pos,
-        currentTimeString = _state5.currentTimeString;
+        playing = _state5.playing,
+        isSpeaker = _state5.isSpeaker;
+    var _state6 = this.state,
+        pos = _state6.pos,
+        currentTimeString = _state6.currentTimeString;
 
 
     pos = e.originalArgs[0];
@@ -50158,9 +50190,9 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.unSynch = function unSynch() {
-    var _state6 = this.state,
-        isSynched = _state6.isSynched,
-        isSpeaker = _state6.isSpeaker;
+    var _state7 = this.state,
+        isSynched = _state7.isSynched,
+        isSpeaker = _state7.isSpeaker;
 
 
     if (isSynched) {
@@ -50178,12 +50210,12 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
 
     if (this.songHasStarted) {
-      var _state7 = this.state,
-          isSynched = _state7.isSynched,
-          isSpeaker = _state7.isSpeaker;
       var _state8 = this.state,
-          song = _state8.song,
-          pos = _state8.pos;
+          isSynched = _state8.isSynched,
+          isSpeaker = _state8.isSpeaker;
+      var _state9 = this.state,
+          song = _state9.song,
+          pos = _state9.pos;
 
 
       console.log('-!- SONG ENDED -!-', song.general.title);
@@ -50206,16 +50238,16 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this3 = this;
+    var _this4 = this;
 
     console.log('[toggleSynched]');
 
-    var _state9 = this.state,
-        isSpeaker = _state9.isSpeaker,
-        isSynched = _state9.isSynched;
     var _state10 = this.state,
-        song = _state10.song,
-        pos = _state10.pos;
+        isSpeaker = _state10.isSpeaker,
+        isSynched = _state10.isSynched;
+    var _state11 = this.state,
+        song = _state11.song,
+        pos = _state11.pos;
 
 
     if (!isSpeaker) {
@@ -50226,7 +50258,7 @@ var AudioPlayer = function (_Component) {
       song = { general: '' };
       pos = 0;
       setTimeout(function () {
-        return _this3.updateSong();
+        return _this4.updateSong(true);
       }, 10);
       this.setState({ song: song, pos: pos });
     }
@@ -50236,9 +50268,9 @@ var AudioPlayer = function (_Component) {
 
     console.log('[togglePlay]');
 
-    var _state11 = this.state,
-        isSynched = _state11.isSynched,
-        isSpeaker = _state11.isSpeaker;
+    var _state12 = this.state,
+        isSynched = _state12.isSynched,
+        isSpeaker = _state12.isSpeaker;
     var playing = this.state.playing;
 
 
@@ -50260,12 +50292,12 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this4 = this;
+    var _this5 = this;
 
-    var _state12 = this.state,
-        song = _state12.song,
-        playing = _state12.playing,
-        pos = _state12.pos;
+    var _state13 = this.state,
+        song = _state13.song,
+        playing = _state13.playing,
+        pos = _state13.pos;
 
 
     if (song.general !== '') {
@@ -50276,23 +50308,23 @@ var AudioPlayer = function (_Component) {
         audioFile: audioFile,
         pos: pos,
         onReady: function onReady() {
-          return _this4.handleReadyToPlay();
+          return _this5.handleReadyToPlay();
         },
         onPosChange: function onPosChange(e) {
-          return _this4.handlePosChange(e);
+          return _this5.handlePosChange(e);
         },
         onSeek: function onSeek() {
-          return _this4.unSynch();
+          return _this5.unSynch();
         },
         onFinish: function onFinish() {
-          return _this4.handleSongEnd();
+          return _this5.handleSongEnd();
         },
         playing: playing,
         options: this.waveOptions
         //zoom={10}
         , __source: {
           fileName: _jsxFileName,
-          lineNumber: 270
+          lineNumber: 287
         }
       });
     } else {
@@ -50302,13 +50334,13 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.render = function render() {
-    var _this5 = this;
+    var _this6 = this;
 
-    var _state13 = this.state,
-        song = _state13.song,
-        playing = _state13.playing,
-        currentTimeString = _state13.currentTimeString,
-        isSynched = _state13.isSynched;
+    var _state14 = this.state,
+        song = _state14.song,
+        playing = _state14.playing,
+        currentTimeString = _state14.currentTimeString,
+        isSynched = _state14.isSynched;
 
 
     var toggleSynchClasses = 'btn-toggle-synch unsynched';
@@ -50325,16 +50357,16 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 306
+          lineNumber: 323
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
-            return _this5.toggleSynched();
+            return _this6.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 307
+            lineNumber: 324
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50342,7 +50374,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 307
+              lineNumber: 324
             }
           },
           '\xA0'
@@ -50351,10 +50383,10 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: togglePlayClasses, onClick: function onClick() {
-            return _this5.togglePlay(true);
+            return _this6.togglePlay(true);
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 308
+            lineNumber: 325
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50362,7 +50394,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 308
+              lineNumber: 325
             }
           },
           '\xA0'
@@ -50372,7 +50404,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-time', __source: {
             fileName: _jsxFileName,
-            lineNumber: 309
+            lineNumber: 326
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50380,7 +50412,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 309
+              lineNumber: 326
             }
           },
           currentTimeString
@@ -50390,7 +50422,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'wave-pos-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 310
+            lineNumber: 327
           }
         },
         this.renderPlayer()
@@ -50399,7 +50431,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 313
+            lineNumber: 330
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50407,7 +50439,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 313
+              lineNumber: 330
             }
           },
           song.general.duration
@@ -78898,4 +78930,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.273a505f2371f9500aba.js.map
+//# sourceMappingURL=main.1f63c0b830b66b3342d8.js.map

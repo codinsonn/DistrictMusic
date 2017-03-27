@@ -52,6 +52,8 @@ export default class AudioPlayer extends Component {
 
   componentDidMount() {
 
+
+
   }
 
   checkSongUpdate() {

@@ -7279,8 +7279,18 @@ var PlaylistStore = function (_EventEmitter) {
 
       if (_this2.queue[0] !== _this2.speakerSong) {
 
+        console.log('[PlaylistStore] About to update speakersong');
+
+        if (_this2.userChosenSong.general === '') {
+          _this2.userChosenSong = _this2.queue[0];
+          _this2.hasFetchedQueue = true;
+          _this2.emit('SONG_CHANGED');
+        }
+
         _this2.updateSpeakerSong();
       } else if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] && !_this2.hasFetchedQueue) {
+
+        console.log('[PlaylistStore] About to update user chosen song');
 
         _this2.userChosenSong = _this2.queue[0];
         _this2.hasFetchedQueue = true;
@@ -7329,11 +7339,11 @@ var PlaylistStore = function (_EventEmitter) {
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    console.log('[PlaylistStore] Updating speakerSong');
+    console.log('[PlaylistStore] Updating speakersong');
 
     this.speakerSong = this.queue[0];
 
-    if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+    if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSynched()) {
       this.emit('SPEAKER_SONG_CHANGED');
     }
 
@@ -50022,7 +50032,7 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SONG_CHANGED', function () {
       return _this2.updateSong();
     });
-    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKERSONG_CHANGED', function () {
+    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_SONG_CHANGED', function () {
       return _this2.checkSongUpdate();
     });
     __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SET_AS_SPEAKER', function () {
@@ -50320,7 +50330,7 @@ var AudioPlayer = function (_Component) {
         //zoom={10}
         , __source: {
           fileName: _jsxFileName,
-          lineNumber: 285
+          lineNumber: 287
         }
       });
     } else {
@@ -50353,7 +50363,7 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 321
+          lineNumber: 323
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50361,44 +50371,6 @@ var AudioPlayer = function (_Component) {
         { className: toggleSynchClasses, onClick: function onClick() {
             return _this6.toggleSynched();
           }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 322
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 322
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this6.togglePlay(true);
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 323
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 323
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'current-time', __source: {
             fileName: _jsxFileName,
             lineNumber: 324
           }
@@ -50411,6 +50383,44 @@ var AudioPlayer = function (_Component) {
               lineNumber: 324
             }
           },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this6.togglePlay(true);
+          }, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 325
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 325
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 326
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 326
+            }
+          },
           currentTimeString
         )
       ),
@@ -50418,7 +50428,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'wave-pos-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 325
+            lineNumber: 327
           }
         },
         this.renderPlayer()
@@ -50427,7 +50437,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 328
+            lineNumber: 330
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50435,7 +50445,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 328
+              lineNumber: 330
             }
           },
           song.general.duration
@@ -78926,4 +78936,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.bbaf3492b03b0791afe7.js.map
+//# sourceMappingURL=main.b79ace821363534a38e7.js.map
