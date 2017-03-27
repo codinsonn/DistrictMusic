@@ -5,6 +5,62 @@ var _ = require("lodash");
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 
 var UserModel = require(__base + "app/models/user");
+var SpeakerModel = require(__base + "app/models/speaker");
+
+module.exports.requireSpeaker = (req, res, next) => {
+
+  console.log('[CHECK] Session:', req.session);
+
+  if(req.session.speaker && req.session.speaker.meta.socketIds.length > 0){
+
+    SpeakerModel.findOne().exec((err, speaker) => {
+
+      if(err){
+        console.log('-!- [SPEAKER] Error whilst searching for speaker -!-');
+        res.statusCode = 500;
+        return done(null, res.json({ error: err }));
+      }
+
+      if(speaker && speaker.meta.socketIds.length >= 1 && speaker.meta.socketIds[0] === req.session.speaker.meta.socketIds[0]){
+
+        console.log('[SPEAKER] Speaker confirmed');
+
+        next();
+
+      }else{
+
+        console.log('- Speaker not verified -');
+
+        delete req.session.speaker;
+        res.statusCode = 401;
+        return res.json({
+          errors: [
+            'Speaker not verified'
+          ]
+        });
+
+        next();
+
+      }
+
+    });
+
+  }else{
+
+    console.log('- Speaker not in session -');
+
+    res.statusCode = 401;
+    return res.json({
+      errors: [
+        'Action reserved for speaker'
+      ]
+    });
+
+    next();
+
+  }
+
+}
 
 module.exports.checkVotesLeft = (req, res, next) => {
 

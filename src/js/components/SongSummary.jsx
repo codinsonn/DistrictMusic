@@ -212,7 +212,7 @@ export default class SongSummary extends Component {
     }
 
     if (order < 3) {
-      if (isPlaying) { tags = `${tags}[PLAYING] `;buttonsEnabled = `disabled`; }
+      if (isPlaying) { tags = `${tags}[PLAYING] `;buttonsEnabled = `disabled`; } else { console.log(`IsPlaying?`, isPlaying); }
       if (order === 2) tags = `${tags}[UP NEXT] `;
     }
 

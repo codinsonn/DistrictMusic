@@ -54,7 +54,7 @@ module.exports = (req, res, done) => {
       }else{
 
         this.returnQueue = playlistQueue;
-        this.respondQueue();
+        this.sortQueue();
 
       }
 
@@ -69,7 +69,7 @@ module.exports = (req, res, done) => {
 
   }
 
-  this.respondQueue = () => {
+  this.sortQueue = () => {
 
     this.returnQueue.sort((song1, song2) => {
 
@@ -90,6 +90,26 @@ module.exports = (req, res, done) => {
       return s2 - s1;
 
     });
+
+    if(!this.returnQueue[0].queue.isPlaying){
+      console.log('[GetAllQueued] Set as playing:', this.returnQueue[0].general.title);
+      this.returnQueue[0].queue.isPlaying = true;
+      var firstsong = this.returnQueue[0];
+      SongModel.update(
+        {'general.id': firstsong.general.id, 'general.title': firstsong.general.title},
+        {'queue.isPlaying': true}, {}, () => {
+          console.log('[GetAllQueued] Updated playing song');
+          this.respondQueue();
+        }
+      );
+    }else{
+      console.log('[GetAllQueued] First song playing:', this.returnQueue[0].queue.isPlaying);
+      this.respondQueue();
+    }
+
+  }
+
+  this.respondQueue = () => {
 
     res.statusCode = 200;
     return done(null, res.json(this.returnQueue));

@@ -1,7 +1,11 @@
 var _ = require("lodash");
 var CronJob = require('cron').CronJob;
+
 var path = require('path');
 var fs = require('fs');
+var fse = require('fs-extra');
+var ytdl = require('ytdl-core');
+var ffmpeg = require('fluent-ffmpeg');
 
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 
@@ -22,7 +26,7 @@ module.exports = function(timeZone) {
 
   this.addRandomSongToQueue = () => {
 
-    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 10 } };
+    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: -10 } };
 
     // Find random unqueued song with legacy score greater than 10
     SongModel.find(query).exec((err, unqueuedSongs) => {
@@ -44,30 +48,78 @@ module.exports = function(timeZone) {
 
           if(song){
 
-            song.general.isFileAboutToBeRemoved = false;
-            song.queue.votes.currentQueueScore = 0;
-            song.queue.lastAddedBy.googleId = 'cronbot';
-            song.queue.lastAddedBy.userName = 'cronbot';
-            song.queue.lastAddedBy.profileImage = '/assets/img/defaultProfile.png';
-            song.queue.lastAddedBy.added = (new Date()).getTime();
-            song.queue.isVetoed = false;
-            song.queue.inQueue = true;
-
-            return song.save((err) => {
-
-              if (err) {
-                console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
-              } else {
-                console.log('[CRON] Cronbot added', song.general.title, 'to the queue!');
-                EmitHelper.broadcast('QUEUE_UPDATED');
-              }
-
-            });
+            if(song.general.isDownloaded){
+              this.saveSong(song);
+            }else{
+              this.downloadSong(song);
+            }
 
           }
 
         });
 
+      }
+
+    });
+
+  }
+
+  this.downloadSong = (song) => {
+
+    var url = `https://www.youtube.com/watch?v=${song.general.id}`;
+    var tempFolder = `${__base}uploads/temp/`;
+    var audioFolder = `${__base}uploads/audio/`;
+    var audioFilename = `${song.general.id}${Math.random().toString().substr(2, 3)}.mp4`;
+    var tempOutput = path.resolve(tempFolder, audioFilename);
+    var audioOutput = path.resolve(audioFolder, audioFilename);
+
+    console.log('Attempting to save video as song in: ', tempOutput);
+
+    ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
+      .on('response', (res) => {
+        var totalSize = res.headers['content-length'];
+        var dataRead = 0;
+        res.on('data', (data) => {
+          dataRead += data.length;
+          var percent = dataRead / totalSize;
+          var strPercent = (percent * 100).toFixed(2) + '%';
+          process.stdout.cursorTo(0);
+          process.stdout.clearLine(1);
+          process.stdout.write(strPercent);
+        });
+        res.on('end', () => {
+          process.stdout.write('\n');
+          fse.copySync(tempOutput, audioOutput);
+          fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
+          fs.unlinkSync(tempOutput);
+          console.log('-f- Finished downloading song to:', audioOutput);
+          song.general.filename = audioFilename;
+          this.saveSong(song);
+        });
+      })
+      .pipe(fs.createWriteStream(tempOutput))
+    ;
+
+  }
+
+  this.saveSong = (song) => {
+
+    song.general.isFileAboutToBeRemoved = false;
+    song.queue.votes.currentQueueScore = 0;
+    song.queue.lastAddedBy.googleId = 'cronbot';
+    song.queue.lastAddedBy.userName = 'cronbot';
+    song.queue.lastAddedBy.profileImage = '/assets/img/defaultProfile.png';
+    song.queue.lastAddedBy.added = (new Date()).getTime();
+    song.queue.isVetoed = false;
+    song.queue.inQueue = true;
+
+    return song.save((err) => {
+
+      if (err) {
+        console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
+      } else {
+        console.log('[CRON] Cronbot added', song.general.title, 'to the queue!');
+        EmitHelper.broadcast('QUEUE_UPDATED');
       }
 
     });
@@ -87,7 +139,7 @@ module.exports = function(timeZone) {
           console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
         }
 
-        if(songs && songs.length <= 1){
+        if(songs && songs.length < 3){
 
           this.addRandomSongToQueue();
 
@@ -105,7 +157,7 @@ module.exports = function(timeZone) {
 
   /* --- Daily: Add random song to queue -------------------------------------------- */
 
-  this.checkQueueEmpty = new CronJob(everyWeekdayInTheMorning, () => {
+  this.addRandomSongEveryday = new CronJob(everyWeekdayInTheMorning, () => {
 
     console.log('-CRON- Adding random song to queue -CRON-');
 

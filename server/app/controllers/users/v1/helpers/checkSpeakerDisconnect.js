@@ -33,6 +33,7 @@ module.exports = function(socketId) {
             throw err;
           }else{
 
+            //delete req.session.speaker;
             console.log('-!- [SPEAKER] Speaker disconnected (2) -!-');
             EmitHelper.broadcast('SPEAKER_UNSET');
             console.log('-!- [SPEAKER] Speaker disconnected (3) -!-');

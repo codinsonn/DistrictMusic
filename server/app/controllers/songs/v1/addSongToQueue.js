@@ -6,7 +6,6 @@ var path = require('path');
 var fs = require('fs');
 var fse = require('fs-extra');
 var ytdl = require('ytdl-core');
-//var ytdl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 
 var EmitHelper = require(__base + "app/helpers/io/emitter");

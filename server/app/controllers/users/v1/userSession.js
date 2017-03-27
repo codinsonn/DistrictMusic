@@ -2,15 +2,9 @@
 require("rootpath")();
 var _ = require("lodash");
 
-// Helpers
-//var ResponseHelper = require(__base + "app/helpers/response");
-//var PromiseHelper = require(__base + "app/helpers/promise");
-//var Helpers = require("./helpers");
-
 var authConfig = require(__base + "config/auth");
 var passport = require("passport");
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-//var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var PassportHelper = require(__base + "app/helpers/passport");
 
 var UserModel = require(__base + "app/models/user");
@@ -29,7 +23,7 @@ module.exports.require = (req, res, next) => {
 
         console.log('Error occured while searching user:', err);
         res.statusCode = 500;
-        res.json({
+        return res.json({
           errors: [
             'Could not search for user'
           ]
@@ -50,7 +44,7 @@ module.exports.require = (req, res, next) => {
         console.log('- Unknown user -');
 
         res.statusCode = 401;
-        res.json({
+        return res.json({
           errors: [
             'Unknown user'
           ]
@@ -67,7 +61,7 @@ module.exports.require = (req, res, next) => {
     console.log('- Profile not in session -');
 
     res.statusCode = 401;
-    res.json({
+    return res.json({
       errors: [
         'No user in session'
       ]

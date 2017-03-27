@@ -70,6 +70,22 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  endSongAndPlayNext(song) {
+
+    songs.endSongAndPlayNext(song)
+      .then(res => {
+
+        console.log(`[Speaker] Ending song and playing next one`, res);
+
+      }, failData => {
+
+        console.log(`[Speaker] Failed to end song and play next:`, failData);
+
+      })
+    ;
+
+  }
+
   updateSpeakerConnected(speakerConnected) {
 
     if (speakerConnected !== this.speakerConnected) {
@@ -91,7 +107,7 @@ class PlaylistStore extends EventEmitter {
   updateSynchSong() {
 
     this.currentSong = this.queue[0];
-    this.emit(`SONG_CHANGED`);
+    setTimeout(() => this.emit(`SONG_CHANGED`), 10);
 
   }
 
@@ -274,6 +290,10 @@ class PlaylistStore extends EventEmitter {
 
     case `SET_VIDEO_POS`:
       this.setVideoPos(action.data);
+      break;
+
+    case `END_SONG_AND_PLAY_NEXT`:
+      this.endSongAndPlayNext(action.data);
       break;
 
     }

@@ -91,6 +91,30 @@ module.exports = (app) => {
    **/
   app.post("/api/songs/queue/", UsersController.userSession.require, SongsController.addSongToQueue);
 
+  /** --- Remove current song from queue -----------------------------------------------------------------------------
+   * @api {post} /api/songs/queue/next Vote for song to change ranking
+   * @apiDescription Up/Down vote song, return new score
+   * @apiGroup Authentication
+   * @apiVersion 1.0.0
+   *
+   * @apiSuccessExample {json} Request-Example:
+   *     {
+   *       "songId": "youtube id",
+   *       "songTitle": "youtube title"
+   *     }
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *
+   *     }
+   *
+   * @apiUse messageBadRequest
+   *
+   * @apiUse messageNotFound
+   **/
+  app.post("/api/songs/queue/next", UsersController.permissions.requireSpeaker, SongsController.playNext);
+
   /** --- Vote for song (upvote / downvote / super votes) -----------------------------------------------------------------------------
    * @api {post} /api/songs/queue/vote/ Vote for song to change ranking
    * @apiDescription Up/Down vote song, return new score

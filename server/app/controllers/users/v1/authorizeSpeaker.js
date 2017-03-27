@@ -99,14 +99,14 @@ module.exports = (req, res, done) => {
 
       }else if(this.setAsSpeaker){
 
-        req.session.isSpeaker = true;
+        req.session.speaker = speaker;
         EmitHelper.broadcast('SPEAKER_RESET');
-        console.log('-?- [SPEAKER] UPDATED SPEAKER: ', speaker.meta.socketIds[0], ' -?-');
+        console.log('-?- [SPEAKER] UPDATED SPEAKER: ', speaker.meta.socketIds[0], req.session.speaker, ' -?-');
         return done(null, res.json({ speaker }));
 
       }else{
 
-        req.session.isSpeaker = false;
+        delete req.session.speaker;
         EmitHelper.broadcast('SPEAKER_UNSET');
         console.log('-!- [SPEAKER] UNSET SPEAKER -!-');
         return done(null, res.json({ speaker }));

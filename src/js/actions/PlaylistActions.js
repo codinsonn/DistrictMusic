@@ -58,3 +58,10 @@ export function setVideoPos(videoPos) {
     data: videoPos
   });
 }
+
+export function endSongAndPlayNext(song) {
+  dispatcher.dispatch({
+    type: `END_SONG_AND_PLAY_NEXT`,
+    data: song
+  });
+}

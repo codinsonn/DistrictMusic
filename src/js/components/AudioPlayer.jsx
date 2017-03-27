@@ -164,9 +164,24 @@ export default class AudioPlayer extends Component {
     const {isSynched, isSpeaker} = this.state;
 
     if (!isSpeaker && isSynched) {
-      this.toggleSynched();
+      //this.toggleSynched();
     } else {
-      UserActions.setSpeaker(false);
+      //UserActions.setSpeaker(false);
+    }
+
+  }
+
+  handleSongEnd() {
+
+    const {song, isSynched, isSpeaker} = this.state;
+
+    if (isSynched || isSpeaker) {
+      this.songHasStarted = false;
+      this.prevTimeString = `00:00`;
+    }
+
+    if (isSpeaker) {
+      PlaylistActions.endSongAndPlayNext(song);
     }
 
   }
@@ -223,6 +238,7 @@ export default class AudioPlayer extends Component {
           onReady={() => this.handleReadyToPlay()}
           onPosChange={e => this.handlePosChange(e)}
           onSeek={() => this.unSynch()}
+          onFinish={() => this.handleSongEnd()}
           playing={playing}
           options={this.waveOptions}
           zoom={10}
