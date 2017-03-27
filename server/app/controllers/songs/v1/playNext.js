@@ -2,16 +2,18 @@
 require("rootpath")();
 var _ = require("lodash");
 
+// Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
+var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
 // Models
 var SongModel = require(__base + "app/models/song");
 
 module.exports = (req, res, done) => {
 
-  console.log('[PlayNext] ...Removing current song from queue...');
-
   this.prevSong = req.body;
+
+  console.log('[PlayNext] ...Removing current song from queue...', this.prevSong.general.id, this.prevSong.general.title);
 
   SongModel.findOne({ 'general.id': this.prevSong.general.id, "general.title": this.prevSong.general.title }, (err, song) => {
 
@@ -54,6 +56,7 @@ module.exports = (req, res, done) => {
 
         }
 
+        SongHelper.removeVotesForSong(song.general.id);
         this.respondSong(song);
 
       });

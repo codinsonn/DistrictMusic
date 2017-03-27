@@ -21,7 +21,7 @@ class PlaylistStore extends EventEmitter {
 
     this.queue = [];
     this.defaultSong = {general: ``};
-    this.currentSong = this.defaultSong;
+    this.speakerSong = this.defaultSong;
     this.userChosenSong = this.defaultSong;
     this.hasFetchedQueue = false;
 
@@ -44,9 +44,9 @@ class PlaylistStore extends EventEmitter {
 
         this.emit(`QUEUE_CHANGED`);
 
-        if (UserStore.getSynched() && this.queue[0] !== this.currentSong) {
+        if (this.queue[0] !== this.speakerSong) {
 
-          this.updateSynchSong();
+          this.updateSpeakerSong();
 
         } else if (!UserStore.getSynched() && this.queue[0] && !this.hasFetchedQueue) {
 
@@ -105,10 +105,17 @@ class PlaylistStore extends EventEmitter {
 
   }
 
-  updateSynchSong() {
+  updateSpeakerSong(asSynched = false) {
 
-    this.currentSong = this.queue[0];
-    setTimeout(() => this.emit(`SONG_CHANGED`), 10);
+    console.log(`[PlaylistStore] Updating speakerSong`);
+
+    this.speakerSong = this.queue[0];
+
+    if (asSynched || UserStore.getSynched()) {
+      this.emit(`SPEAKER_SONG_CHANGED`);
+    }
+
+    //setTimeout(() => this.emit(`SONG_CHANGED`), 10);
 
   }
 
@@ -247,7 +254,7 @@ class PlaylistStore extends EventEmitter {
 
     if (synched && this.queue[0]) {
       console.log(`Returning first song`);
-      return this.currentSong;
+      return this.speakerSong;
     } else {
       console.log(`Returning user chosen song`);
       return this.userChosenSong;

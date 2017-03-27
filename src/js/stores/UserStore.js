@@ -91,7 +91,7 @@ class UserStore extends EventEmitter {
 
         } else if (!this.isSpeaker && speakerConnected && !this.waitingForPosChange) {
 
-          PlaylistStore.updateSynchSong();
+          PlaylistStore.updateSpeakerSong(true);
 
           this.waitingForPosChange = true;
 

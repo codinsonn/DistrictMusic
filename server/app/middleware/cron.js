@@ -118,8 +118,8 @@ module.exports = function(timeZone) {
       if (err) {
         console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
       } else {
+        EmitHelper.broadcast('QUEUE_UPDATED', song);
         console.log('[CRON] Cronbot added', song.general.title, 'to the queue!');
-        EmitHelper.broadcast('QUEUE_UPDATED');
       }
 
     });

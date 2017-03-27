@@ -25,6 +25,7 @@ var set = module.exports.set = (type) => {
         break;
 
       case "QUEUE_UPDATED":
+        console.log('[Emitter] set: QUEUE_UPDATED');
         return "QUEUE_UPDATED";
         break;
 
@@ -71,6 +72,8 @@ module.exports.emit = (type, tokens, data) => {
 };
 
 module.exports.broadcast = (type, data) => {
+
+  console.log('[Emitter] Broadcasting...');
 
   this.io.sockets.emit(set(type), data);
 

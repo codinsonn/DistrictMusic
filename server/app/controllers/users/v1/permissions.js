@@ -9,56 +9,39 @@ var SpeakerModel = require(__base + "app/models/speaker");
 
 module.exports.requireSpeaker = (req, res, next) => {
 
-  /*console.log('[CHECK] Session:', req.session);
+  var data = req.body;
 
-  if(req.session.speaker && req.session.speaker.meta.socketIds.length > 0){
+  SpeakerModel.findOne().exec((err, speaker) => {
 
-    SpeakerModel.findOne().exec((err, speaker) => {
+    if(err){
+      console.log('-!- [SPEAKER] Error while searching for speaker -!-');
+      res.statusCode = 500;
+      return done(null, res.json({ error: err }));
+    }
 
-      if(err){
-        console.log('-!- [SPEAKER] Error whilst searching for speaker -!-');
-        res.statusCode = 500;
-        return done(null, res.json({ error: err }));
-      }
+    if(speaker && speaker.meta.socketIds.length >= 1 && speaker.meta.socketIds[0] === data.socketId){
 
-      if(speaker && speaker.meta.socketIds.length >= 1 && speaker.meta.socketIds[0] === req.session.speaker.meta.socketIds[0]){
+      console.log('[SPEAKER] Speaker confirmed, data:', data);
 
-        console.log('[SPEAKER] Speaker confirmed');
+      next();
 
-        next();
+    }else{
 
-      }else{
+      console.log('- Speaker not verified -');
 
-        console.log('- Speaker not verified -');
+      delete req.session.speaker;
+      res.statusCode = 401;
+      return res.json({
+        errors: [
+          'Speaker not verified'
+        ]
+      });
 
-        delete req.session.speaker;
-        res.statusCode = 401;
-        return res.json({
-          errors: [
-            'Speaker not verified'
-          ]
-        });
+      next();
 
-        next();
+    }
 
-      }
-
-    });
-
-  }else{
-
-    console.log('- Speaker not in session -');
-
-    res.statusCode = 401;
-    return res.json({
-      errors: [
-        'Action reserved for speaker'
-      ]
-    });
-
-    next();
-
-  }*/
+  });
 
 }
 

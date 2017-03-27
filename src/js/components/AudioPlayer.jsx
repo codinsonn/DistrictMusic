@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Wavesurfer from 'react-wavesurfer';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
+import SocketStore from '../stores/SocketStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
@@ -24,8 +25,8 @@ export default class AudioPlayer extends Component {
     this.waveOptions = {
       height: 40,
       normalize: true,
-      scrollParent: true,
-      hideScrollBar: true,
+      //scrollParent: true,
+      //hideScrollBar: true,
       cursorColor: `#ffffff`,
       waveColor: `#c6c6c6`,
       progressColor: `#fecb58`
@@ -38,6 +39,7 @@ export default class AudioPlayer extends Component {
 
   componentWillMount() {
     PlaylistStore.on(`SONG_CHANGED`, () => this.updateSong());
+    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, () => this.checkSongUpdate());
     UserStore.on(`SET_AS_SPEAKER`, () => this.updateSpeaker(true));
     UserStore.on(`UNSET_AS_SPEAKER`, () => this.updateSpeaker(false));
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
@@ -52,14 +54,32 @@ export default class AudioPlayer extends Component {
 
   }
 
-  updateSong() {
+  checkSongUpdate() {
+
+    const {isSynched} = this.state;
+    let {song, pos} = this.state;
+
+    if (isSynched) {
+      song = {general: ``};
+      pos = 0;
+      setTimeout(() => this.updateSong(true), 10);
+      this.setState({song, pos});
+    }
+
+  }
+
+  updateSong(asSynched = false) {
 
     const {isSynched} = this.state;
     let {song, pos, playing} = this.state;
 
     console.log(`[AudioPlayer] UPDATING SONG`);
 
-    song = PlaylistStore.getSong(isSynched);
+    if (asSynched) {
+      song = PlaylistStore.getSong(true);
+    } else {
+      song = PlaylistStore.getSong(isSynched);
+    }
 
     if (!isSynched) {
       playing = false;
@@ -127,8 +147,8 @@ export default class AudioPlayer extends Component {
     console.log(`[AudioPlayer] SPEAKER: synched =`, isSynched, `, playing =`, playing);
 
     if (playing) {
-      this.togglePlay();
-      this.togglePlay();
+      this.togglePlay(false);
+      this.togglePlay(false);
     }
 
   }
@@ -182,15 +202,28 @@ export default class AudioPlayer extends Component {
 
   handleSongEnd() {
 
-    const {song, isSynched, isSpeaker} = this.state;
+    if (this.songHasStarted) {
 
-    if (isSynched || isSpeaker) {
+      const {isSynched, isSpeaker} = this.state;
+      let {song, pos} = this.state;
+
+      console.log(`-!- SONG ENDED -!-`, song.general.title);
+
+      if (isSpeaker) {
+        song.socketId = SocketStore.getSocketId();
+        PlaylistActions.endSongAndPlayNext(song);
+      }
+
+      if (isSynched || isSpeaker) {
+        this.songHasStarted = false;
+        this.prevTimeString = `00:00`;
+        song = {general: ``};
+        pos = 0;
+      }
+
       this.songHasStarted = false;
-      this.prevTimeString = `00:00`;
-    }
+      this.setState({song, pos});
 
-    if (isSpeaker) {
-      PlaylistActions.endSongAndPlayNext(song);
     }
 
   }
@@ -199,16 +232,23 @@ export default class AudioPlayer extends Component {
 
     console.log(`[toggleSynched]`);
 
-    const {isSpeaker} = this.state;
-    const {isSynched} = this.state;
+    const {isSpeaker, isSynched} = this.state;
+    let {song, pos} = this.state;
 
     if (!isSpeaker) {
       UserActions.setSynched(!isSynched);
     }
 
+    if (!isSynched) {
+      song = {general: ``};
+      pos = 0;
+      setTimeout(() => this.updateSong(true), 10);
+      this.setState({song, pos});
+    }
+
   }
 
-  togglePlay() {
+  togglePlay(clickTriggered) {
 
     console.log(`[togglePlay]`);
 
@@ -217,12 +257,13 @@ export default class AudioPlayer extends Component {
 
     playing = !playing;
 
-    if (isSynched && !playing) {
+    if (clickTriggered && isSynched && !playing) {
       this.toggleSynched();
     }
 
     if (!isSpeaker) {
       this.setState({playing});
+      this.songHasStarted = true;
     } else if (isSpeaker && !playing && !this.songHasStarted) {
       this.setState({playing});
     } else if (isSpeaker && playing && !this.songHasStarted) {
@@ -250,7 +291,7 @@ export default class AudioPlayer extends Component {
           onFinish={() => this.handleSongEnd()}
           playing={playing}
           options={this.waveOptions}
-          zoom={10}
+          //zoom={10}
         />
       );
 
@@ -279,7 +320,7 @@ export default class AudioPlayer extends Component {
     return (
       <article className='audio-player-wrapper'>
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
-        <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
+        <div className={togglePlayClasses} onClick={() => this.togglePlay(true)}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
         <div className='wave-pos-wrapper'>
           {this.renderPlayer()}
