@@ -50147,12 +50147,15 @@ var AudioPlayer = function (_Component) {
         isSpeaker = _state6.isSpeaker;
 
 
-    if (!isSpeaker && isSynched) {
-      console.log('[unSynch]');
-      //this.toggleSynched();
-    } else {
-      console.log('[unSynch]');
-      //UserActions.setSpeaker(false);
+    if (isSynched) {
+
+      if (!isSpeaker) {
+        console.log('[unSynch] unsynching listener');
+        //this.toggleSynched();
+      } else {
+        console.log('[unSynch] removing speaker');
+        //UserActions.setSpeaker(false);
+      }
     }
   };
 
@@ -50245,7 +50248,7 @@ var AudioPlayer = function (_Component) {
         zoom: 10,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 235
+          lineNumber: 239
         }
       });
     } else {
@@ -50278,7 +50281,7 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 271
+          lineNumber: 275
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50287,7 +50290,7 @@ var AudioPlayer = function (_Component) {
             return _this4.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 272
+            lineNumber: 276
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50295,7 +50298,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 272
+              lineNumber: 276
             }
           },
           '\xA0'
@@ -50307,7 +50310,7 @@ var AudioPlayer = function (_Component) {
             return _this4.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 273
+            lineNumber: 277
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50315,7 +50318,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 273
+              lineNumber: 277
             }
           },
           '\xA0'
@@ -50324,33 +50327,6 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'current-time', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 274
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 274
-            }
-          },
-          currentTimeString
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'wave-pos-wrapper', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 275
-          }
-        },
-        this.renderPlayer()
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'total-duration', __source: {
             fileName: _jsxFileName,
             lineNumber: 278
           }
@@ -50361,6 +50337,33 @@ var AudioPlayer = function (_Component) {
             __source: {
               fileName: _jsxFileName,
               lineNumber: 278
+            }
+          },
+          currentTimeString
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'wave-pos-wrapper', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 279
+          }
+        },
+        this.renderPlayer()
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'total-duration', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 282
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 282
             }
           },
           song.general.duration
@@ -78850,4 +78853,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.7537c216748220f36381.js.map
+//# sourceMappingURL=main.2d78f9793856d8586f02.js.map
