@@ -159,14 +159,18 @@ export default class AudioPlayer extends Component {
 
   unSynch() {
 
-    console.log(`[unSynch]`);
-
     const {isSynched, isSpeaker} = this.state;
 
-    if (!isSpeaker && isSynched) {
-      //this.toggleSynched();
-    } else {
-      //UserActions.setSpeaker(false);
+    if (isSynched) {
+
+      if (!isSpeaker) {
+        console.log(`[unSynch] unsynching listener`);
+        //this.toggleSynched();
+      } else {
+        console.log(`[unSynch] removing speaker`);
+        //UserActions.setSpeaker(false);
+      }
+
     }
 
   }

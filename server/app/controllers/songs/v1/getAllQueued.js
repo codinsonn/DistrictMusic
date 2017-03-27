@@ -144,7 +144,7 @@ module.exports = (req, res, done) => {
       this.returnQueue.push(queueItem);
 
       if(this.returnQueue.length === this.currentQueue.length){
-        this.respondQueue();
+        this.sortQueue();
       }
 
     });
