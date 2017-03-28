@@ -197,8 +197,8 @@ body {
   position: absolute;
   display: block;
   width: calc(100vw - 250px);
-  height: 40px;
-  top: 6px;
+  height: 32px;
+  top: 10px;
   left: 125px;
   cursor: ew-resize;
 }
@@ -458,6 +458,10 @@ body {
   background-position: center;
   background-size: cover;
   cursor: pointer;
+}
+
+.is-speaker .song-thumb {
+  cursor: not-allowed;
 }
 
 .song-duration {
@@ -867,6 +871,7 @@ body {
   font-size: 2em;
   font-weight: bold;
   font-family: Roboto, sans-serif;
+  overflow: hidden;
 }
 
 .notification.success,

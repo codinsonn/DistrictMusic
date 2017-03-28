@@ -1,4 +1,5 @@
 import {EventEmitter} from 'events';
+import _ from 'lodash';
 import dispatcher from '../dispatcher';
 import {songs} from '../api/';
 import UserStore from '../stores/UserStore';
@@ -17,7 +18,7 @@ class PlaylistStore extends EventEmitter {
     this.videoLayoutMode = `side`;
 
     this.currentSuggestion = {};
-    this.defaultSuggestion = {id: ``, title: ``}; // { id: '', title: '', channel: '', thumbs: {}, duration: '' };
+    this.defaultSuggestion = {id: ``, title: ``};
 
     this.queue = [];
     this.defaultSong = {general: ``};
@@ -42,12 +43,11 @@ class PlaylistStore extends EventEmitter {
 
         this.queue = res;
 
-        console.log(`[PlaylistStore] QUEUE_CHANGED`, this.queue[0].general.id, this.speakerSong);
-        console.log(`[PlaylistStore] QUEUE_CHANGED`, UserStore.getIsSpeaker(), UserStore.getSynched());
+        console.log(`[QUEUE_CHANGED]`, UserStore.getIsSpeaker(), this.speakerSong.general.id, this.queue[0].general.id);
 
         this.emit(`QUEUE_CHANGED`);
 
-        if (UserStore.getIsSpeaker()) {
+        if (UserStore.getIsSpeaker() && this.queue[0].general.id !== ``) {
 
           this.updateSpeakerSong();
 
@@ -101,6 +101,32 @@ class PlaylistStore extends EventEmitter {
 
       })
     ;
+
+  }
+
+  startNextSongUnsynched(prevSongId) {
+
+    console.log(`[NEXT] Starting next song in queue, prev:`, prevSongId);
+
+    let i = 0;
+    let nextSongIndex = 0;
+    _.forEach(this.queue, queItem => {
+
+      console.log(`[NEXT] Checking:`, prevSongId, queItem.general.id);
+
+      if (queItem.general.id === prevSongId && i !== this.queue.length - 1) {
+        console.log(`[NEXT] HIT!!!`);
+        nextSongIndex = i + 1;
+      }
+
+      i ++;
+
+      if (i === this.queue.length) {
+        console.log(`[NEXT] Ending loop:`, nextSongIndex, this.queue.length, this.queue[nextSongIndex].general.title);
+        this.setUserChosenSong(this.queue[nextSongIndex]);
+      }
+
+    });
 
   }
 
@@ -284,9 +310,11 @@ class PlaylistStore extends EventEmitter {
 
     if (synched && this.speakerSong.general !== ``) {
       console.log(`Returning speaker song:`, this.speakerSong.general.title);
+      setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== ``) {
       console.log(`Returning user chosen song:`, this.userChosenSong.general.title);
+      setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.userChosenSong;
     } else if (this.queue[0]) {
       console.log(`Returning first in queue:`, this.queue[0].general.title);
@@ -340,6 +368,10 @@ class PlaylistStore extends EventEmitter {
 
     case `END_SONG_AND_PLAY_NEXT`:
       this.endSongAndPlayNext(action.data);
+      break;
+
+    case `START_NEXT_SONG_UNSYNCHED`:
+      this.startNextSongUnsynched(action.data);
       break;
 
     }

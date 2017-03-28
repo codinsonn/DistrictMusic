@@ -23,7 +23,7 @@ export default class AudioPlayer extends Component {
     };
 
     this.waveOptions = {
-      height: 40,
+      height: 32,
       normalize: true,
       //scrollParent: true,
       //hideScrollBar: true,
@@ -32,6 +32,7 @@ export default class AudioPlayer extends Component {
       progressColor: `#fecb58`
     };
 
+    this.prevSongId = ``;
     this.songHasStarted = false;
     this.prevTimeString = `00:00`;
 
@@ -45,6 +46,8 @@ export default class AudioPlayer extends Component {
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
     UserStore.on(`SPEAKER_NOT_CONNECTED`, () => NotifActions.addError(`Speaker not connected`));
     PlaylistStore.on(`SPEAKER_DISCONNECTED`, () => NotifActions.addError(`Speaker disconnected`));
+    PlaylistStore.on(`SHOW_SONG_UPDATE`, () => this.showNowPlaying());
+    PlaylistStore.on(`PAUSE_PLAY`, () => this.pausePlay());
   }
 
   componentWillUnmount() {
@@ -141,15 +144,29 @@ export default class AudioPlayer extends Component {
 
   handleReadyToPlay() {
 
-    console.log(`[handleReadyToPlay]`);
+    //console.log(`[handleReadyToPlay]`);
 
-    const {isSynched, playing} = this.state;
+    const {isSynched, playing, song} = this.state;
 
     console.log(`[AudioPlayer] SPEAKER: synched =`, isSynched, `, playing =`, playing);
 
+    if (playing) { // x2 to trigger waveform play
+      this.togglePlay(false);
+      this.togglePlay(false);
+    } else if (song.general !== ``) {
+      this.togglePlay(false);
+    }
+
+  }
+
+  pausePlay() {
+
+    console.log(`pausing play`);
+
+    const {playing} = this.state;
+
     if (playing) {
-      this.togglePlay(false);
-      this.togglePlay(false);
+      this.togglePlay(true);
     }
 
   }
@@ -191,7 +208,7 @@ export default class AudioPlayer extends Component {
 
       if (!isSpeaker) {
         console.log(`[unSynch] unsynching listener`);
-        //this.toggleSynched();
+        this.toggleSynched();
       } else {
         console.log(`[unSynch] removing speaker`);
         //UserActions.setSpeaker(false);
@@ -208,21 +225,23 @@ export default class AudioPlayer extends Component {
       const {isSynched, isSpeaker} = this.state;
       let {song, pos} = this.state;
 
-      console.log(`-!- SONG ENDED -!-`, song.general.title);
+      console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
+
+      this.prevSongId = song.general.id;
 
       if (isSpeaker) {
         song.socketId = SocketStore.getSocketId();
         PlaylistActions.endSongAndPlayNext(song);
+      } else if (!isSynched) {
+        console.log(`PREVSONGID:`, this.prevSongId);
+        setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
       }
 
-      if (isSynched || isSpeaker) {
-        this.songHasStarted = false;
-        this.prevTimeString = `00:00`;
-        song = {general: ``};
-        pos = 0;
-      }
-
+      this.prevTimeString = `00:00`;
+      song = {general: ``};
+      pos = 0;
       this.songHasStarted = false;
+
       this.setState({song, pos});
 
     }
@@ -240,7 +259,7 @@ export default class AudioPlayer extends Component {
       UserActions.setSynched(!isSynched);
     }
 
-    if (!isSynched) {
+    if (!isSynched && song.general.id !== PlaylistStore.getSong(true).general.id) {
       song = {general: ``};
       pos = 0;
       setTimeout(() => this.updateSong(true), 10);
@@ -249,7 +268,7 @@ export default class AudioPlayer extends Component {
 
   }
 
-  togglePlay(clickTriggered) {
+  togglePlay(clickTriggered = false) {
 
     console.log(`[togglePlay]`);
 
@@ -270,6 +289,16 @@ export default class AudioPlayer extends Component {
     } else if (isSpeaker && playing && !this.songHasStarted) {
       this.setState({playing});
       this.songHasStarted = true;
+    }
+
+  }
+
+  showNowPlaying() {
+
+    const {song} = this.state;
+
+    if (document.querySelector(`.notification`).className.indexOf(`hide`) > - 1) {
+      NotifActions.addNotification(`Now playing: ${song.general.title}`);
     }
 
   }
