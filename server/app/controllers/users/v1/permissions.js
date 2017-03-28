@@ -21,7 +21,7 @@ module.exports.requireSpeaker = (req, res, next) => {
 
     if(speaker && speaker.meta.socketIds.length >= 1 && speaker.meta.socketIds[0] === data.socketId){
 
-      console.log('[SPEAKER] Speaker confirmed, data:', data);
+      console.log('[SPEAKER] Speaker confirmed, song to be changed:', data.general.id, data.general.title);
 
       next();
 

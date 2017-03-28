@@ -44,6 +44,7 @@ export default class AudioPlayer extends Component {
     UserStore.on(`UNSET_AS_SPEAKER`, () => this.updateSpeaker(false));
     UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
     UserStore.on(`SPEAKER_NOT_CONNECTED`, () => NotifActions.addError(`Speaker not connected`));
+    PlaylistStore.on(`SPEAKER_DISCONNECTED`, () => NotifActions.addError(`Speaker disconnected`));
   }
 
   componentWillUnmount() {

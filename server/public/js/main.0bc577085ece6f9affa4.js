@@ -7275,27 +7275,27 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.queue = res;
 
+      console.log('[PlaylistStore] QUEUE_CHANGED');
+
       _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.queue[0] !== _this2.speakerSong) {
+      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
         if (_this2.userChosenSong.general === '') {
-          _this2.userChosenSong = _this2.queue[0];
-          _this2.hasFetchedQueue = true;
-          _this2.emit('SONG_CHANGED');
+          _this2.updateUserChosenSong(_this2.queue[0]);
         }
 
-        _this2.updateSpeakerSong();
-      } else if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] && !_this2.hasFetchedQueue) {
+        _this2.updateSpeakerSong(false);
+      } else if (_this2.queue[0] && !_this2.hasFetchedQueue) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
-        _this2.userChosenSong = _this2.queue[0];
-        _this2.hasFetchedQueue = true;
-        _this2.emit('SONG_CHANGED');
+        _this2.updateUserChosenSong(_this2.queue[0]);
       }
+
+      _this2.hasFetchedQueue = true;
     }, function (failData) {
 
       console.log('-!- Update queue error -!- \n', failData, '\n-!-');
@@ -7310,9 +7310,11 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.endSongAndPlayNext = function endSongAndPlayNext(song) {
 
+    console.log('[Speaker] About to end song and play next');
+
     __WEBPACK_IMPORTED_MODULE_2__api___["a" /* songs */].endSongAndPlayNext(song).then(function (res) {
 
-      console.log('[Speaker] Ending song and playing next one', res);
+      console.log('[Speaker] Ended song, about play the next one', res);
     }, function (failData) {
 
       console.log('[Speaker] Failed to end song and play next:', failData);
@@ -7320,6 +7322,7 @@ var PlaylistStore = function (_EventEmitter) {
   };
 
   PlaylistStore.prototype.updateSpeakerConnected = function updateSpeakerConnected(speakerConnected) {
+    var _this3 = this;
 
     if (speakerConnected !== this.speakerConnected) {
 
@@ -7330,22 +7333,32 @@ var PlaylistStore = function (_EventEmitter) {
         this.emit('SPEAKER_RESET');
       } else {
         console.log('[SPEAKER] Speaker disconnected', this.speakerConnected);
+        __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].setSynched(false);
+        setTimeout(function () {
+          return _this3.emit('SPEAKER_DISCONNECTED');
+        }, 10);
         this.emit('SPEAKER_UNSET');
       }
     }
+  };
+
+  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong(song) {
+
+    this.userChosenSong = song;
+    this.emit('SONG_CHANGED');
   };
 
   PlaylistStore.prototype.updateSpeakerSong = function updateSpeakerSong() {
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    if (this.speakerSong !== this.queue[0]) {
+    if (this.speakerSong.general === '' || this.speakerSong.general.id !== this.queue[0].general.id) {
 
       console.log('[PlaylistStore] Updating speakersong');
 
       this.speakerSong = this.queue[0];
 
-      if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
         this.emit('SPEAKER_SONG_CHANGED');
       }
     }
@@ -7468,12 +7481,18 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.getSong = function getSong(synched) {
 
-    if (synched && this.queue[0]) {
-      console.log('Returning first song');
+    if (synched && this.speakerSong.general !== '') {
+      console.log('Returning speaker song:', this.speakerSong.general.title);
       return this.speakerSong;
-    } else {
-      console.log('Returning user chosen song');
+    } else if (!synched && this.userChosenSong.general !== '') {
+      console.log('Returning user chosen song:', this.userChosenSong.general.title);
       return this.userChosenSong;
+    } else if (this.queue[0]) {
+      console.log('Returning first in queue:', this.queue[0].general.title);
+      return this.queue[0];
+    } else {
+      console.log('Returning default empty song');
+      return this.defaultSong;
     }
   };
 
@@ -50048,6 +50067,9 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SPEAKER_NOT_CONNECTED', function () {
       return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker not connected');
     });
+    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_DISCONNECTED', function () {
+      return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+    });
   };
 
   AudioPlayer.prototype.componentWillUnmount = function componentWillUnmount() {};
@@ -50331,7 +50353,7 @@ var AudioPlayer = function (_Component) {
         //zoom={10}
         , __source: {
           fileName: _jsxFileName,
-          lineNumber: 287
+          lineNumber: 288
         }
       });
     } else {
@@ -50364,33 +50386,13 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 323
+          lineNumber: 324
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
             return _this6.toggleSynched();
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 324
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 324
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this6.togglePlay(true);
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 325
@@ -50409,7 +50411,9 @@ var AudioPlayer = function (_Component) {
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
-        { className: 'current-time', __source: {
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this6.togglePlay(true);
+          }, __source: {
             fileName: _jsxFileName,
             lineNumber: 326
           }
@@ -50422,6 +50426,24 @@ var AudioPlayer = function (_Component) {
               lineNumber: 326
             }
           },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 327
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 327
+            }
+          },
           currentTimeString
         )
       ),
@@ -50429,7 +50451,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'wave-pos-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 327
+            lineNumber: 328
           }
         },
         this.renderPlayer()
@@ -50438,7 +50460,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 330
+            lineNumber: 331
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50446,7 +50468,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 330
+              lineNumber: 331
             }
           },
           song.general.duration
@@ -78970,4 +78992,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.35035b93eb4e72a270e2.js.map
+//# sourceMappingURL=main.0bc577085ece6f9affa4.js.map

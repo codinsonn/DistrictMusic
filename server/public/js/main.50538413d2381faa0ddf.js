@@ -7277,25 +7277,23 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.queue[0] !== _this2.speakerSong) {
+      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
         if (_this2.userChosenSong.general === '') {
-          _this2.userChosenSong = _this2.queue[0];
-          _this2.hasFetchedQueue = true;
-          _this2.emit('SONG_CHANGED');
+          _this2.updateUserChosenSong(_this2.queue[0]);
         }
 
-        _this2.updateSpeakerSong();
-      } else if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] && !_this2.hasFetchedQueue) {
+        _this2.updateSpeakerSong(false);
+      } else if (_this2.queue[0] && !_this2.hasFetchedQueue) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
-        _this2.userChosenSong = _this2.queue[0];
-        _this2.hasFetchedQueue = true;
-        _this2.emit('SONG_CHANGED');
+        _this2.updateUserChosenSong(_this2.queue[0]);
       }
+
+      _this2.hasFetchedQueue = true;
     }, function (failData) {
 
       console.log('-!- Update queue error -!- \n', failData, '\n-!-');
@@ -7310,9 +7308,11 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.endSongAndPlayNext = function endSongAndPlayNext(song) {
 
+    console.log('[Speaker] About to end song and play next');
+
     __WEBPACK_IMPORTED_MODULE_2__api___["a" /* songs */].endSongAndPlayNext(song).then(function (res) {
 
-      console.log('[Speaker] Ending song and playing next one', res);
+      console.log('[Speaker] Ended song, about play the next one', res);
     }, function (failData) {
 
       console.log('[Speaker] Failed to end song and play next:', failData);
@@ -7320,6 +7320,7 @@ var PlaylistStore = function (_EventEmitter) {
   };
 
   PlaylistStore.prototype.updateSpeakerConnected = function updateSpeakerConnected(speakerConnected) {
+    var _this3 = this;
 
     if (speakerConnected !== this.speakerConnected) {
 
@@ -7330,22 +7331,32 @@ var PlaylistStore = function (_EventEmitter) {
         this.emit('SPEAKER_RESET');
       } else {
         console.log('[SPEAKER] Speaker disconnected', this.speakerConnected);
+        __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].setSynched(false);
+        setTimeout(function () {
+          return _this3.emit('SPEAKER_DISCONNECTED');
+        }, 10);
         this.emit('SPEAKER_UNSET');
       }
     }
+  };
+
+  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong(song) {
+
+    this.userChosenSong = song;
+    this.emit('SONG_CHANGED');
   };
 
   PlaylistStore.prototype.updateSpeakerSong = function updateSpeakerSong() {
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    if (this.speakerSong !== this.queue[0]) {
+    if (this.speakerSong.general === '' || this.speakerSong.general.id !== this.queue[0].general.id) {
 
       console.log('[PlaylistStore] Updating speakersong');
 
       this.speakerSong = this.queue[0];
 
-      if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
         this.emit('SPEAKER_SONG_CHANGED');
       }
     }
@@ -7468,12 +7479,18 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.getSong = function getSong(synched) {
 
-    if (synched && this.queue[0]) {
-      console.log('Returning first song');
+    if (synched && this.speakerSong.general !== '') {
+      console.log('Returning speaker song:', this.speakerSong.general.title);
       return this.speakerSong;
-    } else {
-      console.log('Returning user chosen song');
+    } else if (!synched && this.userChosenSong.general !== '') {
+      console.log('Returning user chosen song:', this.userChosenSong.general.title);
       return this.userChosenSong;
+    } else if (this.queue[0]) {
+      console.log('Returning first in queue:', this.queue[0].general.title);
+      return this.queue[0];
+    } else {
+      console.log('Returning default empty song');
+      return this.defaultSong;
     }
   };
 
@@ -50048,6 +50065,9 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SPEAKER_NOT_CONNECTED', function () {
       return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker not connected');
     });
+    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_DISCONNECTED', function () {
+      return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+    });
   };
 
   AudioPlayer.prototype.componentWillUnmount = function componentWillUnmount() {};
@@ -50331,7 +50351,7 @@ var AudioPlayer = function (_Component) {
         //zoom={10}
         , __source: {
           fileName: _jsxFileName,
-          lineNumber: 287
+          lineNumber: 288
         }
       });
     } else {
@@ -50364,33 +50384,13 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: 'audio-player-wrapper', __source: {
           fileName: _jsxFileName,
-          lineNumber: 323
+          lineNumber: 324
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
             return _this6.toggleSynched();
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 324
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 324
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this6.togglePlay(true);
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 325
@@ -50409,7 +50409,9 @@ var AudioPlayer = function (_Component) {
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
-        { className: 'current-time', __source: {
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this6.togglePlay(true);
+          }, __source: {
             fileName: _jsxFileName,
             lineNumber: 326
           }
@@ -50422,6 +50424,24 @@ var AudioPlayer = function (_Component) {
               lineNumber: 326
             }
           },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 327
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 327
+            }
+          },
           currentTimeString
         )
       ),
@@ -50429,7 +50449,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'wave-pos-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 327
+            lineNumber: 328
           }
         },
         this.renderPlayer()
@@ -50438,7 +50458,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 330
+            lineNumber: 331
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -50446,7 +50466,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 330
+              lineNumber: 331
             }
           },
           song.general.duration
@@ -52003,45 +52023,49 @@ var SongSummary = function (_Component) {
   SongSummary.prototype.vote = function vote(e, type) {
     var _this3 = this;
 
-    var $target = e.currentTarget;
-    var enabled = $target.getAttribute('data-enabled');
+    if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
 
-    if (enabled === 'enabled') {
+      var $target = e.currentTarget;
+      var enabled = $target.getAttribute('data-enabled');
 
-      var isLoggedIn = __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getLoggedIn();
+      if (enabled === 'enabled') {
 
-      if (isLoggedIn) {
-        (function () {
-          var _state2 = _this3.state,
-              id = _state2.id,
-              title = _state2.title;
+        var isLoggedIn = __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getLoggedIn();
 
-          var voteType = _this3.getVoteType(type);
+        if (isLoggedIn) {
+          (function () {
+            var _state2 = _this3.state,
+                id = _state2.id,
+                title = _state2.title;
 
-          __WEBPACK_IMPORTED_MODULE_6__api_songs__["a" /* default */].voteSong(id, title, voteType).then(function (res) {
+            var voteType = _this3.getVoteType(type);
 
-            // success!
-            console.log('SUCCESS!', res);
+            __WEBPACK_IMPORTED_MODULE_6__api_songs__["a" /* default */].voteSong(id, title, voteType).then(function (res) {
 
-            if (_this3.props.voteMode === 'veto' || _this3.props.voteMode === 'super') {
-              var message = voteType + ' successfull!';
-              __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */](message);
-            }
-          }, function (failData) {
+              // success!
+              console.log('SUCCESS!', res);
 
-            // failed to vote
-            console.log('FAILED:', failData);
+              if (_this3.props.voteMode === 'veto' || _this3.props.voteMode === 'super') {
+                var message = voteType + ' successfull!';
+                __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */](message);
+              }
+            }, function (failData) {
 
-            if (_this3.props.voteMode === 'veto' || _this3.props.voteMode === 'super') {
-              var message = voteType + ' failed!';
-              __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](message);
-            }
-          });
-        })();
-      } else {
+              // failed to vote
+              console.log('FAILED:', failData);
 
-        __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["d" /* showLoginModal */]();
+              if (_this3.props.voteMode === 'veto' || _this3.props.voteMode === 'super') {
+                var message = voteType + ' failed!';
+                __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](message);
+              }
+            });
+          })();
+        } else {
+          __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["d" /* showLoginModal */]();
+        }
       }
+    } else {
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */]('Cannot vote as speaker');
     }
   };
 
@@ -52059,6 +52083,8 @@ var SongSummary = function (_Component) {
           return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["c" /* setSong */](song);
         }, 10);
       })();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */]('Cannot change song as speaker');
     }
   };
 
@@ -52145,14 +52171,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 236
+          lineNumber: 242
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 237
+            lineNumber: 243
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52161,7 +52187,7 @@ var SongSummary = function (_Component) {
               return _this5.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 238
+              lineNumber: 244
             }
           },
           '\xA0'
@@ -52170,7 +52196,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 239
+              lineNumber: 245
             }
           },
           currentQueueScore
@@ -52181,7 +52207,7 @@ var SongSummary = function (_Component) {
               return _this5.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 240
+              lineNumber: 246
             }
           },
           '\xA0'
@@ -52191,14 +52217,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 242
+            lineNumber: 248
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 243
+              lineNumber: 249
             }
           },
           duration
@@ -52210,14 +52236,14 @@ var SongSummary = function (_Component) {
             return _this5.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 245
+            lineNumber: 251
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 246
+              lineNumber: 252
             }
           },
           tags,
@@ -52227,7 +52253,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 247
+              lineNumber: 253
             }
           },
           'Submitted ',
@@ -52235,7 +52261,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 247
+                lineNumber: 253
               }
             },
             fromNow
@@ -52246,7 +52272,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 247
+                lineNumber: 253
               }
             },
             lastAddedBy.userName
@@ -78964,4 +78990,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.bdaebd5f6eeaa3d0f93e.js.map
+//# sourceMappingURL=main.50538413d2381faa0ddf.js.map
