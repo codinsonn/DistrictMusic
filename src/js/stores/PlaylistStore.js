@@ -115,8 +115,10 @@ class PlaylistStore extends EventEmitter {
         this.emit(`SPEAKER_RESET`);
       } else {
         console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
+        if (UserStore.getSynched()) {
+          setTimeout(() => this.emit(`SPEAKER_DISCONNECTED`), 10);
+        }
         UserStore.setSynched(false);
-        setTimeout(() => this.emit(`SPEAKER_DISCONNECTED`), 10);
         this.emit(`SPEAKER_UNSET`);
       }
 

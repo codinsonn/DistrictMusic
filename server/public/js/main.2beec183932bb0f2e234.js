@@ -7275,11 +7275,15 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.queue = res;
 
-      console.log('[PlaylistStore] QUEUE_CHANGED');
+      console.log('[PlaylistStore] QUEUE_CHANGED', _this2.queue[0].general.id, _this2.speakerSong);
+      console.log('[PlaylistStore] QUEUE_CHANGED', __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker(), __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched());
 
-      _this2.emit('QUEUE_CHANGED', _this2.queue[0].general.id, _this2.speakerSong.general.id);
+      _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
+      if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+
+        _this2.updateSpeakerSong();
+      } else if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
@@ -50068,7 +50072,9 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker not connected');
     });
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_DISCONNECTED', function () {
-      return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+      if (__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getSynched()) {
+        __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+      }
     });
   };
 
@@ -78992,4 +78998,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.0b62c54e320a67021c54.js.map
+//# sourceMappingURL=main.2beec183932bb0f2e234.js.map

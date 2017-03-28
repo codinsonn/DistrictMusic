@@ -50072,7 +50072,9 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker not connected');
     });
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_DISCONNECTED', function () {
-      return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+      if (__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSynched()) {
+        __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker disconnected');
+      }
     });
   };
 
@@ -78996,4 +78998,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.a71156f3d0ca8f29dd44.js.map
+//# sourceMappingURL=main.5f6ef225c8e656fd1441.js.map

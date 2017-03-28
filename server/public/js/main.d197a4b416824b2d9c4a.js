@@ -7275,22 +7275,28 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.queue = res;
 
+      console.log('[PlaylistStore] QUEUE_CHANGED', _this2.queue[0].general.id, _this2.speakerSong);
+      console.log('[PlaylistStore] QUEUE_CHANGED', __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker(), __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched());
+
       _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
+      if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+
+        _this2.updateSpeakerSong();
+      } else if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
         if (_this2.userChosenSong.general === '') {
-          _this2.updateUserChosenSong();
+          _this2.updateUserChosenSong(_this2.queue[0]);
         }
 
-        _this2.updateSpeakerSong(false);
-      } else if ( /*!UserStore.getSynched() && */_this2.queue[0] && !_this2.hasFetchedQueue) {
+        _this2.updateSpeakerSong();
+      } else if (!_this2.hasFetchedQueue && _this2.queue[0]) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
-        _this2.updateUserChosenSong();
+        _this2.updateUserChosenSong(_this2.queue[0]);
       }
 
       _this2.hasFetchedQueue = true;
@@ -7308,9 +7314,11 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.endSongAndPlayNext = function endSongAndPlayNext(song) {
 
+    console.log('[Speaker] About to end song and play next');
+
     __WEBPACK_IMPORTED_MODULE_2__api___["a" /* songs */].endSongAndPlayNext(song).then(function (res) {
 
-      console.log('[Speaker] Ending song and playing next one', res);
+      console.log('[Speaker] Ended song, about play the next one', res);
     }, function (failData) {
 
       console.log('[Speaker] Failed to end song and play next:', failData);
@@ -7318,6 +7326,7 @@ var PlaylistStore = function (_EventEmitter) {
   };
 
   PlaylistStore.prototype.updateSpeakerConnected = function updateSpeakerConnected(speakerConnected) {
+    var _this3 = this;
 
     if (speakerConnected !== this.speakerConnected) {
 
@@ -7328,14 +7337,20 @@ var PlaylistStore = function (_EventEmitter) {
         this.emit('SPEAKER_RESET');
       } else {
         console.log('[SPEAKER] Speaker disconnected', this.speakerConnected);
+        if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+          setTimeout(function () {
+            return _this3.emit('SPEAKER_DISCONNECTED');
+          }, 10);
+        }
+        __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].setSynched(false);
         this.emit('SPEAKER_UNSET');
       }
     }
   };
 
-  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong() {
+  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong(song) {
 
-    this.userChosenSong = this.queue[0];
+    this.userChosenSong = song;
     this.emit('SONG_CHANGED');
   };
 
@@ -7349,7 +7364,7 @@ var PlaylistStore = function (_EventEmitter) {
 
       this.speakerSong = this.queue[0];
 
-      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
         this.emit('SPEAKER_SONG_CHANGED');
       }
     }
@@ -8086,16 +8101,16 @@ module.exports = function(module) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(26);
-/* harmony export (immutable) */ __webpack_exports__["i"] = showSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["e"] = hideSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["h"] = showSuggestionDetail;
-/* harmony export (immutable) */ __webpack_exports__["f"] = hideSuggestionDetail;
-/* harmony export (immutable) */ __webpack_exports__["g"] = resetSearchbar;
-/* harmony export (immutable) */ __webpack_exports__["d"] = updateQueue;
-/* harmony export (immutable) */ __webpack_exports__["c"] = setSong;
-/* harmony export (immutable) */ __webpack_exports__["a"] = setAudioPos;
+/* harmony export (immutable) */ __webpack_exports__["g"] = showSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["c"] = hideSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["f"] = showSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["d"] = hideSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["e"] = resetSearchbar;
+/* harmony export (immutable) */ __webpack_exports__["b"] = updateQueue;
+/* harmony export (immutable) */ __webpack_exports__["a"] = setSong;
+/* unused harmony export setAudioPos */
 /* unused harmony export setVideoPos */
-/* harmony export (immutable) */ __webpack_exports__["b"] = endSongAndPlayNext;
+/* unused harmony export endSongAndPlayNext */
 
 
 function showSearchModal() {
@@ -8172,10 +8187,10 @@ function endSongAndPlayNext(song) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(26);
 /* harmony export (immutable) */ __webpack_exports__["a"] = fetchProfile;
-/* harmony export (immutable) */ __webpack_exports__["d"] = showLoginModal;
+/* harmony export (immutable) */ __webpack_exports__["c"] = showLoginModal;
 /* harmony export (immutable) */ __webpack_exports__["g"] = hideLoginModal;
 /* harmony export (immutable) */ __webpack_exports__["e"] = setVoteMode;
-/* harmony export (immutable) */ __webpack_exports__["c"] = setSynched;
+/* harmony export (immutable) */ __webpack_exports__["d"] = setSynched;
 /* harmony export (immutable) */ __webpack_exports__["b"] = setSpeaker;
 /* harmony export (immutable) */ __webpack_exports__["f"] = logoutUser;
 
@@ -12423,7 +12438,8 @@ module.exports = setInnerHTML;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SongSummary__ = __webpack_require__(311);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_8__SongSummary__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AudioPlayer__ = __webpack_require__(304);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_9__AudioPlayer__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AudioPlayer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__AudioPlayer__);
+/* harmony reexport (binding) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_9__AudioPlayer__, "default")) __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_9__AudioPlayer__["default"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__YoutubeVideo__ = __webpack_require__(314);
 /* unused harmony reexport YoutubeVideo */
 
@@ -49974,501 +49990,10 @@ module.exports = function(arraybuffer, start, end) {
 
 /***/ }),
 /* 304 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, __webpack_exports__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_wavesurfer__ = __webpack_require__(530);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_wavesurfer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_wavesurfer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__ = __webpack_require__(32);
-var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/AudioPlayer.jsx';
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-
-
-
-
-
-var AudioPlayer = function (_Component) {
-  _inherits(AudioPlayer, _Component);
-
-  function AudioPlayer(props, context) {
-    _classCallCheck(this, AudioPlayer);
-
-    var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
-
-    _this.state = {
-      song: __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSong(__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getSynched()),
-      playing: false,
-      pos: 0,
-      currentTimeString: '00:00',
-      isSpeaker: __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker(),
-      isSynched: __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getSynched()
-    };
-
-    _this.waveOptions = {
-      height: 40,
-      normalize: true,
-      //scrollParent: true,
-      //hideScrollBar: true,
-      cursorColor: '#ffffff',
-      waveColor: '#c6c6c6',
-      progressColor: '#fecb58'
-    };
-
-    _this.songHasStarted = false;
-    _this.prevTimeString = '00:00';
-
-    return _this;
-  }
-
-  AudioPlayer.prototype.componentWillMount = function componentWillMount() {
-    var _this2 = this;
-
-    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SONG_CHANGED', function () {
-      return _this2.updateSong();
-    });
-    __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_SONG_CHANGED', function () {
-      return _this2.checkSongUpdate();
-    });
-    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SET_AS_SPEAKER', function () {
-      return _this2.updateSpeaker(true);
-    });
-    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('UNSET_AS_SPEAKER', function () {
-      return _this2.updateSpeaker(false);
-    });
-    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SYNCHED_CHANGED', function () {
-      return _this2.updateSynched();
-    });
-    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SPEAKER_NOT_CONNECTED', function () {
-      return __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Speaker not connected');
-    });
-  };
-
-  AudioPlayer.prototype.componentWillUnmount = function componentWillUnmount() {};
-
-  AudioPlayer.prototype.componentDidMount = function componentDidMount() {};
-
-  AudioPlayer.prototype.checkSongUpdate = function checkSongUpdate() {
-    var _this3 = this;
-
-    var isSynched = this.state.isSynched;
-    var _state = this.state,
-        song = _state.song,
-        pos = _state.pos;
-
-
-    if (isSynched) {
-      song = { general: '' };
-      pos = 0;
-      setTimeout(function () {
-        return _this3.updateSong(true);
-      }, 10);
-      this.setState({ song: song, pos: pos });
-    }
-  };
-
-  AudioPlayer.prototype.updateSong = function updateSong() {
-    var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    var isSynched = this.state.isSynched;
-    var _state2 = this.state,
-        song = _state2.song,
-        pos = _state2.pos,
-        playing = _state2.playing;
-
-
-    console.log('[AudioPlayer] UPDATING SONG');
-
-    if (asSynched) {
-      song = __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSong(true);
-    } else {
-      song = __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSong(isSynched);
-    }
-
-    if (!isSynched) {
-      playing = false;
-      pos = 0;
-    }
-
-    this.songHasStarted = false;
-
-    this.setState({ song: song, pos: pos, playing: playing });
-  };
-
-  AudioPlayer.prototype.updateSpeaker = function updateSpeaker(blnIsSpeaker) {
-
-    console.log('[updateSpeaker]');
-
-    var isSpeaker = this.state.isSpeaker;
-
-
-    isSpeaker = blnIsSpeaker;
-
-    this.setState({ isSpeaker: isSpeaker });
-  };
-
-  AudioPlayer.prototype.updateSynched = function updateSynched() {
-    var isSynched = this.state.isSynched;
-
-
-    isSynched = __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getSynched();
-
-    console.log('[updateSynched] synched:', isSynched);
-
-    if (isSynched) {
-      this.synchPosToSpeakerAndPlay();
-    }
-
-    this.setState({ isSynched: isSynched });
-  };
-
-  AudioPlayer.prototype.synchPosToSpeakerAndPlay = function synchPosToSpeakerAndPlay() {
-
-    console.log('[synchPosToSpeakerAndPlay]');
-
-    var _state3 = this.state,
-        playing = _state3.playing,
-        pos = _state3.pos;
-
-
-    var speakerPos = __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSpeakerPos();
-
-    playing = true;
-    pos = speakerPos.speakerPos + 0.002 + (new Date().getTime() - speakerPos.lastSpeakerPosUpdate) / 1000;
-    //pos = speakerPos.speakerPos;
-
-    console.log('pos', pos);
-
-    this.setState({ playing: playing, pos: pos });
-  };
-
-  AudioPlayer.prototype.handleReadyToPlay = function handleReadyToPlay() {
-
-    console.log('[handleReadyToPlay]');
-
-    var _state4 = this.state,
-        isSynched = _state4.isSynched,
-        playing = _state4.playing;
-
-
-    console.log('[AudioPlayer] SPEAKER: synched =', isSynched, ', playing =', playing);
-
-    if (playing) {
-      this.togglePlay(false);
-      this.togglePlay(false);
-    }
-  };
-
-  AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
-    var _state5 = this.state,
-        playing = _state5.playing,
-        isSpeaker = _state5.isSpeaker;
-    var _state6 = this.state,
-        pos = _state6.pos,
-        currentTimeString = _state6.currentTimeString;
-
-
-    pos = e.originalArgs[0];
-
-    var currentMinutes = Math.floor(pos / 60);
-    var currentSeconds = Math.round(pos % 60);
-
-    currentTimeString = '0' + currentMinutes + ':' + currentSeconds;
-    if (currentSeconds < 10) {
-      currentTimeString = '0' + currentMinutes + ':0' + currentSeconds;
-    }
-
-    var sendSocketEvent = false;
-    if (isSpeaker && currentTimeString !== this.prevTimeString) {
-      sendSocketEvent = true;
-    }
-
-    if (playing) {
-      __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["a" /* setAudioPos */](pos, sendSocketEvent, new Date().getTime());
-    }
-
-    this.setState({ pos: pos, currentTimeString: currentTimeString });
-    this.prevTimeString = currentTimeString;
-  };
-
-  AudioPlayer.prototype.unSynch = function unSynch() {
-    var _state7 = this.state,
-        isSynched = _state7.isSynched,
-        isSpeaker = _state7.isSpeaker;
-
-
-    if (isSynched) {
-
-      if (!isSpeaker) {
-        console.log('[unSynch] unsynching listener');
-        //this.toggleSynched();
-      } else {
-        console.log('[unSynch] removing speaker');
-        //UserActions.setSpeaker(false);
-      }
-    }
-  };
-
-  AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
-
-    if (this.songHasStarted) {
-      var _state8 = this.state,
-          isSynched = _state8.isSynched,
-          isSpeaker = _state8.isSpeaker;
-      var _state9 = this.state,
-          song = _state9.song,
-          pos = _state9.pos;
-
-
-      console.log('-!- SONG ENDED -!-', song.general.title);
-
-      if (isSpeaker) {
-        song.socketId = __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__["a" /* default */].getSocketId();
-        __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["b" /* endSongAndPlayNext */](song);
-      }
-
-      if (isSynched || isSpeaker) {
-        this.songHasStarted = false;
-        this.prevTimeString = '00:00';
-        song = { general: '' };
-        pos = 0;
-      }
-
-      this.songHasStarted = false;
-      this.setState({ song: song, pos: pos });
-    }
-  };
-
-  AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this4 = this;
-
-    console.log('[toggleSynched]');
-
-    var _state10 = this.state,
-        isSpeaker = _state10.isSpeaker,
-        isSynched = _state10.isSynched;
-    var _state11 = this.state,
-        song = _state11.song,
-        pos = _state11.pos;
-
-
-    if (!isSpeaker) {
-      __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["c" /* setSynched */](!isSynched);
-    }
-
-    if (!isSynched) {
-      song = { general: '' };
-      pos = 0;
-      setTimeout(function () {
-        return _this4.updateSong(true);
-      }, 10);
-      this.setState({ song: song, pos: pos });
-    }
-  };
-
-  AudioPlayer.prototype.togglePlay = function togglePlay(clickTriggered) {
-
-    console.log('[togglePlay]');
-
-    var _state12 = this.state,
-        isSynched = _state12.isSynched,
-        isSpeaker = _state12.isSpeaker;
-    var playing = this.state.playing;
-
-
-    playing = !playing;
-
-    if (clickTriggered && isSynched && !playing) {
-      this.toggleSynched();
-    }
-
-    if (!isSpeaker) {
-      this.setState({ playing: playing });
-      this.songHasStarted = true;
-    } else if (isSpeaker && !playing && !this.songHasStarted) {
-      this.setState({ playing: playing });
-    } else if (isSpeaker && playing && !this.songHasStarted) {
-      this.setState({ playing: playing });
-      this.songHasStarted = true;
-    }
-  };
-
-  AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this5 = this;
-
-    var _state13 = this.state,
-        song = _state13.song,
-        playing = _state13.playing,
-        pos = _state13.pos;
-
-
-    if (song.general !== '') {
-
-      var audioFile = 'assets/audio/' + song.general.filename;
-
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_wavesurfer___default.a, {
-        audioFile: audioFile,
-        pos: pos,
-        onReady: function onReady() {
-          return _this5.handleReadyToPlay();
-        },
-        onPosChange: function onPosChange(e) {
-          return _this5.handlePosChange(e);
-        },
-        onSeek: function onSeek() {
-          return _this5.unSynch();
-        },
-        onFinish: function onFinish() {
-          return _this5.handleSongEnd();
-        },
-        playing: playing,
-        options: this.waveOptions
-        //zoom={10}
-        , __source: {
-          fileName: _jsxFileName,
-          lineNumber: 287
-        }
-      });
-    } else {
-
-      console.log('[AudioPlayer] No render:', song);
-    }
-  };
-
-  AudioPlayer.prototype.render = function render() {
-    var _this6 = this;
-
-    var _state14 = this.state,
-        song = _state14.song,
-        playing = _state14.playing,
-        currentTimeString = _state14.currentTimeString,
-        isSynched = _state14.isSynched;
-
-
-    var toggleSynchClasses = 'btn-toggle-synch unsynched';
-    if (isSynched) {
-      toggleSynchClasses = 'btn-toggle-synch synched';
-    }
-
-    var togglePlayClasses = 'btn-toggle-play play';
-    if (playing) {
-      togglePlayClasses = 'btn-toggle-play pause';
-    }
-
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'article',
-      { className: 'audio-player-wrapper', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 323
-        }
-      },
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: toggleSynchClasses, onClick: function onClick() {
-            return _this6.toggleSynched();
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 324
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 324
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this6.togglePlay(true);
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 325
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 325
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'current-time', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 326
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 326
-            }
-          },
-          currentTimeString
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'wave-pos-wrapper', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 327
-          }
-        },
-        this.renderPlayer()
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'total-duration', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 330
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 330
-            }
-          },
-          song.general.duration
-        )
-      )
-    );
-  };
-
-  return AudioPlayer;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = AudioPlayer;
+throw new Error("Module build failed: SyntaxError: Unexpected token, expected , (47:96)\n\n\u001b[0m \u001b[90m 45 | \u001b[39m    \u001b[33mUserStore\u001b[39m\u001b[33m.\u001b[39mon(\u001b[32m`SYNCHED_CHANGED`\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mupdateSynched())\u001b[33m;\u001b[39m\n \u001b[90m 46 | \u001b[39m    \u001b[33mUserStore\u001b[39m\u001b[33m.\u001b[39mon(\u001b[32m`SPEAKER_NOT_CONNECTED`\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m \u001b[33mNotifActions\u001b[39m\u001b[33m.\u001b[39maddError(\u001b[32m`Speaker not connected`\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 47 | \u001b[39m    \u001b[33mPlaylistStore\u001b[39m\u001b[33m.\u001b[39mon(\u001b[32m`SPEAKER_DISCONNECTED`\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m \u001b[33mNotifActions\u001b[39m\u001b[33m.\u001b[39maddError(\u001b[32m`Speaker disconnected`\u001b[39m)\u001b[33m;\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    | \u001b[39m                                                                                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 48 | \u001b[39m  }\n \u001b[90m 49 | \u001b[39m\n \u001b[90m 50 | \u001b[39m  componentWillUnmount() {\u001b[0m\n");
 
 /***/ }),
 /* 305 */
@@ -51009,10 +50534,10 @@ var PlaylistQueue = function (_Component) {
 
     // listeners
     __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__["a" /* default */].on('QUEUE_UPDATED', function () {
-      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["d" /* updateQueue */]();
+      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["b" /* updateQueue */]();
     });
     __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('USER_PROFILE_CHANGED', function () {
-      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["d" /* updateQueue */]();
+      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["b" /* updateQueue */]();
     });
     __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].on('QUEUE_CHANGED', function () {
       return _this2.updateQueue();
@@ -51022,7 +50547,7 @@ var PlaylistQueue = function (_Component) {
     });
 
     // fetch queue from api
-    __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["d" /* updateQueue */]();
+    __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["b" /* updateQueue */]();
   };
 
   PlaylistQueue.prototype.componentWillUnmount = function componentWillUnmount() {};
@@ -51265,7 +50790,7 @@ var Profile = function (_Component) {
     } else if (!__WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       console.log('Must login to continue...');
       document.querySelector('.profile').blur();
-      __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* showLoginModal */]();
+      __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["c" /* showLoginModal */]();
     } else {
       __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["a" /* addError */]('Cannot login as speaker');
     }
@@ -51646,7 +51171,7 @@ var SearchModal = function (_Component) {
     currentSuggestions = [];
     //document.querySelector(`.search-query`).value = ``;
     setTimeout(function () {
-      return __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["e" /* hideSearchModal */]();
+      return __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["c" /* hideSearchModal */]();
     }, 10);
 
     this.setState({ currentSuggestions: currentSuggestions });
@@ -51658,10 +51183,10 @@ var SearchModal = function (_Component) {
     var showSuggestionDetail = __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
 
     if (isLoggedIn && !showSuggestionDetail) {
-      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["i" /* showSearchModal */]();
+      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["g" /* showSearchModal */]();
       this.onInputChanged(false);
     } else if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
-      __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["d" /* showLoginModal */]();
+      __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["c" /* showLoginModal */]();
     } else {
       __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__["a" /* addError */]('Cannot add songs as speaker');
     }
@@ -52051,7 +51576,7 @@ var SongSummary = function (_Component) {
             });
           })();
         } else {
-          __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["d" /* showLoginModal */]();
+          __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["c" /* showLoginModal */]();
         }
       }
     } else {
@@ -52067,10 +51592,10 @@ var SongSummary = function (_Component) {
         var song = _this4.state.song;
 
 
-        __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["c" /* setSynched */](false);
+        __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["d" /* setSynched */](false);
 
         setTimeout(function () {
-          return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["c" /* setSong */](song);
+          return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["a" /* setSong */](song);
         }, 10);
       })();
     } else {
@@ -52341,8 +51866,8 @@ var Suggestion = function (_Component) {
 
     var data = { id: id, title: title, channel: channel, thumbs: thumbs, duration: duration };
 
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["e" /* hideSearchModal */]();
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["h" /* showSuggestionDetail */](data);
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["c" /* hideSearchModal */]();
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["f" /* showSuggestionDetail */](data);
   };
 
   Suggestion.prototype.render = function render() {
@@ -52500,7 +52025,7 @@ var SuggestionDetail = function (_Component) {
     visible = __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
     if (!visible) {
       setTimeout(function () {
-        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["e" /* hideSearchModal */]();
+        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["c" /* hideSearchModal */]();
       }, 10);
     }
 
@@ -52512,13 +52037,13 @@ var SuggestionDetail = function (_Component) {
 
 
     __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["c" /* addNotification */]('Uploading song to queue...');
-    __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+    __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["d" /* hideSuggestionDetail */]();
 
     __WEBPACK_IMPORTED_MODULE_5__api_songs__["a" /* default */].addToQueue(suggestion).then(function (res) {
 
       __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */]('Submission added to queue!');
 
-      __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* resetSearchbar */]();
+      __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["e" /* resetSearchbar */]();
 
       console.log('Success!', res);
     }, function (failData) {
@@ -52593,7 +52118,7 @@ var SuggestionDetail = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lightbox', onClick: function onClick() {
-            return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+            return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["d" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 131
@@ -52637,7 +52162,7 @@ var SuggestionDetail = function (_Component) {
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'button',
             { className: 'btn-cancel', onClick: function onClick() {
-                return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+                return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["d" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
                 lineNumber: 136
@@ -56459,13 +55984,7 @@ module.exports = Object.keys || function keys (obj){
 
 
 /***/ }),
-/* 368 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["WaveSurfer"] = __webpack_require__(554);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
-
-/***/ }),
+/* 368 */,
 /* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -73795,12 +73314,7 @@ function withRouter(WrappedComponent, options) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 530 */
-/***/ (function(module, exports, __webpack_require__) {
-
-!function(e,o){ true?module.exports=o(__webpack_require__(4),__webpack_require__(368)):"function"==typeof define&&define.amd?define(["react","wavesurfer"],o):"object"==typeof exports?exports.Wavesurfer=o(require("react"),require("wavesurfer.js")):e.Wavesurfer=o(e.React,e.WaveSurfer)}(this,function(e,o){return function(e){function o(t){if(r[t])return r[t].exports;var n=r[t]={exports:{},id:t,loaded:!1};return e[t].call(n.exports,n,n.exports,o),n.loaded=!0,n.exports}var r={};return o.m=e,o.c=r,o.p="",o(0)}([function(e,o,r){"use strict";function t(e){return e&&e.__esModule?e:{default:e}}function n(e,o){if(!(e instanceof o))throw new TypeError("Cannot call a class as a function")}function i(e,o){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!o||"object"!=typeof o&&"function"!=typeof o?e:o}function s(e,o){if("function"!=typeof o&&null!==o)throw new TypeError("Super expression must either be null or a function, not "+typeof o);e.prototype=Object.create(o&&o.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),o&&(Object.setPrototypeOf?Object.setPrototypeOf(e,o):e.__proto__=o)}function a(e){return e.split("-").map(function(e){return e.charAt(0).toUpperCase()+e.slice(1)}).join("")}function p(e,o,r){var t=e[o];return void 0!==t&&("number"!=typeof t||t!==parseInt(t,10)||t<0)?new Error("Invalid "+o+" supplied to "+r+",\n      expected a positive integer"):null}Object.defineProperty(o,"__esModule",{value:!0});var u="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},l=function(){function e(e,o){for(var r=0;r<o.length;r++){var t=o[r];t.enumerable=t.enumerable||!1,t.configurable=!0,"value"in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}}return function(o,r,t){return r&&e(o.prototype,r),t&&e(o,t),o}}(),f=r(3),d=t(f),c=r(1),y=t(c),v=r(4),h=["audioprocess","error","finish","loading","mouseup","pause","play","ready","scroll","seek","zoom"],m=function(e){return function(){var o=void 0;o||(o=setTimeout(function(){o=null,e()},66))}},w=function(e){function o(e){n(this,o);var r=i(this,(o.__proto__||Object.getPrototypeOf(o)).call(this,e));if(r.state={isReady:!1},void 0===("undefined"==typeof v?"undefined":u(v)))throw new Error("WaveSurfer is undefined!");return r._wavesurfer=Object.create(v),r._loadMediaElt=r._loadMediaElt.bind(r),r._loadAudio=r._loadAudio.bind(r),r._seekTo=r._seekTo.bind(r),r.props.responsive&&(r._handleResize=m(function(){r.props.playing&&r._wavesurfer.pause(),r._wavesurfer.drawBuffer(),r.state.isReady&&r._seekTo(r.props.pos),r.props.playing&&r._wavesurfer.play()})),r}return s(o,e),l(o,[{key:"componentDidMount",value:function(){var e=this,o=(0,y.default)({},this.props.options,{container:this.wavesurferEl});this.props.mediaElt&&(o.backend="MediaElement"),this._wavesurfer.init(o),this._wavesurfer.on("ready",function(){e.setState({isReady:!0,pos:e.props.pos}),e.props.pos&&e._seekTo(e.props.pos),e.props.volume&&e._wavesurfer.setVolume(e.props.volume),e.props.zoom&&e._wavesurfer.zoom(e.props.zoom)}),this._wavesurfer.on("audioprocess",function(o){e.setState({pos:o}),e.props.onPosChange({wavesurfer:e._wavesurfer,originalArgs:[o]})}),this._wavesurfer.on("seek",function(o){var r=e._posToSec(o);e.setState({formattedPos:r}),e.props.onPosChange({wavesurfer:e._wavesurfer,originalArgs:[r]})}),h.forEach(function(o){var r=e.props["on"+a(o)],t=e._wavesurfer;r&&e._wavesurfer.on(o,function(){for(var e=arguments.length,o=Array(e),n=0;n<e;n++)o[n]=arguments[n];r({wavesurfer:t,originalArgs:o})})}),this.props.audioFile&&this._loadAudio(this.props.audioFile,this.props.audioPeaks),this.props.mediaElt&&this._loadMediaElt(this.props.mediaElt,this.props.audioPeaks),this.props.responsive&&window.addEventListener("resize",this._handleResize,!1)}},{key:"componentWillReceiveProps",value:function(e){this.props.audioFile!==e.audioFile&&this._loadAudio(e.audioFile,e.audioPeaks),this.props.mediaElt!==e.mediaElt&&this._loadMediaElt(e.mediaElt,e.audioPeaks),this.props.audioPeaks!==e.audioPeaks&&(e.mediaElt?this._loadMediaElt(e.mediaElt,e.audioPeaks):this._loadAudio(e.audioFile,e.audioPeaks)),e.pos&&this.state.isReady&&e.pos!==this.props.pos&&e.pos!==this.state.pos&&this._seekTo(e.pos),this.props.playing===e.playing&&this._wavesurfer.isPlaying()===e.playing||(e.playing?this._wavesurfer.play():this._wavesurfer.pause()),this.props.volume!==e.volume&&this._wavesurfer.setVolume(e.volume),this.props.zoom!==e.zoom&&this._wavesurfer.zoom(e.zoom),this.props.options.audioRate!==e.options.audioRate&&this._wavesurfer.setPlaybackRate(e.options.audioRate),e.responsive&&this.props.responsive!==e.responsive&&window.addEventListener("resize",this._handleResize,!1),e.responsive||this.props.responsive===e.responsive||window.removeEventListener("resize",this._handleResize)}},{key:"shouldComponentUpdate",value:function(){return!1}},{key:"componentWillUnmount",value:function(){var e=this;h.forEach(function(o){e._wavesurfer.un(o)}),this._wavesurfer.destroy(),this.props.responsive&&window.removeEventListener("resize",this._handleResize)}},{key:"_secToPos",value:function(e){return 1/this._wavesurfer.getDuration()*e}},{key:"_posToSec",value:function(e){return e*this._wavesurfer.getDuration()}},{key:"_seekTo",value:function(e){var o=this._secToPos(e);this.props.options.autoCenter?this._wavesurfer.seekAndCenter(o):this._wavesurfer.seekTo(o)}},{key:"_loadMediaElt",value:function(e,o){if(e instanceof window.HTMLElement)this._loadAudio(e,o);else{if(!window.document.querySelector(e))throw new Error("Media Element not found!");this._loadAudio(window.document.querySelector(e),o)}}},{key:"_loadAudio",value:function(e,o){if(e instanceof window.HTMLElement)this._wavesurfer.loadMediaElement(e,o);else if("string"==typeof e)this._wavesurfer.load(e,o);else{if(!(e instanceof window.Blob||e instanceof window.File))throw new Error("Wavesurfer._loadAudio expects prop audioFile\n        to be either HTMLElement, string or file/blob");this._wavesurfer.loadBlob(e,o)}}},{key:"render",value:function(){var e=this,o=!!this.props.children&&d.default.Children.map(this.props.children,function(o){return d.default.cloneElement(o,{wavesurfer:e._wavesurfer,isReady:e.state.isReady})});return d.default.createElement("div",null,d.default.createElement("div",{ref:function(o){e.wavesurferEl=o}}),o)}}]),o}(f.Component);w.propTypes={playing:f.PropTypes.bool,pos:f.PropTypes.number,audioFile:function(e,o,r){var t=e[o];return!t||"string"==typeof t||t instanceof window.Blob||t instanceof window.File?null:new Error("Invalid "+o+" supplied to "+r+"\n        expected either string or file/blob")},mediaElt:f.PropTypes.oneOfType([f.PropTypes.string,f.PropTypes.instanceOf(window.HTMLElement)]),audioPeaks:f.PropTypes.array,volume:f.PropTypes.number,zoom:f.PropTypes.number,responsive:f.PropTypes.bool,onPosChange:f.PropTypes.func,children:f.PropTypes.oneOfType([f.PropTypes.element,f.PropTypes.array]),options:f.PropTypes.shape({audioRate:f.PropTypes.number,backend:f.PropTypes.oneOf(["WebAudio","MediaElement"]),barWidth:function(e,o,r){var t=e[o];return void 0!==t&&"number"!=typeof t?new Error("Invalid "+o+" supplied to "+r+"\n          expected either undefined or number"):null},cursorColor:f.PropTypes.string,cursorWidth:p,dragSelection:f.PropTypes.bool,fillParent:f.PropTypes.bool,height:p,hideScrollbar:f.PropTypes.bool,interact:f.PropTypes.bool,loopSelection:f.PropTypes.bool,mediaControls:f.PropTypes.bool,minPxPerSec:p,normalize:f.PropTypes.bool,pixelRatio:f.PropTypes.number,progressColor:f.PropTypes.string,scrollParent:f.PropTypes.bool,skipLength:f.PropTypes.number,waveColor:f.PropTypes.string,autoCenter:f.PropTypes.bool})},w.defaultProps={playing:!1,pos:0,options:v.defaultParams,responsive:!0,onPosChange:function(){}},o.default=w},function(e,o,r){"use strict";function t(e){if(null===e||void 0===e)throw new TypeError("Sources cannot be null or undefined");return Object(e)}function n(e,o,r){var t=o[r];if(void 0!==t&&null!==t){if(a.call(e,r)&&(void 0===e[r]||null===e[r]))throw new TypeError("Cannot convert undefined or null to object ("+r+")");a.call(e,r)&&s(t)?e[r]=i(Object(e[r]),o[r]):e[r]=t}}function i(e,o){if(e===o)return e;o=Object(o);for(var r in o)a.call(o,r)&&n(e,o,r);if(Object.getOwnPropertySymbols)for(var t=Object.getOwnPropertySymbols(o),i=0;i<t.length;i++)p.call(o,t[i])&&n(e,o,t[i]);return e}var s=r(2),a=Object.prototype.hasOwnProperty,p=Object.prototype.propertyIsEnumerable;e.exports=function(e){e=t(e);for(var o=1;o<arguments.length;o++)i(e,arguments[o]);return e}},function(e,o){"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};e.exports=function(e){var o="undefined"==typeof e?"undefined":r(e);return null!==e&&("object"===o||"function"===o)}},function(o,r){o.exports=e},function(e,r){e.exports=o}])});
-
-/***/ }),
+/* 530 */,
 /* 531 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -77752,18 +77266,7 @@ function toArray(list, index) {
 
 
 /***/ }),
-/* 554 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! wavesurfer.js 1.3.7 (Sun, 19 Mar 2017 17:49:02 GMT)
-* https://github.com/katspaugh/wavesurfer.js
-* @license CC-BY-3.0 */
-!function(a,b){ true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function(){return a.WaveSurfer=b()}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==typeof exports?module.exports=b():a.WaveSurfer=b()}(this,function(){"use strict";var a={defaultParams:{audioContext:null,audioRate:1,autoCenter:!0,backend:"WebAudio",barHeight:1,closeAudioContext:!1,container:null,cursorColor:"#333",cursorWidth:1,dragSelection:!0,fillParent:!0,forceDecode:!1,height:128,hideScrollbar:!1,interact:!0,loopSelection:!0,mediaContainer:null,mediaControls:!1,mediaType:"audio",minPxPerSec:20,partialRender:!1,pixelRatio:window.devicePixelRatio||screen.deviceXDPI/screen.logicalXDPI,progressColor:"#555",normalize:!1,renderer:"MultiCanvas",scrollParent:!1,skipLength:2,splitChannels:!1,waveColor:"#999"},init:function(b){if(this.params=a.util.extend({},this.defaultParams,b),this.container="string"==typeof b.container?document.querySelector(this.params.container):this.params.container,!this.container)throw new Error("Container element not found");if(null==this.params.mediaContainer?this.mediaContainer=this.container:"string"==typeof this.params.mediaContainer?this.mediaContainer=document.querySelector(this.params.mediaContainer):this.mediaContainer=this.params.mediaContainer,!this.mediaContainer)throw new Error("Media Container element not found");this.savedVolume=0,this.isMuted=!1,this.tmpEvents=[],this.currentAjax=null,this.createDrawer(),this.createBackend(),this.createPeakCache(),this.isDestroyed=!1},createDrawer:function(){var b=this;this.drawer=Object.create(a.Drawer[this.params.renderer]),this.drawer.init(this.container,this.params),this.drawer.on("redraw",function(){b.drawBuffer(),b.drawer.progress(b.backend.getPlayedPercents())}),this.drawer.on("click",function(a,c){setTimeout(function(){b.seekTo(c)},0)}),this.drawer.on("scroll",function(a){b.params.partialRender&&b.drawBuffer(),b.fireEvent("scroll",a)})},createBackend:function(){var b=this;this.backend&&this.backend.destroy(),"AudioElement"==this.params.backend&&(this.params.backend="MediaElement"),"WebAudio"!=this.params.backend||a.WebAudio.supportsWebAudio()||(this.params.backend="MediaElement"),this.backend=Object.create(a[this.params.backend]),this.backend.init(this.params),this.backend.on("finish",function(){b.fireEvent("finish")}),this.backend.on("play",function(){b.fireEvent("play")}),this.backend.on("pause",function(){b.fireEvent("pause")}),this.backend.on("audioprocess",function(a){b.drawer.progress(b.backend.getPlayedPercents()),b.fireEvent("audioprocess",a)})},createPeakCache:function(){this.params.partialRender&&(this.peakCache=Object.create(a.PeakCache),this.peakCache.init())},getDuration:function(){return this.backend.getDuration()},getCurrentTime:function(){return this.backend.getCurrentTime()},play:function(a,b){this.fireEvent("interaction",this.play.bind(this,a,b)),this.backend.play(a,b)},pause:function(){this.backend.isPaused()||this.backend.pause()},playPause:function(){this.backend.isPaused()?this.play():this.pause()},isPlaying:function(){return!this.backend.isPaused()},skipBackward:function(a){this.skip(-a||-this.params.skipLength)},skipForward:function(a){this.skip(a||this.params.skipLength)},skip:function(a){var b=this.getCurrentTime()||0,c=this.getDuration()||1;b=Math.max(0,Math.min(c,b+(a||0))),this.seekAndCenter(b/c)},seekAndCenter:function(a){this.seekTo(a),this.drawer.recenter(a)},seekTo:function(a){this.fireEvent("interaction",this.seekTo.bind(this,a));var b=this.backend.isPaused();b||this.backend.pause();var c=this.params.scrollParent;this.params.scrollParent=!1,this.backend.seekTo(a*this.getDuration()),this.drawer.progress(this.backend.getPlayedPercents()),b||this.backend.play(),this.params.scrollParent=c,this.fireEvent("seek",a)},stop:function(){this.pause(),this.seekTo(0),this.drawer.progress(0)},setVolume:function(a){this.backend.setVolume(a)},getVolume:function(){return this.backend.getVolume()},setPlaybackRate:function(a){this.backend.setPlaybackRate(a)},getPlaybackRate:function(){return this.backend.getPlaybackRate()},toggleMute:function(){this.setMute(!this.isMuted)},setMute:function(a){a!==this.isMuted&&(a?(this.savedVolume=this.backend.getVolume(),this.backend.setVolume(0),this.isMuted=!0):(this.backend.setVolume(this.savedVolume),this.isMuted=!1))},getMute:function(){return this.isMuted},getFilters:function(){return this.backend.filters||[]},toggleScroll:function(){this.params.scrollParent=!this.params.scrollParent,this.drawBuffer()},toggleInteraction:function(){this.params.interact=!this.params.interact},drawBuffer:function(){var a=Math.round(this.getDuration()*this.params.minPxPerSec*this.params.pixelRatio),b=this.drawer.getWidth(),c=a,d=this.drawer.getScrollX(),e=Math.min(d+b,c);if(this.params.fillParent&&(!this.params.scrollParent||a<b)&&(c=b,d=0,e=c),this.params.partialRender)for(var f=this.peakCache.addRangeToPeakCache(c,d,e),g=0;g<f.length;g++){var h=this.backend.getPeaks(c,f[g][0],f[g][1]);this.drawer.drawPeaks(h,c,f[g][0],f[g][1])}else{d=0,e=c;var h=this.backend.getPeaks(c,d,e);this.drawer.drawPeaks(h,c,d,e)}this.fireEvent("redraw",h,c)},zoom:function(a){this.params.minPxPerSec=a,this.params.scrollParent=!0,this.drawBuffer(),this.drawer.progress(this.backend.getPlayedPercents()),this.drawer.recenter(this.getCurrentTime()/this.getDuration()),this.fireEvent("zoom",a)},loadArrayBuffer:function(a){this.decodeArrayBuffer(a,function(a){this.isDestroyed||this.loadDecodedBuffer(a)}.bind(this))},loadDecodedBuffer:function(a){this.backend.load(a),this.drawBuffer(),this.fireEvent("ready")},loadBlob:function(a){var b=this,c=new FileReader;c.addEventListener("progress",function(a){b.onProgress(a)}),c.addEventListener("load",function(a){b.loadArrayBuffer(a.target.result)}),c.addEventListener("error",function(){b.fireEvent("error","Error reading file")}),c.readAsArrayBuffer(a),this.empty()},load:function(a,b,c){switch(this.empty(),this.params.backend){case"WebAudio":return this.loadBuffer(a,b);case"MediaElement":return this.loadMediaElement(a,b,c)}},loadBuffer:function(a,b){var c=function(b){return b&&this.tmpEvents.push(this.once("ready",b)),this.getArrayBuffer(a,this.loadArrayBuffer.bind(this))}.bind(this);return b?(this.backend.setPeaks(b),this.drawBuffer(),this.tmpEvents.push(this.once("interaction",c)),void 0):c()},loadMediaElement:function(a,b,c){var d=a;if("string"==typeof a)this.backend.load(d,this.mediaContainer,b,c);else{var e=a;this.backend.loadElt(e,b),d=e.src}this.tmpEvents.push(this.backend.once("canplay",function(){this.drawBuffer(),this.fireEvent("ready")}.bind(this)),this.backend.once("error",function(a){this.fireEvent("error",a)}.bind(this))),b&&this.backend.setPeaks(b),b&&!this.params.forceDecode||!this.backend.supportsWebAudio()||this.getArrayBuffer(d,function(a){this.decodeArrayBuffer(a,function(a){this.backend.buffer=a,this.backend.setPeaks(null),this.drawBuffer(),this.fireEvent("waveform-ready")}.bind(this))}.bind(this))},decodeArrayBuffer:function(a,b){this.arraybuffer=a,this.backend.decodeArrayBuffer(a,function(c){this.isDestroyed||this.arraybuffer!=a||(b(c),this.arraybuffer=null)}.bind(this),this.fireEvent.bind(this,"error","Error decoding audiobuffer"))},getArrayBuffer:function(b,c){var d=this,e=a.util.ajax({url:b,responseType:"arraybuffer"});return this.currentAjax=e,this.tmpEvents.push(e.on("progress",function(a){d.onProgress(a)}),e.on("success",function(a,b){c(a),d.currentAjax=null}),e.on("error",function(a){d.fireEvent("error","XHR error: "+a.target.statusText),d.currentAjax=null})),e},onProgress:function(a){if(a.lengthComputable)var b=a.loaded/a.total;else b=a.loaded/(a.loaded+1e6);this.fireEvent("loading",Math.round(100*b),a.target)},exportPCM:function(a,b,c){a=a||1024,b=b||1e4,c=c||!1;var d=this.backend.getPeaks(a,b),e=[].map.call(d,function(a){return Math.round(a*b)/b}),f=JSON.stringify(e);return c||window.open("data:application/json;charset=utf-8,"+encodeURIComponent(f)),f},exportImage:function(a,b){return a||(a="image/png"),b||(b=1),this.drawer.getImage(a,b)},cancelAjax:function(){this.currentAjax&&(this.currentAjax.xhr.abort(),this.currentAjax=null)},clearTmpEvents:function(){this.tmpEvents.forEach(function(a){a.un()})},empty:function(){this.backend.isPaused()||(this.stop(),this.backend.disconnectSource()),this.cancelAjax(),this.clearTmpEvents(),this.drawer.progress(0),this.drawer.setWidth(0),this.drawer.drawPeaks({length:this.drawer.getWidth()},0)},destroy:function(){this.fireEvent("destroy"),this.cancelAjax(),this.clearTmpEvents(),this.unAll(),this.backend.destroy(),this.drawer.destroy(),this.isDestroyed=!0}};return a.create=function(b){var c=Object.create(a);return c.init(b),c},a.util={extend:function(a){var b=Array.prototype.slice.call(arguments,1);return b.forEach(function(b){Object.keys(b).forEach(function(c){a[c]=b[c]})}),a},debounce:function(a,b,c){var d,e,f,g=function(){f=null,c||a.apply(e,d)};return function(){e=this,d=arguments;var h=c&&!f;clearTimeout(f),f=setTimeout(g,b),f||(f=setTimeout(g,b)),h&&a.apply(e,d)}},min:function(a){var b=+(1/0);for(var c in a)a[c]<b&&(b=a[c]);return b},max:function(a){var b=-(1/0);for(var c in a)a[c]>b&&(b=a[c]);return b},getId:function(){return"wavesurfer_"+Math.random().toString(32).substring(2)},ajax:function(b){var c=Object.create(a.Observer),d=new XMLHttpRequest,e=!1;return d.open(b.method||"GET",b.url,!0),d.responseType=b.responseType||"json",d.addEventListener("progress",function(a){c.fireEvent("progress",a),a.lengthComputable&&a.loaded==a.total&&(e=!0)}),d.addEventListener("load",function(a){e||c.fireEvent("progress",a),c.fireEvent("load",a),200==d.status||206==d.status?c.fireEvent("success",d.response,a):c.fireEvent("error",a)}),d.addEventListener("error",function(a){c.fireEvent("error",a)}),d.send(),c.xhr=d,c}},a.Observer={on:function(a,b){this.handlers||(this.handlers={});var c=this.handlers[a];return c||(c=this.handlers[a]=[]),c.push(b),{name:a,callback:b,un:this.un.bind(this,a,b)}},un:function(a,b){if(this.handlers){var c=this.handlers[a];if(c)if(b)for(var d=c.length-1;d>=0;d--)c[d]==b&&c.splice(d,1);else c.length=0}},unAll:function(){this.handlers=null},once:function(a,b){var c=this,d=function(){b.apply(this,arguments),setTimeout(function(){c.un(a,d)},0)};return this.on(a,d)},fireEvent:function(a){if(this.handlers){var b=this.handlers[a],c=Array.prototype.slice.call(arguments,1);b&&b.forEach(function(a){a.apply(null,c)})}}},a.util.extend(a,a.Observer),a.WebAudio={scriptBufferSize:256,PLAYING_STATE:0,PAUSED_STATE:1,FINISHED_STATE:2,supportsWebAudio:function(){return!(!window.AudioContext&&!window.webkitAudioContext)},getAudioContext:function(){return a.WebAudio.audioContext||(a.WebAudio.audioContext=new(window.AudioContext||window.webkitAudioContext)),a.WebAudio.audioContext},getOfflineAudioContext:function(b){return a.WebAudio.offlineAudioContext||(a.WebAudio.offlineAudioContext=new(window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,2,b)),a.WebAudio.offlineAudioContext},init:function(b){this.params=b,this.ac=b.audioContext||this.getAudioContext(),this.lastPlay=this.ac.currentTime,this.startPosition=0,this.scheduledPause=null,this.states=[Object.create(a.WebAudio.state.playing),Object.create(a.WebAudio.state.paused),Object.create(a.WebAudio.state.finished)],this.createVolumeNode(),this.createScriptNode(),this.createAnalyserNode(),this.setState(this.PAUSED_STATE),this.setPlaybackRate(this.params.audioRate),this.setLength(0)},disconnectFilters:function(){this.filters&&(this.filters.forEach(function(a){a&&a.disconnect()}),this.filters=null,this.analyser.connect(this.gainNode))},setState:function(a){this.state!==this.states[a]&&(this.state=this.states[a],this.state.init.call(this))},setFilter:function(){this.setFilters([].slice.call(arguments))},setFilters:function(a){this.disconnectFilters(),a&&a.length&&(this.filters=a,this.analyser.disconnect(),a.reduce(function(a,b){return a.connect(b),b},this.analyser).connect(this.gainNode))},createScriptNode:function(){this.ac.createScriptProcessor?this.scriptNode=this.ac.createScriptProcessor(this.scriptBufferSize):this.scriptNode=this.ac.createJavaScriptNode(this.scriptBufferSize),this.scriptNode.connect(this.ac.destination)},addOnAudioProcess:function(){var a=this;this.scriptNode.onaudioprocess=function(){var b=a.getCurrentTime();b>=a.getDuration()?(a.setState(a.FINISHED_STATE),a.fireEvent("pause")):b>=a.scheduledPause?a.pause():a.state===a.states[a.PLAYING_STATE]&&a.fireEvent("audioprocess",b)}},removeOnAudioProcess:function(){this.scriptNode.onaudioprocess=null},createAnalyserNode:function(){this.analyser=this.ac.createAnalyser(),this.analyser.connect(this.gainNode)},createVolumeNode:function(){this.ac.createGain?this.gainNode=this.ac.createGain():this.gainNode=this.ac.createGainNode(),this.gainNode.connect(this.ac.destination)},setVolume:function(a){this.gainNode.gain.value=a},getVolume:function(){return this.gainNode.gain.value},decodeArrayBuffer:function(a,b,c){this.offlineAc||(this.offlineAc=this.getOfflineAudioContext(this.ac?this.ac.sampleRate:44100)),this.offlineAc.decodeAudioData(a,function(a){b(a)}.bind(this),c)},setPeaks:function(a){this.peaks=a},setLength:function(a){if(!this.mergedPeaks||a!=2*this.mergedPeaks.length-1+2){this.splitPeaks=[],this.mergedPeaks=[];for(var b=this.buffer?this.buffer.numberOfChannels:1,c=0;c<b;c++)this.splitPeaks[c]=[],this.splitPeaks[c][2*(a-1)]=0,this.splitPeaks[c][2*(a-1)+1]=0;this.mergedPeaks[2*(a-1)]=0,this.mergedPeaks[2*(a-1)+1]=0}},getPeaks:function(a,b,c){if(this.peaks)return this.peaks;this.setLength(a);for(var d=this.buffer.length/a,e=~~(d/10)||1,f=this.buffer.numberOfChannels,g=0;g<f;g++)for(var h=this.splitPeaks[g],i=this.buffer.getChannelData(g),j=b;j<=c;j++){for(var k=~~(j*d),l=~~(k+d),m=0,n=0,o=k;o<l;o+=e){var p=i[o];p>n&&(n=p),p<m&&(m=p)}h[2*j]=n,h[2*j+1]=m,(0==g||n>this.mergedPeaks[2*j])&&(this.mergedPeaks[2*j]=n),(0==g||m<this.mergedPeaks[2*j+1])&&(this.mergedPeaks[2*j+1]=m)}return this.params.splitChannels?this.splitPeaks:this.mergedPeaks},getPlayedPercents:function(){return this.state.getPlayedPercents.call(this)},disconnectSource:function(){this.source&&this.source.disconnect()},destroy:function(){this.isPaused()||this.pause(),this.unAll(),this.buffer=null,this.disconnectFilters(),this.disconnectSource(),this.gainNode.disconnect(),this.scriptNode.disconnect(),this.analyser.disconnect(),this.params.closeAudioContext&&("function"==typeof this.ac.close&&"closed"!=this.ac.state&&this.ac.close(),this.ac=null,this.params.audioContext?this.params.audioContext=null:a.WebAudio.audioContext=null,a.WebAudio.offlineAudioContext=null)},load:function(a){this.startPosition=0,this.lastPlay=this.ac.currentTime,this.buffer=a,this.createSource()},createSource:function(){this.disconnectSource(),this.source=this.ac.createBufferSource(),this.source.start=this.source.start||this.source.noteGrainOn,this.source.stop=this.source.stop||this.source.noteOff,this.source.playbackRate.value=this.playbackRate,this.source.buffer=this.buffer,this.source.connect(this.analyser)},isPaused:function(){return this.state!==this.states[this.PLAYING_STATE]},getDuration:function(){return this.buffer?this.buffer.duration:0},seekTo:function(a,b){if(this.buffer)return this.scheduledPause=null,null==a&&(a=this.getCurrentTime(),a>=this.getDuration()&&(a=0)),null==b&&(b=this.getDuration()),this.startPosition=a,this.lastPlay=this.ac.currentTime,this.state===this.states[this.FINISHED_STATE]&&this.setState(this.PAUSED_STATE),{start:a,end:b}},getPlayedTime:function(){return(this.ac.currentTime-this.lastPlay)*this.playbackRate},play:function(a,b){if(this.buffer){this.createSource();var c=this.seekTo(a,b);a=c.start,b=c.end,this.scheduledPause=b,this.source.start(0,a,b-a),"suspended"==this.ac.state&&this.ac.resume&&this.ac.resume(),this.setState(this.PLAYING_STATE),this.fireEvent("play")}},pause:function(){this.scheduledPause=null,this.startPosition+=this.getPlayedTime(),this.source&&this.source.stop(0),this.setState(this.PAUSED_STATE),this.fireEvent("pause")},getCurrentTime:function(){return this.state.getCurrentTime.call(this)},getPlaybackRate:function(){return this.playbackRate},setPlaybackRate:function(a){a=a||1,this.isPaused()?this.playbackRate=a:(this.pause(),this.playbackRate=a,this.play())}},a.WebAudio.state={},a.WebAudio.state.playing={init:function(){this.addOnAudioProcess()},getPlayedPercents:function(){var a=this.getDuration();return this.getCurrentTime()/a||0},getCurrentTime:function(){return this.startPosition+this.getPlayedTime()}},a.WebAudio.state.paused={init:function(){this.removeOnAudioProcess()},getPlayedPercents:function(){var a=this.getDuration();return this.getCurrentTime()/a||0},getCurrentTime:function(){return this.startPosition}},a.WebAudio.state.finished={init:function(){this.removeOnAudioProcess(),this.fireEvent("finish")},getPlayedPercents:function(){return 1},getCurrentTime:function(){return this.getDuration()}},a.util.extend(a.WebAudio,a.Observer),a.MediaElement=Object.create(a.WebAudio),a.util.extend(a.MediaElement,{init:function(a){this.params=a,this.media={currentTime:0,duration:0,paused:!0,playbackRate:1,play:function(){},pause:function(){}},this.mediaType=a.mediaType.toLowerCase(),this.elementPosition=a.elementPosition,this.setPlaybackRate(this.params.audioRate),this.createTimer()},createTimer:function(){var a=this,b=function(){if(!a.isPaused()){a.fireEvent("audioprocess",a.getCurrentTime());var c=window.requestAnimationFrame||window.webkitRequestAnimationFrame;c(b)}};this.on("play",b)},load:function(a,b,c,d){var e=document.createElement(this.mediaType);e.controls=this.params.mediaControls,e.autoplay=this.params.autoplay||!1,e.preload=null==d?"auto":d,e.src=a,e.style.width="100%";var f=b.querySelector(this.mediaType);f&&b.removeChild(f),b.appendChild(e),this._load(e,c)},loadElt:function(a,b){var c=a;c.controls=this.params.mediaControls,c.autoplay=this.params.autoplay||!1,this._load(c,b)},_load:function(a,b){var c=this;"function"==typeof a.load&&a.load(),a.addEventListener("error",function(){c.fireEvent("error","Error loading media element")}),a.addEventListener("canplay",function(){c.fireEvent("canplay")}),a.addEventListener("ended",function(){c.fireEvent("finish")}),this.media=a,this.peaks=b,this.onPlayEnd=null,this.buffer=null,this.setPlaybackRate(this.playbackRate)},isPaused:function(){return!this.media||this.media.paused},getDuration:function(){var a=(this.buffer||this.media).duration;return a>=1/0&&(a=this.media.seekable.end(0)),a},getCurrentTime:function(){return this.media&&this.media.currentTime},getPlayedPercents:function(){return this.getCurrentTime()/this.getDuration()||0},getPlaybackRate:function(){return this.playbackRate||this.media.playbackRate},setPlaybackRate:function(a){this.playbackRate=a||1,this.media.playbackRate=this.playbackRate},seekTo:function(a){null!=a&&(this.media.currentTime=a),this.clearPlayEnd()},play:function(a,b){this.seekTo(a),this.media.play(),b&&this.setPlayEnd(b),this.fireEvent("play")},pause:function(){this.media&&this.media.pause(),this.clearPlayEnd(),this.fireEvent("pause")},setPlayEnd:function(a){var b=this;this.onPlayEnd=function(c){c>=a&&(b.pause(),b.seekTo(a))},this.on("audioprocess",this.onPlayEnd)},clearPlayEnd:function(){this.onPlayEnd&&(this.un("audioprocess",this.onPlayEnd),this.onPlayEnd=null)},getPeaks:function(b,c,d){return this.buffer?a.WebAudio.getPeaks.call(this,b,c,d):this.peaks||[]},getVolume:function(){return this.media.volume},setVolume:function(a){this.media.volume=a},destroy:function(){this.pause(),this.unAll(),this.media&&this.media.parentNode&&this.media.parentNode.removeChild(this.media),this.media=null}}),a.AudioElement=a.MediaElement,a.Drawer={init:function(a,b){this.container=a,this.params=b,this.width=0,this.height=b.height*this.params.pixelRatio,this.lastPos=0,this.initDrawer(b),this.createWrapper(),this.createElements()},createWrapper:function(){this.wrapper=this.container.appendChild(document.createElement("wave")),this.style(this.wrapper,{display:"block",position:"relative",userSelect:"none",webkitUserSelect:"none",height:this.params.height+"px"}),(this.params.fillParent||this.params.scrollParent)&&this.style(this.wrapper,{width:"100%",overflowX:this.params.hideScrollbar?"hidden":"auto",overflowY:"hidden"}),this.setupWrapperEvents()},handleEvent:function(a,b){!b&&a.preventDefault();var c,d=a.targetTouches?a.targetTouches[0].clientX:a.clientX,e=this.wrapper.getBoundingClientRect(),f=this.width,g=this.getWidth();return!this.params.fillParent&&f<g?(c=(d-e.left)*this.params.pixelRatio/f||0,c>1&&(c=1)):c=(d-e.left+this.wrapper.scrollLeft)/this.wrapper.scrollWidth||0,c},setupWrapperEvents:function(){var a=this;this.wrapper.addEventListener("click",function(b){var c=a.wrapper.offsetHeight-a.wrapper.clientHeight;if(0!=c){var d=a.wrapper.getBoundingClientRect();if(b.clientY>=d.bottom-c)return}a.params.interact&&a.fireEvent("click",b,a.handleEvent(b))}),this.wrapper.addEventListener("scroll",function(b){a.fireEvent("scroll",b)})},drawPeaks:function(a,b,c,d){this.setWidth(b),this.params.barWidth?this.drawBars(a,0,c,d):this.drawWave(a,0,c,d)},style:function(a,b){return Object.keys(b).forEach(function(c){a.style[c]!==b[c]&&(a.style[c]=b[c])}),a},resetScroll:function(){null!==this.wrapper&&(this.wrapper.scrollLeft=0)},recenter:function(a){var b=this.wrapper.scrollWidth*a;this.recenterOnPosition(b,!0)},recenterOnPosition:function(a,b){var c=this.wrapper.scrollLeft,d=~~(this.wrapper.clientWidth/2),e=a-d,f=e-c,g=this.wrapper.scrollWidth-this.wrapper.clientWidth;if(0!=g){if(!b&&-d<=f&&f<d){var h=5;f=Math.max(-h,Math.min(h,f)),e=c+f}e=Math.max(0,Math.min(g,e)),e!=c&&(this.wrapper.scrollLeft=e)}},getScrollX:function(){return Math.round(this.wrapper.scrollLeft*this.params.pixelRatio)},getWidth:function(){return Math.round(this.container.clientWidth*this.params.pixelRatio)},setWidth:function(a){this.width!=a&&(this.width=a,this.params.fillParent||this.params.scrollParent?this.style(this.wrapper,{width:""}):this.style(this.wrapper,{width:~~(this.width/this.params.pixelRatio)+"px"}),this.updateSize())},setHeight:function(a){a!=this.height&&(this.height=a,this.style(this.wrapper,{height:~~(this.height/this.params.pixelRatio)+"px"}),this.updateSize())},progress:function(a){var b=1/this.params.pixelRatio,c=Math.round(a*this.width)*b;if(c<this.lastPos||c-this.lastPos>=b){if(this.lastPos=c,this.params.scrollParent&&this.params.autoCenter){var d=~~(this.wrapper.scrollWidth*a);this.recenterOnPosition(d)}this.updateProgress(c)}},destroy:function(){this.unAll(),this.wrapper&&(this.container.removeChild(this.wrapper),this.wrapper=null)},initDrawer:function(){},createElements:function(){},updateSize:function(){},drawWave:function(a,b){},clearWave:function(){},updateProgress:function(a){}},a.util.extend(a.Drawer,a.Observer),a.Drawer.Canvas=Object.create(a.Drawer),a.util.extend(a.Drawer.Canvas,{createElements:function(){var a=this.wrapper.appendChild(this.style(document.createElement("canvas"),{position:"absolute",zIndex:1,left:0,top:0,bottom:0}));if(this.waveCc=a.getContext("2d"),this.progressWave=this.wrapper.appendChild(this.style(document.createElement("wave"),{position:"absolute",zIndex:2,left:0,top:0,bottom:0,overflow:"hidden",width:"0",display:"none",boxSizing:"border-box",borderRightStyle:"solid",borderRightWidth:this.params.cursorWidth+"px",borderRightColor:this.params.cursorColor})),this.params.waveColor!=this.params.progressColor){var b=this.progressWave.appendChild(document.createElement("canvas"));this.progressCc=b.getContext("2d")}},updateSize:function(){var a=Math.round(this.width/this.params.pixelRatio);this.waveCc.canvas.width=this.width,this.waveCc.canvas.height=this.height,this.style(this.waveCc.canvas,{width:a+"px"}),this.style(this.progressWave,{display:"block"}),this.progressCc&&(this.progressCc.canvas.width=this.width,this.progressCc.canvas.height=this.height,this.style(this.progressCc.canvas,{width:a+"px"})),this.clearWave()},clearWave:function(){this.waveCc.clearRect(0,0,this.width,this.height),this.progressCc&&this.progressCc.clearRect(0,0,this.width,this.height)},drawBars:function(b,c,d,e){var f=this;if(b[0]instanceof Array){var g=b;if(this.params.splitChannels)return this.setHeight(g.length*this.params.height*this.params.pixelRatio),void g.forEach(function(a,b){f.drawBars(a,b,d,e)});b=g[0]}var h=[].some.call(b,function(a){return a<0}),i=1;h&&(i=2);var j=.5/this.params.pixelRatio,k=this.width,l=this.params.height*this.params.pixelRatio,m=l*c||0,n=l/2,o=b.length/i,p=this.params.barWidth*this.params.pixelRatio,q=Math.max(this.params.pixelRatio,~~(p/2)),r=p+q,s=1/this.params.barHeight;if(this.params.normalize){var t=a.util.max(b),u=a.util.min(b);s=-u>t?-u:t}var v=o/k;this.waveCc.fillStyle=this.params.waveColor,this.progressCc&&(this.progressCc.fillStyle=this.params.progressColor),[this.waveCc,this.progressCc].forEach(function(a){if(a)for(var c=d/v;c<e/v;c+=r){var f=b[Math.floor(c*v*i)]||0,g=Math.round(f/s*n);a.fillRect(c+j,n-g+m,p+j,2*g)}},this)},drawWave:function(b,c,d,e){var f=this;if(b[0]instanceof Array){var g=b;if(this.params.splitChannels)return this.setHeight(g.length*this.params.height*this.params.pixelRatio),void g.forEach(function(a,b){f.drawWave(a,b,d,e)});b=g[0]}var h=[].some.call(b,function(a){return a<0});if(!h){for(var i=[],j=0,k=b.length;j<k;j++)i[2*j]=b[j],i[2*j+1]=-b[j];b=i}var l=.5/this.params.pixelRatio,m=this.params.height*this.params.pixelRatio,n=m*c||0,o=m/2,p=~~(b.length/2),q=1;this.params.fillParent&&this.width!=p&&(q=this.width/p);var r=1/this.params.barHeight;if(this.params.normalize){var s=a.util.max(b),t=a.util.min(b);r=-t>s?-t:s}this.waveCc.fillStyle=this.params.waveColor,this.progressCc&&(this.progressCc.fillStyle=this.params.progressColor),[this.waveCc,this.progressCc].forEach(function(a){if(a){a.beginPath(),a.moveTo(d*q+l,o+n);for(var c=d;c<e;c++){var f=Math.round(b[2*c]/r*o);a.lineTo(c*q+l,o-f+n)}for(var c=e-1;c>=d;c--){var f=Math.round(b[2*c+1]/r*o);a.lineTo(c*q+l,o-f+n)}a.closePath(),a.fill(),a.fillRect(0,o+n-l,this.width,l)}},this)},updateProgress:function(a){this.style(this.progressWave,{width:a+"px"})},getImage:function(a,b){return this.waveCc.canvas.toDataURL(a,b)}}),a.Drawer.MultiCanvas=Object.create(a.Drawer),a.util.extend(a.Drawer.MultiCanvas,{initDrawer:function(a){if(this.maxCanvasWidth=null!=a.maxCanvasWidth?a.maxCanvasWidth:4e3,this.maxCanvasElementWidth=Math.round(this.maxCanvasWidth/this.params.pixelRatio),this.maxCanvasWidth<=1)throw"maxCanvasWidth must be greater than 1.";if(this.maxCanvasWidth%2==1)throw"maxCanvasWidth must be an even number.";this.hasProgressCanvas=this.params.waveColor!=this.params.progressColor,this.halfPixel=.5/this.params.pixelRatio,this.canvases=[]},createElements:function(){this.progressWave=this.wrapper.appendChild(this.style(document.createElement("wave"),{position:"absolute",zIndex:2,left:0,top:0,bottom:0,overflow:"hidden",width:"0",display:"none",boxSizing:"border-box",borderRightStyle:"solid",borderRightWidth:this.params.cursorWidth+"px",borderRightColor:this.params.cursorColor})),this.addCanvas()},updateSize:function(){for(var a=Math.round(this.width/this.params.pixelRatio),b=Math.ceil(a/this.maxCanvasElementWidth);this.canvases.length<b;)this.addCanvas();for(;this.canvases.length>b;)this.removeCanvas();for(var c in this.canvases){var d=this.maxCanvasWidth+2*Math.ceil(this.params.pixelRatio/2);c==this.canvases.length-1&&(d=this.width-this.maxCanvasWidth*(this.canvases.length-1)),this.updateDimensions(this.canvases[c],d,this.height),this.clearWaveForEntry(this.canvases[c])}},addCanvas:function(){var a={},b=this.maxCanvasElementWidth*this.canvases.length;a.wave=this.wrapper.appendChild(this.style(document.createElement("canvas"),{position:"absolute",zIndex:1,left:b+"px",top:0,bottom:0})),a.waveCtx=a.wave.getContext("2d"),this.hasProgressCanvas&&(a.progress=this.progressWave.appendChild(this.style(document.createElement("canvas"),{position:"absolute",left:b+"px",top:0,bottom:0})),a.progressCtx=a.progress.getContext("2d")),this.canvases.push(a)},removeCanvas:function(){var a=this.canvases.pop();a.wave.parentElement.removeChild(a.wave),this.hasProgressCanvas&&a.progress.parentElement.removeChild(a.progress)},updateDimensions:function(a,b,c){var d=Math.round(b/this.params.pixelRatio),e=Math.round(this.width/this.params.pixelRatio);a.start=a.waveCtx.canvas.offsetLeft/e||0,a.end=a.start+d/e,a.waveCtx.canvas.width=b,a.waveCtx.canvas.height=c,this.style(a.waveCtx.canvas,{width:d+"px"}),this.style(this.progressWave,{display:"block"}),this.hasProgressCanvas&&(a.progressCtx.canvas.width=b,a.progressCtx.canvas.height=c,this.style(a.progressCtx.canvas,{width:d+"px"}))},clearWave:function(){for(var a in this.canvases)this.clearWaveForEntry(this.canvases[a])},clearWaveForEntry:function(a){a.waveCtx.clearRect(0,0,a.waveCtx.canvas.width,a.waveCtx.canvas.height),this.hasProgressCanvas&&a.progressCtx.clearRect(0,0,a.progressCtx.canvas.width,a.progressCtx.canvas.height)},drawBars:function(b,c,d,e){var f=this;if(b[0]instanceof Array){var g=b;if(this.params.splitChannels)return this.setHeight(g.length*this.params.height*this.params.pixelRatio),void g.forEach(function(a,b){f.drawBars(a,b,d,e)});b=g[0]}var h=[].some.call(b,function(a){return a<0}),i=1;h&&(i=2);var j=this.width,k=this.params.height*this.params.pixelRatio,l=k*c||0,m=k/2,n=b.length/i,o=this.params.barWidth*this.params.pixelRatio,p=Math.max(this.params.pixelRatio,~~(o/2)),q=o+p,r=1/this.params.barHeight;if(this.params.normalize){var s=a.util.max(b),t=a.util.min(b);r=-t>s?-t:s}for(var u=n/j,v=d/u;v<e/u;v+=q){var w=b[Math.floor(v*u*i)]||0,x=Math.round(w/r*m);this.fillRect(v+this.halfPixel,m-x+l,o+this.halfPixel,2*x)}},drawWave:function(b,c,d,e){var f=this;if(b[0]instanceof Array){var g=b;if(this.params.splitChannels)return this.setHeight(g.length*this.params.height*this.params.pixelRatio),void g.forEach(function(a,b){f.drawWave(a,b,d,e)});b=g[0]}var h=[].some.call(b,function(a){return a<0});if(!h){for(var i=[],j=0,k=b.length;j<k;j++)i[2*j]=b[j],i[2*j+1]=-b[j];b=i}var l=this.params.height*this.params.pixelRatio,m=l*c||0,n=l/2,o=1/this.params.barHeight;if(this.params.normalize){var p=a.util.max(b),q=a.util.min(b);o=-q>p?-q:p}this.drawLine(b,o,n,m,d,e),this.fillRect(0,n+m-this.halfPixel,this.width,this.halfPixel)},drawLine:function(a,b,c,d,e,f){for(var g in this.canvases){var h=this.canvases[g];this.setFillStyles(h),this.drawLineToContext(h,h.waveCtx,a,b,c,d,e,f),this.drawLineToContext(h,h.progressCtx,a,b,c,d,e,f)}},drawLineToContext:function(a,b,c,d,e,f,g,h){if(b){var i=c.length/2,j=1;this.params.fillParent&&this.width!=i&&(j=this.width/i);var k=Math.round(i*a.start),l=Math.round(i*a.end);if(!(k>h||l<g)){var m=Math.max(k,g),n=Math.min(l,h);b.beginPath(),b.moveTo((m-k)*j+this.halfPixel,e+f);for(var o=m;o<n;o++){var p=c[2*o]||0,q=Math.round(p/d*e);b.lineTo((o-k)*j+this.halfPixel,e-q+f)}for(var o=n-1;o>=m;o--){var p=c[2*o+1]||0,q=Math.round(p/d*e);b.lineTo((o-k)*j+this.halfPixel,e-q+f)}b.closePath(),b.fill()}}},fillRect:function(a,b,c,d){for(var e=Math.floor(a/this.maxCanvasWidth),f=Math.min(Math.ceil((a+c)/this.maxCanvasWidth)+1,this.canvases.length),g=e;g<f;g++){var h=this.canvases[g],i=g*this.maxCanvasWidth,j={x1:Math.max(a,g*this.maxCanvasWidth),y1:b,x2:Math.min(a+c,g*this.maxCanvasWidth+h.waveCtx.canvas.width),y2:b+d};j.x1<j.x2&&(this.setFillStyles(h),this.fillRectToContext(h.waveCtx,j.x1-i,j.y1,j.x2-j.x1,j.y2-j.y1),this.fillRectToContext(h.progressCtx,j.x1-i,j.y1,j.x2-j.x1,j.y2-j.y1))}},fillRectToContext:function(a,b,c,d,e){a&&a.fillRect(b,c,d,e)},setFillStyles:function(a){a.waveCtx.fillStyle=this.params.waveColor,this.hasProgressCanvas&&(a.progressCtx.fillStyle=this.params.progressColor)},updateProgress:function(a){this.style(this.progressWave,{width:a+"px"})},getImage:function(a,b){var c=[];return this.canvases.forEach(function(d){c.push(d.wave.toDataURL(a,b))}),c.length>1?c:c[0]}}),a.Drawer.SplitWavePointPlot=Object.create(a.Drawer.Canvas),a.util.extend(a.Drawer.SplitWavePointPlot,{defaultPlotParams:{plotNormalizeTo:"whole",plotTimeStart:0,plotMin:0,plotMax:1,plotColor:"#f63",plotProgressColor:"#F00",
-plotPointHeight:2,plotPointWidth:2,plotSeparator:!0,plotSeparatorColor:"black",plotRangeDisplay:!1,plotRangeUnits:"",plotRangePrecision:4,plotRangeIgnoreOutliers:!1,plotRangeFontSize:12,plotRangeFontType:"Ariel",waveDrawMedianLine:!0,plotFileDelimiter:"\t"},plotTimeStart:0,plotTimeEnd:-1,plotArrayLoaded:!1,plotArray:[],plotPoints:[],plotMin:0,plotMax:1,initDrawer:function(a){var b=this;for(var c in this.defaultPlotParams)void 0===this.params[c]&&(this.params[c]=this.defaultPlotParams[c]);if(this.plotTimeStart=this.params.plotTimeStart,void 0!==this.params.plotTimeEnd&&(this.plotTimeEnd=this.params.plotTimeEnd),Array.isArray(a.plotArray))this.plotArray=a.plotArray,this.plotArrayLoaded=!0;else{var d=function(a){b.plotArray=a,b.plotArrayLoaded=!0,b.fireEvent("plot_array_loaded")};this.loadPlotArrayFromFile(a.plotFileUrl,d,this.params.plotFileDelimiter)}},drawPeaks:function(a,b,c,d){if(1==this.plotArrayLoaded)this.setWidth(b),this.splitChannels=!0,this.params.height=this.params.height/2,a[0]instanceof Array&&(a=a[0]),this.params.barWidth?this.drawBars(a,1,c,d):this.drawWave(a,1,c,d),this.params.height=2*this.params.height,this.calculatePlots(),this.drawPlots();else{var e=this;e.on("plot-array-loaded",function(){e.drawPeaks(a,b,c,d)})}},drawPlots:function(){var a=this.params.height*this.params.pixelRatio/2,b=.5/this.params.pixelRatio;this.waveCc.fillStyle=this.params.plotColor,this.progressCc&&(this.progressCc.fillStyle=this.params.plotProgressColor);for(var c in this.plotPoints){var d=parseInt(c),e=a-this.params.plotPointHeight-this.plotPoints[c]*(a-this.params.plotPointHeight),f=this.params.plotPointHeight;this.waveCc.fillRect(d,e,this.params.plotPointWidth,f),this.progressCc&&this.progressCc.fillRect(d,e,this.params.plotPointWidth,f)}this.params.plotSeparator&&(this.waveCc.fillStyle=this.params.plotSeparatorColor,this.waveCc.fillRect(0,a,this.width,b)),this.params.plotRangeDisplay&&this.displayPlotRange()},displayPlotRange:function(){var a=this.params.plotRangeFontSize*this.params.pixelRatio,b=this.plotMax.toPrecision(this.params.plotRangePrecision)+" "+this.params.plotRangeUnits,c=this.plotMin.toPrecision(this.params.plotRangePrecision)+" "+this.params.plotRangeUnits;this.waveCc.font=a.toString()+"px "+this.params.plotRangeFontType,this.waveCc.fillText(b,3,a),this.waveCc.fillText(c,3,this.height/2)},calculatePlots:function(){this.plotPoints={},this.calculatePlotTimeEnd();for(var a=[],b=-1,c=0,d=99999999999999,e=0,f=99999999999999,g=this.plotTimeEnd-this.plotTimeStart,h=0;h<this.plotArray.length;h++){var i=this.plotArray[h];if(i.value>c&&(c=i.value),i.value<d&&(d=i.value),i.time>=this.plotTimeStart&&i.time<=this.plotTimeEnd){var j=Math.round(this.width*(i.time-this.plotTimeStart)/g);if(a.push(i.value),j!==b&&a.length>0){var k=this.avg(a);k>e&&(e=k),k<f&&(f=k),this.plotPoints[b]=k,a=[]}b=j}}"whole"==this.params.plotNormalizeTo?(this.plotMin=d,this.plotMax=c):"values"==this.params.plotNormalizeTo?(this.plotMin=this.params.plotMin,this.plotMax=this.params.plotMax):(this.plotMin=f,this.plotMax=e),this.normalizeValues()},normalizeValues:function(){var a={};if("none"!==this.params.plotNormalizeTo){for(var b in this.plotPoints){var c=(this.plotPoints[b]-this.plotMin)/(this.plotMax-this.plotMin);c>1?this.params.plotRangeIgnoreOutliers||(a[b]=1):c<0?this.params.plotRangeIgnoreOutliers||(a[b]=0):a[b]=c}this.plotPoints=a}},loadPlotArrayFromFile:function(b,c,d){void 0===d&&(d="\t");var e=[],f={url:b,responseType:"text"},g=a.util.ajax(f);g.on("load",function(a){if(200==a.currentTarget.status){for(var b=a.currentTarget.responseText.split("\n"),f=0;f<b.length;f++){var g=b[f].split(d);2==g.length&&e.push({time:parseFloat(g[0]),value:parseFloat(g[1])})}c(e)}})},calculatePlotTimeEnd:function(){void 0!==this.params.plotTimeEnd?this.plotTimeEnd=this.params.plotTimeEnd:this.plotTimeEnd=this.plotArray[this.plotArray.length-1].time},avg:function(a){var b=a.reduce(function(a,b){return a+b});return b/a.length}}),a.util.extend(a.Drawer.SplitWavePointPlot,a.Observer),a.PeakCache={init:function(){this.clearPeakCache()},clearPeakCache:function(){this.peakCacheRanges=[],this.peakCacheLength=-1},addRangeToPeakCache:function(a,b,c){a!=this.peakCacheLength&&(this.clearPeakCache(),this.peakCacheLength=a);for(var d=[],e=0;e<this.peakCacheRanges.length&&this.peakCacheRanges[e]<b;)e++;for(e%2==0&&d.push(b);e<this.peakCacheRanges.length&&this.peakCacheRanges[e]<=c;)d.push(this.peakCacheRanges[e]),e++;e%2==0&&d.push(c),d=d.filter(function(a,b,c){return 0==b?a!=c[b+1]:b==c.length-1?a!=c[b-1]:a!=c[b-1]&&a!=c[b+1]}),this.peakCacheRanges=this.peakCacheRanges.concat(d),this.peakCacheRanges=this.peakCacheRanges.sort(function(a,b){return a-b}).filter(function(a,b,c){return 0==b?a!=c[b+1]:b==c.length-1?a!=c[b-1]:a!=c[b-1]&&a!=c[b+1]});var f=[];for(e=0;e<d.length;e+=2)f.push([d[e],d[e+1]]);return f},getCacheRanges:function(){for(var a=[],b=0;b<this.peakCacheRanges.length;b+=2)a.push([this.peakCacheRanges[b],this.peakCacheRanges[b+1]]);return a}},function(){var b=function(){var b=document.querySelectorAll("wavesurfer");Array.prototype.forEach.call(b,function(b){var c=a.util.extend({container:b,backend:"MediaElement",mediaControls:!0},b.dataset);b.style.display="block";var d=a.create(c);if(b.dataset.peaks)var e=JSON.parse(b.dataset.peaks);d.load(b.dataset.url,e)})};"complete"===document.readyState?b():window.addEventListener("load",b)}(),a});
-//# sourceMappingURL=wavesurfer.min.js.map
-
-/***/ }),
+/* 554 */,
 /* 555 */
 /***/ (function(module, exports) {
 
@@ -78980,4 +78483,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.c04ad8bdc8c98127727c.js.map
+//# sourceMappingURL=main.d197a4b416824b2d9c4a.js.map

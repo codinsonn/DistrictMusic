@@ -475,6 +475,10 @@ body {
   cursor: pointer;
 }
 
+.is-speaker .song-info {
+  cursor: not-allowed;
+}
+
 .song-title {
   position: absolute;
   display: block;
@@ -672,6 +676,10 @@ body {
 .search-query[disabled] {
   background-color: gainsboro;
   z-index: 0;
+}
+
+.is-speaker .search-query[disabled] {
+  cursor: not-allowed;
 }
 
 .suggestions-wrapper {
@@ -928,6 +936,12 @@ body {
 .profile:focus {
   background-color: rgba(66, 66, 66, 1);
   cursor: pointer;
+}
+
+.is-speaker .profile,
+.is-speaker .profile:hover,
+.is-speaker .profile:focus {
+  cursor: not-allowed;
 }
 
 .profile-img {

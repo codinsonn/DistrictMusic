@@ -7275,22 +7275,28 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.queue = res;
 
+      console.log('[PlaylistStore] QUEUE_CHANGED', _this2.queue[0].general.id, _this2.speakerSong);
+      console.log('[PlaylistStore] QUEUE_CHANGED', __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker(), __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched());
+
       _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
+      if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+
+        _this2.updateSpeakerSong();
+      } else if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
         if (_this2.userChosenSong.general === '') {
-          _this2.updateUserChosenSong();
+          _this2.updateUserChosenSong(_this2.queue[0]);
         }
 
-        _this2.updateSpeakerSong(false);
-      } else if ( /*!UserStore.getSynched() && */_this2.queue[0] && !_this2.hasFetchedQueue) {
+        _this2.updateSpeakerSong();
+      } else if (!_this2.hasFetchedQueue && _this2.queue[0]) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
-        _this2.updateUserChosenSong();
+        _this2.updateUserChosenSong(_this2.queue[0]);
       }
 
       _this2.hasFetchedQueue = true;
@@ -7308,9 +7314,11 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.endSongAndPlayNext = function endSongAndPlayNext(song) {
 
+    console.log('[Speaker] About to end song and play next');
+
     __WEBPACK_IMPORTED_MODULE_2__api___["a" /* songs */].endSongAndPlayNext(song).then(function (res) {
 
-      console.log('[Speaker] Ending song and playing next one', res);
+      console.log('[Speaker] Ended song, about play the next one', res);
     }, function (failData) {
 
       console.log('[Speaker] Failed to end song and play next:', failData);
@@ -7338,9 +7346,9 @@ var PlaylistStore = function (_EventEmitter) {
     }
   };
 
-  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong() {
+  PlaylistStore.prototype.updateUserChosenSong = function updateUserChosenSong(song) {
 
-    this.userChosenSong = this.queue[0];
+    this.userChosenSong = song;
     this.emit('SONG_CHANGED');
   };
 
@@ -7354,7 +7362,7 @@ var PlaylistStore = function (_EventEmitter) {
 
       this.speakerSong = this.queue[0];
 
-      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
         this.emit('SPEAKER_SONG_CHANGED');
       }
     }
@@ -78988,4 +78996,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.6340a823c08cb48c676a.js.map
+//# sourceMappingURL=main.29e39829f91914778796.js.map

@@ -7275,9 +7275,15 @@ var PlaylistStore = function (_EventEmitter) {
 
       _this2.queue = res;
 
+      console.log('[PlaylistStore] QUEUE_CHANGED', _this2.queue[0].general.id, _this2.speakerSong);
+      console.log('[PlaylistStore] QUEUE_CHANGED', __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker(), __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched());
+
       _this2.emit('QUEUE_CHANGED');
 
-      if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
+      if (__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+
+        _this2.updateSpeakerSong();
+      } else if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
@@ -7285,8 +7291,8 @@ var PlaylistStore = function (_EventEmitter) {
           _this2.updateUserChosenSong(_this2.queue[0]);
         }
 
-        _this2.updateSpeakerSong(false);
-      } else if (_this2.queue[0] && !_this2.hasFetchedQueue) {
+        _this2.updateSpeakerSong();
+      } else if (!_this2.hasFetchedQueue && _this2.queue[0]) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
@@ -7356,7 +7362,7 @@ var PlaylistStore = function (_EventEmitter) {
 
       this.speakerSong = this.queue[0];
 
-      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+      if (this.speakerSong.general === '' || asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
         this.emit('SPEAKER_SONG_CHANGED');
       }
     }
@@ -78990,4 +78996,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.50538413d2381faa0ddf.js.map
+//# sourceMappingURL=main.bdac98c7efb0d0a658eb.js.map
