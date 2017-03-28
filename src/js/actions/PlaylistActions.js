@@ -37,6 +37,13 @@ export function updateQueue() {
   });
 }
 
+export function pausePlay() {
+  console.log(`About to pause play`);
+  dispatcher.dispatch({
+    type: `PAUSE_PLAY`
+  });
+}
+
 export function setSong(song) {
   dispatcher.dispatch({
     type: `SET_USER_CHOSEN_SONG`,

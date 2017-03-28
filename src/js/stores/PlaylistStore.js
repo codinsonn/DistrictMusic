@@ -38,13 +38,14 @@ class PlaylistStore extends EventEmitter {
 
   updateQueue() {
 
+    console.log(`[PlaylistStore] About to update queue...`);
+
     songs.getAllQueued()
       .then(res => {
 
+        console.log(`[PlaylistStore] Queue Fetched!`);
+
         this.queue = res;
-
-        console.log(`[QUEUE_CHANGED]`, UserStore.getIsSpeaker(), this.speakerSong.general.id, this.queue[0].general.id);
-
         this.emit(`QUEUE_CHANGED`);
 
         if (UserStore.getIsSpeaker() && this.queue[0].general.id !== ``) {
@@ -372,6 +373,11 @@ class PlaylistStore extends EventEmitter {
 
     case `START_NEXT_SONG_UNSYNCHED`:
       this.startNextSongUnsynched(action.data);
+      break;
+
+    case `PAUSE_PLAY`:
+      console.log(`Pausing play`);
+      this.emit(`PAUSE_PLAY`);
       break;
 
     }

@@ -109,6 +109,7 @@ export default class SuggestionDetail extends Component {
           id='yt-player'
           class='yt-player'
           opts={opts}
+          onPlay={() => PlaylistActions.pausePlay()}
           onReady={this.handleOnVideoReady}
         />
       );

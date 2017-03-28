@@ -22,15 +22,23 @@ export default class AudioPlayer extends Component {
       isSynched: UserStore.getSynched()
     };
 
-    this.waveOptions = {
+    this.unSynchedWaveOptions = {
       height: 32,
       normalize: true,
-      //scrollParent: true,
-      //hideScrollBar: true,
       cursorColor: `#ffffff`,
       waveColor: `#c6c6c6`,
       progressColor: `#fecb58`
     };
+
+    /*this.synchedWaveOptions = {
+      height: 32,
+      normalize: true,
+      scrollParent: true,
+      hideScrollBar: true,
+      cursorColor: `#ffffff`,
+      waveColor: `#c6c6c6`,
+      progressColor: `#fecb58`
+    };*/
 
     this.prevSongId = ``;
     this.songHasStarted = false;
@@ -305,7 +313,12 @@ export default class AudioPlayer extends Component {
 
   renderPlayer() {
 
-    const {song, playing, pos} = this.state;
+    const {song, playing, pos/*, isSynched*/} = this.state;
+
+    const waveOptions = this.unSynchedWaveOptions;
+    /*if (isSynched) {
+      waveOptions = this.synchedWaveOptions;
+    }*/
 
     if (song.general !== ``) {
 
@@ -320,8 +333,7 @@ export default class AudioPlayer extends Component {
           onSeek={() => this.unSynch()}
           onFinish={() => this.handleSongEnd()}
           playing={playing}
-          options={this.waveOptions}
-          //zoom={10}
+          options={waveOptions}
         />
       );
 
