@@ -117,15 +117,17 @@ class PlaylistStore extends EventEmitter {
 
   updateSpeakerSong(asSynched = false) {
 
-    console.log(`[PlaylistStore] Updating speakersong`);
+    if (this.speakerSong !== this.queue[0]) {
 
-    this.speakerSong = this.queue[0];
+      console.log(`[PlaylistStore] Updating speakersong`);
 
-    if (asSynched || UserStore.getSynched()) {
-      this.emit(`SPEAKER_SONG_CHANGED`);
+      this.speakerSong = this.queue[0];
+
+      if (asSynched || UserStore.getSynched()) {
+        this.emit(`SPEAKER_SONG_CHANGED`);
+      }
+
     }
-
-    //setTimeout(() => this.emit(`SONG_CHANGED`), 10);
 
   }
 

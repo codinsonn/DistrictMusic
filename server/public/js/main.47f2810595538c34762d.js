@@ -7281,6 +7281,12 @@ var PlaylistStore = function (_EventEmitter) {
 
         console.log('[PlaylistStore] About to update speakersong');
 
+        if (_this2.userChosenSong.general === '') {
+          _this2.userChosenSong = _this2.queue[0];
+          _this2.hasFetchedQueue = true;
+          _this2.emit('SONG_CHANGED');
+        }
+
         _this2.updateSpeakerSong();
       } else if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched() && _this2.queue[0] && !_this2.hasFetchedQueue) {
 
@@ -7333,15 +7339,16 @@ var PlaylistStore = function (_EventEmitter) {
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    console.log('[PlaylistStore] Updating speakersong');
+    if (this.speakerSong !== this.queue[0]) {
 
-    this.speakerSong = this.queue[0];
+      console.log('[PlaylistStore] Updating speakersong');
 
-    if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSynched()) {
-      this.emit('SPEAKER_SONG_CHANGED');
+      this.speakerSong = this.queue[0];
+
+      if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+        this.emit('SPEAKER_SONG_CHANGED');
+      }
     }
-
-    //setTimeout(() => this.emit(`SONG_CHANGED`), 10);
   };
 
   PlaylistStore.prototype.synchPosToSpeaker = function synchPosToSpeaker(speakerPos) {
@@ -51161,6 +51168,7 @@ var Profile = function (_Component) {
 
     _this.state = {
       isLoggedIn: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getLoggedIn(),
+      isSynched: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getSynched(),
       voteMode: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getVoteMode(),
       prevVoteMode: 'normal',
       userProfile: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getProfile(),
@@ -51180,6 +51188,9 @@ var Profile = function (_Component) {
     });
     __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('VOTE_MODE_CHANGED', function () {
       return _this2.updateVoteMode();
+    });
+    __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('SYNCHED_CHANGED', function () {
+      return _this2.updateSynched();
     });
   };
 
@@ -51224,29 +51235,42 @@ var Profile = function (_Component) {
     this.setState({ isLoggedIn: isLoggedIn, userProfile: userProfile });
   };
 
+  Profile.prototype.updateSynched = function updateSynched() {
+    var isSynched = this.state.isSynched;
+
+
+    isSynched = __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getSynched();
+
+    this.setState({ isSynched: isSynched });
+  };
+
   Profile.prototype.checkProfileActions = function checkProfileActions() {
-    var isLoggedIn = this.state.isLoggedIn;
+    var _state3 = this.state,
+        isLoggedIn = _state3.isLoggedIn,
+        isSynched = _state3.isSynched;
     var showProfileOptions = this.state.showProfileOptions;
 
 
     if (isLoggedIn) {
       showProfileOptions = !showProfileOptions;
       this.setState({ showProfileOptions: showProfileOptions });
-    } else {
+    } else if (!__WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       console.log('Must login to continue...');
       document.querySelector('.profile').blur();
       __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* showLoginModal */]();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["a" /* addError */]('Cannot login as speaker');
     }
   };
 
   Profile.prototype.renderProfileOptions = function renderProfileOptions() {
     var _this3 = this;
 
-    var _state3 = this.state,
-        isLoggedIn = _state3.isLoggedIn,
-        voteMode = _state3.voteMode,
-        userProfile = _state3.userProfile,
-        showProfileOptions = _state3.showProfileOptions;
+    var _state4 = this.state,
+        isLoggedIn = _state4.isLoggedIn,
+        voteMode = _state4.voteMode,
+        userProfile = _state4.userProfile,
+        showProfileOptions = _state4.showProfileOptions;
 
 
     var optionsClasses = 'profile-options show';
@@ -51266,12 +51290,12 @@ var Profile = function (_Component) {
       superModeClasses = 'btn-toggle-super active';
     }
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !__WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 112
+            lineNumber: 128
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51279,7 +51303,7 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 113
+              lineNumber: 129
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51288,14 +51312,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* setVoteMode */]('veto');
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 114
+                lineNumber: 130
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: vetoModeClasses, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 114
+                  lineNumber: 130
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51303,7 +51327,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 114
+                    lineNumber: 130
                   }
                 },
                 'Vetos x',
@@ -51317,14 +51341,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* setVoteMode */]('super');
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 115
+                lineNumber: 131
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: superModeClasses, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 115
+                  lineNumber: 131
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51332,7 +51356,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 115
+                    lineNumber: 131
                   }
                 },
                 'Supers x',
@@ -51346,14 +51370,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["f" /* logoutUser */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 116
+                lineNumber: 132
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: 'btn-logout', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 116
+                  lineNumber: 132
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51361,7 +51385,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 116
+                    lineNumber: 132
                   }
                 },
                 'logout'
@@ -51375,7 +51399,7 @@ var Profile = function (_Component) {
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 122
+            lineNumber: 138
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51383,7 +51407,7 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 123
+              lineNumber: 139
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51392,14 +51416,14 @@ var Profile = function (_Component) {
                 return _this3.checkProfileActions();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 124
+                lineNumber: 140
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: 'btn-login', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 124
+                  lineNumber: 140
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51407,7 +51431,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 124
+                    lineNumber: 140
                   }
                 },
                 'login'
@@ -51422,17 +51446,17 @@ var Profile = function (_Component) {
   Profile.prototype.render = function render() {
     var _this4 = this;
 
-    var _state4 = this.state,
-        isLoggedIn = _state4.isLoggedIn,
-        userProfile = _state4.userProfile;
+    var _state5 = this.state,
+        isLoggedIn = _state5.isLoggedIn,
+        userProfile = _state5.userProfile;
 
     var profileImage = userProfile.general.profileImage;
     var style = { backgroundImage: 'url(' + profileImage + ')' };
 
     if (this.hasChangedVoteMode) {
-      var _state5 = this.state,
-          voteMode = _state5.voteMode,
-          prevVoteMode = _state5.prevVoteMode;
+      var _state6 = this.state,
+          voteMode = _state6.voteMode,
+          prevVoteMode = _state6.prevVoteMode;
 
 
       if (voteMode === 'veto' || voteMode === 'super') {
@@ -51455,7 +51479,7 @@ var Profile = function (_Component) {
           return _this4.hideProfileOptions();
         }, __source: {
           fileName: _jsxFileName,
-          lineNumber: 158
+          lineNumber: 174
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51464,7 +51488,7 @@ var Profile = function (_Component) {
             return _this4.checkProfileActions();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 159
+            lineNumber: 175
           }
         },
         '\xA0'
@@ -78930,4 +78954,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.52e38ca7ccc59bb4c86f.js.map
+//# sourceMappingURL=main.47f2810595538c34762d.js.map

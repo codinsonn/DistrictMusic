@@ -11,6 +11,7 @@ export default class Profile extends Component {
 
     this.state = {
       isLoggedIn: UserStore.getLoggedIn(),
+      isSynched: UserStore.getSynched(),
       voteMode: UserStore.getVoteMode(),
       prevVoteMode: `normal`,
       userProfile: UserStore.getProfile(),
@@ -24,6 +25,7 @@ export default class Profile extends Component {
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
     UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
+    UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
   }
 
   componentWillUnmount() {
@@ -70,18 +72,32 @@ export default class Profile extends Component {
 
   }
 
+  updateSynched() {
+
+    let {isSynched} = this.state;
+
+    isSynched = UserStore.getSynched();
+
+    this.setState({isSynched});
+
+  }
+
   checkProfileActions() {
 
     const {isLoggedIn} = this.state;
+
+
     let {showProfileOptions} = this.state;
 
     if (isLoggedIn) {
       showProfileOptions = !showProfileOptions;
       this.setState({showProfileOptions});
-    } else {
+    } else if (!UserStore.getIsSpeaker()) {
       console.log(`Must login to continue...`);
       document.querySelector(`.profile`).blur();
       UserActions.showLoginModal();
+    } else {
+      NotifActions.addError(`Cannot login as speaker`);
     }
 
   }
@@ -107,7 +123,7 @@ export default class Profile extends Component {
       superModeClasses = `btn-toggle-super active`;
     }
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !UserStore.getIsSpeaker()) {
       return (
         <div className={optionsClasses}>
           <ul>

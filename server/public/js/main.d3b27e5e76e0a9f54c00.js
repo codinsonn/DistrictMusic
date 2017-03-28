@@ -7339,15 +7339,16 @@ var PlaylistStore = function (_EventEmitter) {
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    console.log('[PlaylistStore] Updating speakersong');
+    if (this.speakerSong !== this.queue[0]) {
 
-    this.speakerSong = this.queue[0];
+      console.log('[PlaylistStore] Updating speakersong');
 
-    if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
-      this.emit('SPEAKER_SONG_CHANGED');
+      this.speakerSong = this.queue[0];
+
+      if (asSynched || __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getSynched()) {
+        this.emit('SPEAKER_SONG_CHANGED');
+      }
     }
-
-    //setTimeout(() => this.emit(`SONG_CHANGED`), 10);
   };
 
   PlaylistStore.prototype.synchPosToSpeaker = function synchPosToSpeaker(speakerPos) {
@@ -51167,6 +51168,7 @@ var Profile = function (_Component) {
 
     _this.state = {
       isLoggedIn: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getLoggedIn(),
+      isSynched: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getSynched(),
       voteMode: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getVoteMode(),
       prevVoteMode: 'normal',
       userProfile: __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getProfile(),
@@ -51186,6 +51188,9 @@ var Profile = function (_Component) {
     });
     __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('VOTE_MODE_CHANGED', function () {
       return _this2.updateVoteMode();
+    });
+    __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].on('SYNCHED_CHANGED', function () {
+      return _this2.updateSynched();
     });
   };
 
@@ -51230,6 +51235,15 @@ var Profile = function (_Component) {
     this.setState({ isLoggedIn: isLoggedIn, userProfile: userProfile });
   };
 
+  Profile.prototype.updateSynched = function updateSynched() {
+    var isSynched = this.state.isSynched;
+
+
+    isSynched = __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getSynched();
+
+    this.setState({ isSynched: isSynched });
+  };
+
   Profile.prototype.checkProfileActions = function checkProfileActions() {
     var isLoggedIn = this.state.isLoggedIn;
     var showProfileOptions = this.state.showProfileOptions;
@@ -51238,10 +51252,12 @@ var Profile = function (_Component) {
     if (isLoggedIn) {
       showProfileOptions = !showProfileOptions;
       this.setState({ showProfileOptions: showProfileOptions });
-    } else {
+    } else if (!__WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       console.log('Must login to continue...');
       document.querySelector('.profile').blur();
       __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["d" /* showLoginModal */]();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["a" /* addError */]('Cannot login as speaker');
     }
   };
 
@@ -51272,12 +51288,12 @@ var Profile = function (_Component) {
       superModeClasses = 'btn-toggle-super active';
     }
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !__WEBPACK_IMPORTED_MODULE_1__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 112
+            lineNumber: 128
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51285,7 +51301,7 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 113
+              lineNumber: 129
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51294,14 +51310,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* setVoteMode */]('veto');
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 114
+                lineNumber: 130
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: vetoModeClasses, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 114
+                  lineNumber: 130
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51309,7 +51325,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 114
+                    lineNumber: 130
                   }
                 },
                 'Vetos x',
@@ -51323,14 +51339,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["e" /* setVoteMode */]('super');
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 115
+                lineNumber: 131
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: superModeClasses, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 115
+                  lineNumber: 131
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51338,7 +51354,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 115
+                    lineNumber: 131
                   }
                 },
                 'Supers x',
@@ -51352,14 +51368,14 @@ var Profile = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__["f" /* logoutUser */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 116
+                lineNumber: 132
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: 'btn-logout', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 116
+                  lineNumber: 132
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51367,7 +51383,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 116
+                    lineNumber: 132
                   }
                 },
                 'logout'
@@ -51381,7 +51397,7 @@ var Profile = function (_Component) {
         'div',
         { className: optionsClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 122
+            lineNumber: 138
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51389,7 +51405,7 @@ var Profile = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 123
+              lineNumber: 139
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51398,14 +51414,14 @@ var Profile = function (_Component) {
                 return _this3.checkProfileActions();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 124
+                lineNumber: 140
               }
             },
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               'div',
               { className: 'btn-login', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 124
+                  lineNumber: 140
                 }
               },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51413,7 +51429,7 @@ var Profile = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 124
+                    lineNumber: 140
                   }
                 },
                 'login'
@@ -51461,7 +51477,7 @@ var Profile = function (_Component) {
           return _this4.hideProfileOptions();
         }, __source: {
           fileName: _jsxFileName,
-          lineNumber: 158
+          lineNumber: 174
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51470,7 +51486,7 @@ var Profile = function (_Component) {
             return _this4.checkProfileActions();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 159
+            lineNumber: 175
           }
         },
         '\xA0'
@@ -51634,8 +51650,10 @@ var SearchModal = function (_Component) {
     if (isLoggedIn && !showSuggestionDetail) {
       __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["i" /* showSearchModal */]();
       this.onInputChanged(false);
-    } else {
+    } else if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["d" /* showLoginModal */]();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__["a" /* addError */]('Cannot add songs as speaker');
     }
   };
 
@@ -51753,7 +51771,7 @@ var SearchModal = function (_Component) {
       return currentSuggestions.map(function (suggestion) {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["j" /* Suggestion */], _extends({}, suggestion, { key: suggestion.id, __source: {
             fileName: _jsxFileName,
-            lineNumber: 237
+            lineNumber: 239
           }
         }));
       });
@@ -51785,7 +51803,7 @@ var SearchModal = function (_Component) {
       'article',
       { className: 'search-modal', __source: {
           fileName: _jsxFileName,
-          lineNumber: 261
+          lineNumber: 263
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51794,7 +51812,7 @@ var SearchModal = function (_Component) {
             return _this5.endSearch();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 262
+            lineNumber: 264
           }
         },
         '\xA0'
@@ -51805,7 +51823,7 @@ var SearchModal = function (_Component) {
             return _this5.triggerLoginOrModal();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 263
+            lineNumber: 265
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { className: 'search-query', type: 'text', placeholder: placeholder, disabled: true,
@@ -51820,14 +51838,14 @@ var SearchModal = function (_Component) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 264
+            lineNumber: 266
           }
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: suggestionsClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 269
+              lineNumber: 271
             }
           },
           this.renderSuggestions()
@@ -52028,18 +52046,26 @@ var SongSummary = function (_Component) {
   };
 
   SongSummary.prototype.playSongHandler = function playSongHandler() {
-    var song = this.state.song;
+    var _this4 = this;
+
+    if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+      (function () {
+        var song = _this4.state.song;
 
 
-    __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["c" /* setSynched */](false);
+        __WEBPACK_IMPORTED_MODULE_3__actions_UserActions__["c" /* setSynched */](false);
 
-    setTimeout(function () {
-      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["c" /* setSong */](song);
-    }, 10);
+        setTimeout(function () {
+          return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["c" /* setSong */](song);
+        }, 10);
+      })();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */]('Cannot change song as speaker');
+    }
   };
 
   SongSummary.prototype.render = function render() {
-    var _this4 = this;
+    var _this5 = this;
 
     var _state3 = this.state,
         order = _state3.order,
@@ -52105,6 +52131,10 @@ var SongSummary = function (_Component) {
       if (order === 2) tags = tags + '[UP NEXT] ';
     }
 
+    if (__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+      buttonsEnabled = 'disabled';
+    }
+
     var upvoteButtonClasses = 'btn-upvote ' + upvotedClass + buttonsEnabled;
     var downvoteButtonClasses = 'btn-downvote ' + downvotedClass + buttonsEnabled;
 
@@ -52117,23 +52147,23 @@ var SongSummary = function (_Component) {
       'article',
       { className: 'song-summary', __source: {
           fileName: _jsxFileName,
-          lineNumber: 228
+          lineNumber: 238
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 229
+            lineNumber: 239
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: upvoteButtonClasses, 'data-enabled': buttonsEnabled, onClick: function onClick(e) {
-              return _this4.vote(e, 'upvote');
+              return _this5.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 230
+              lineNumber: 240
             }
           },
           '\xA0'
@@ -52142,7 +52172,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 231
+              lineNumber: 241
             }
           },
           currentQueueScore
@@ -52150,10 +52180,10 @@ var SongSummary = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: downvoteButtonClasses, 'data-enabled': buttonsEnabled, onClick: function onClick(e) {
-              return _this4.vote(e, 'downvote');
+              return _this5.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 232
+              lineNumber: 242
             }
           },
           '\xA0'
@@ -52163,14 +52193,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 234
+            lineNumber: 244
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 235
+              lineNumber: 245
             }
           },
           duration
@@ -52179,17 +52209,17 @@ var SongSummary = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'song-info', onClick: function onClick() {
-            return _this4.playSongHandler();
+            return _this5.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 237
+            lineNumber: 247
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 238
+              lineNumber: 248
             }
           },
           tags,
@@ -52199,7 +52229,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 239
+              lineNumber: 249
             }
           },
           'Submitted ',
@@ -52207,7 +52237,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 239
+                lineNumber: 249
               }
             },
             fromNow
@@ -52218,7 +52248,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 239
+                lineNumber: 249
               }
             },
             lastAddedBy.userName
@@ -78936,4 +78966,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.2b551665fce56fe931b4.js.map
+//# sourceMappingURL=main.d3b27e5e76e0a9f54c00.js.map

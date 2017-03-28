@@ -115,8 +115,10 @@ export default class SearchModal extends Component {
     if (isLoggedIn && !showSuggestionDetail) {
       PlaylistActions.showSearchModal();
       this.onInputChanged(false);
-    } else {
+    } else if (!UserStore.getIsSpeaker()) {
       UserActions.showLoginModal();
+    } else {
+      NotifActions.addError(`Cannot add songs as speaker`);
     }
 
   }

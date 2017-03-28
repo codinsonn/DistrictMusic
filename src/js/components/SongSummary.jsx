@@ -106,59 +106,69 @@ export default class SongSummary extends Component {
 
   vote(e, type) {
 
-    const $target = e.currentTarget;
-    const enabled = $target.getAttribute(`data-enabled`);
+    if (!UserStore.getIsSpeaker()) {
 
-    if (enabled === `enabled`) {
+      const $target = e.currentTarget;
+      const enabled = $target.getAttribute(`data-enabled`);
 
-      const isLoggedIn = UserStore.getLoggedIn();
+      if (enabled === `enabled`) {
 
-      if (isLoggedIn) {
+        const isLoggedIn = UserStore.getLoggedIn();
 
-        const {id, title} = this.state;
-        const voteType = this.getVoteType(type);
+        if (isLoggedIn) {
 
-        songs.voteSong(id, title, voteType)
-          .then(res => {
+          const {id, title} = this.state;
+          const voteType = this.getVoteType(type);
 
-            // success!
-            console.log(`SUCCESS!`, res);
+          songs.voteSong(id, title, voteType)
+            .then(res => {
 
-            if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
-              const message = `${voteType} successfull!`;
-              NotifActions.addSuccess(message);
-            }
+              // success!
+              console.log(`SUCCESS!`, res);
 
-          }, failData => {
+              if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+                const message = `${voteType} successfull!`;
+                NotifActions.addSuccess(message);
+              }
 
-            // failed to vote
-            console.log(`FAILED:`, failData);
+            }, failData => {
 
-            if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
-              const message = `${voteType} failed!`;
-              NotifActions.addError(message);
-            }
+              // failed to vote
+              console.log(`FAILED:`, failData);
 
-          })
-        ;
+              if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+                const message = `${voteType} failed!`;
+                NotifActions.addError(message);
+              }
 
-      } else {
+            })
+          ;
 
-        UserActions.showLoginModal();
+        } else {
+          UserActions.showLoginModal();
+        }
 
       }
 
+    } else {
+      NotifActions.addError(`Cannot vote as speaker`);
     }
 
   }
 
   playSongHandler() {
 
-    const {song} = this.state;
+    if (!UserStore.getIsSpeaker()) {
 
-    UserActions.setSynched(false);
+      const {song} = this.state;
 
-    setTimeout(() => PlaylistActions.setSong(song), 10);
+      UserActions.setSynched(false);
+
+      setTimeout(() => PlaylistActions.setSong(song), 10);
+
+    } else {
+      NotifActions.addError(`Cannot change song as speaker`);
+    }
 
   }
 
@@ -214,6 +224,10 @@ export default class SongSummary extends Component {
     if (order < 3) {
       if (isPlaying) { tags = `${tags}[PLAYING] `;buttonsEnabled = `disabled`; }
       if (order === 2) tags = `${tags}[UP NEXT] `;
+    }
+
+    if (UserStore.getIsSpeaker()) {
+      buttonsEnabled = `disabled`;
     }
 
     const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;
