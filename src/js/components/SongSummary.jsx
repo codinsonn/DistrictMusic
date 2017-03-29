@@ -64,6 +64,7 @@ export default class SongSummary extends Component {
 
   componentWillMount() {
     PlaylistStore.on(`SONG_CHANGED`, () => this.checkIndicatePlaying());
+    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, () => this.checkIndicatePlaying());
   }
 
   componentWillUnmount() {

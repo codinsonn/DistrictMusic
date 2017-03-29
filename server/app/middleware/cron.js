@@ -26,7 +26,7 @@ module.exports = function(timeZone) {
 
   this.addRandomSongToQueue = () => {
 
-    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: -10 } };
+    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 2 } };
 
     // Find random unqueued song with legacy score greater than 10
     SongModel.find(query).exec((err, unqueuedSongs) => {
@@ -69,7 +69,6 @@ module.exports = function(timeZone) {
     var url = `https://www.youtube.com/watch?v=${song.general.id}`;
     var tempFolder = `${__base}uploads/temp/`;
     var audioFolder = `${__base}uploads/audio/`;
-    //var audioFilename = `${song.general.id}${Math.random().toString().substr(2, 3)}.mp4`;
     var songTitleStripped = song.general.title;
     songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
     var audioFilename = `${song.general.id}_${songTitleStripped}.mp4`;
@@ -127,12 +126,14 @@ module.exports = function(timeZone) {
 
   this.saveSong = (song) => {
 
+    song.general.isDownloaded = true;
     song.general.isFileAboutToBeRemoved = false;
     song.queue.votes.currentQueueScore = 0;
     song.queue.lastAddedBy.googleId = 'cronbot';
     song.queue.lastAddedBy.userName = 'cronbot';
     song.queue.lastAddedBy.profileImage = '/assets/img/defaultProfile.png';
     song.queue.lastAddedBy.added = (new Date()).getTime();
+    song.queue.isPlaying = false;
     song.queue.isVetoed = false;
     song.queue.inQueue = true;
 
@@ -141,8 +142,9 @@ module.exports = function(timeZone) {
       if (err) {
         console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
       } else {
+        console.log('[CRONBOT] About to emit for update');
         EmitHelper.broadcast('QUEUE_UPDATED', song);
-        console.log('[CRONBOT] Cronbot added', song.general.title, 'to the queue!');
+        console.log('[CRONBOT] Cronbot added', song.general.title, 'to the queue and emitted!');
       }
 
     });
@@ -153,7 +155,10 @@ module.exports = function(timeZone) {
 
   this.checkQueueEmpty = new CronJob(everyMinute, () => {
 
-    //console.log('-CRON- Checking if queue is empty -CRON-');
+    console.log('-CRON- Checking if queue is empty -CRON-');
+    console.log('[CRON] About to emit for update (1)');
+    EmitHelper.broadcast('QUEUE_UPDATED');
+    console.log('[CRON] Emitted for update (2)');
 
       // If one or no song in queue
       SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
@@ -162,7 +167,7 @@ module.exports = function(timeZone) {
           console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
         }
 
-        if(songs && songs.length < 3){
+        if(songs && songs.length < 2){
 
           this.addRandomSongToQueue();
 
@@ -171,6 +176,10 @@ module.exports = function(timeZone) {
       });
 
     }, () => { // Callback after job is done
+
+      console.log('[CRON] About to emit for update (3)');
+      EmitHelper.broadcast('QUEUE_UPDATED');
+      console.log('[CRON] Emitted for update (4)');
 
     },
     true, // Start the job right now
@@ -187,6 +196,8 @@ module.exports = function(timeZone) {
       this.addRandomSongToQueue();
 
     }, () => { // Callback after job is done
+
+      EmitHelper.broadcast('QUEUE_UPDATED');
 
     },
     true, // Start the job right now
@@ -239,6 +250,8 @@ module.exports = function(timeZone) {
 
     }, () => { // Callback after job is done
 
+      EmitHelper.broadcast('QUEUE_UPDATED');
+
     },
     true, // Start the job right now
     timeZone // Time zone of this job
@@ -251,7 +264,7 @@ module.exports = function(timeZone) {
 
     console.log('-CRON- Removing files scheduled for removal -CRON-');
 
-      var removeConditions = { 'general.isFileAboutToBeRemoved': true };
+      var removeConditions = { 'queue.inQueue': false, 'general.isFileAboutToBeRemoved': true };
       var removeQuery = { 'general.isDownloaded': false, 'general.isFileAboutToBeRemoved': false };
       var removeOptions = {};
 
@@ -293,6 +306,9 @@ module.exports = function(timeZone) {
       });
 
     }, () => { // Callback after job is done
+
+      console.log('[CRON] ');
+      EmitHelper.broadcast('QUEUE_UPDATED');
 
     },
     true, // Start the job right now
