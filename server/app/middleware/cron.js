@@ -156,9 +156,6 @@ module.exports = function(timeZone) {
   this.checkQueueEmpty = new CronJob(everyMinute, () => {
 
     console.log('-CRON- Checking if queue is empty -CRON-');
-    console.log('[CRON] About to emit for update (1)');
-    EmitHelper.broadcast('QUEUE_UPDATED');
-    console.log('[CRON] Emitted for update (2)');
 
       // If one or no song in queue
       SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
@@ -171,15 +168,16 @@ module.exports = function(timeZone) {
 
           this.addRandomSongToQueue();
 
+        }else{
+
+          console.log('[CRON] Queue not empty, Emitting for mandatory queue update');
+          EmitHelper.broadcast('QUEUE_UPDATED');
+
         }
 
       });
 
     }, () => { // Callback after job is done
-
-      console.log('[CRON] About to emit for update (3)');
-      EmitHelper.broadcast('QUEUE_UPDATED');
-      console.log('[CRON] Emitted for update (4)');
 
     },
     true, // Start the job right now
@@ -196,8 +194,6 @@ module.exports = function(timeZone) {
       this.addRandomSongToQueue();
 
     }, () => { // Callback after job is done
-
-      EmitHelper.broadcast('QUEUE_UPDATED');
 
     },
     true, // Start the job right now
@@ -218,13 +214,12 @@ module.exports = function(timeZone) {
       UserModel.update(conditions, query, options, () => {
 
         console.log('-!- [CRON] Vetos Reset -!-');
+        EmitHelper.broadcast('USER_PROFILE_CHANGED');
         console.log('-!- [CRON] Super Votes Reset -!-');
 
       });
 
     }, () => { // Callback after job is done
-
-      EmitHelper.broadcast('USER_PROFILE_CHANGED');
 
     },
     true, // Start the job right now
@@ -249,8 +244,6 @@ module.exports = function(timeZone) {
       });
 
     }, () => { // Callback after job is done
-
-      EmitHelper.broadcast('QUEUE_UPDATED');
 
     },
     true, // Start the job right now
@@ -292,6 +285,7 @@ module.exports = function(timeZone) {
             fs.unlinkSync(publicFilePath);
 
             console.log('[CRON] Removed file:', publicFilePath);
+            EmitHelper.broadcast('USER_PROFILE_CHANGED');
 
           });
 
@@ -302,13 +296,11 @@ module.exports = function(timeZone) {
       SongModel.update(removeConditions, removeQuery, removeOptions, () => {
 
         console.log('-!- [CRON] Files removed -!-');
+        EmitHelper.broadcast('QUEUE_UPDATED');
 
       });
 
     }, () => { // Callback after job is done
-
-      console.log('[CRON] ');
-      EmitHelper.broadcast('QUEUE_UPDATED');
 
     },
     true, // Start the job right now

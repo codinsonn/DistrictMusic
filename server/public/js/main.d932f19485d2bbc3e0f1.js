@@ -6620,6 +6620,7 @@ var PlaylistStore = function (_EventEmitter) {
 
         console.log('[PlaylistStore] About to update user chosen song');
 
+        _this2.updateSpeakerSong(_this2.queue[0]);
         _this2.updateUserChosenSong(_this2.queue[0]);
       }
 
@@ -79147,4 +79148,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.9b1b243ba73f833f5bd1.js.map
+//# sourceMappingURL=main.d932f19485d2bbc3e0f1.js.map

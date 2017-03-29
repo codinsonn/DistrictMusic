@@ -66,6 +66,7 @@ class PlaylistStore extends EventEmitter {
 
           console.log(`[PlaylistStore] About to update user chosen song`);
 
+          this.updateSpeakerSong(this.queue[0]);
           this.updateUserChosenSong(this.queue[0]);
 
         }

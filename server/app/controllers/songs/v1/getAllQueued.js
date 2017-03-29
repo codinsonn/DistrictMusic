@@ -18,8 +18,8 @@ module.exports = (req, res, done) => {
   this.returnQueue = [];
 
   SongModel.
-    find().
-    where('queue.inQueue').equals(true).
+    find({'queue.inQueue': true, 'general.isDownloaded': true}).
+    //where('queue.inQueue').equals(true).
     sort('-queue.votes.currentQueueScore').
     exec((err, data) => this.handleQueued(err, data))
   ;
@@ -92,6 +92,7 @@ module.exports = (req, res, done) => {
     });
 
     if(!this.returnQueue[0].queue.isPlaying){
+
       console.log('[GetAllQueued] Set as playing:', this.returnQueue[0].general.title);
       this.returnQueue[0].queue.isPlaying = true;
       var firstsong = this.returnQueue[0];
@@ -102,9 +103,25 @@ module.exports = (req, res, done) => {
           this.respondQueue();
         }
       );
+
+    }else if(this.returnQueue[1].queue.isPlaying){
+
+      console.log('[GetAllQueued] Second song also playing? >', this.returnQueue[0].general.title);
+      this.returnQueue[1].queue.isPlaying = false;
+      var secondSong = this.returnQueue[1];
+      SongModel.update(
+        {'general.id': secondSong.general.id, 'general.title': secondSong.general.title},
+        {'queue.isPlaying': false}, {}, () => {
+          console.log('[GetAllQueued] Updated second song');
+          this.respondQueue();
+        }
+      );
+
     }else{
+
       console.log('[GetAllQueued] First song playing:', this.returnQueue[0].queue.isPlaying);
       this.respondQueue();
+
     }
 
   }
