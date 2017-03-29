@@ -46,7 +46,7 @@ class PlaylistStore extends EventEmitter {
         this.queue = res;
         this.emit(`QUEUE_CHANGED`);
 
-        console.log(`[PlaylistStore] Queue Fetched!`, UserStore.getIsSpeaker(), this.queue[0].general, this.speakerSong.general);
+        //console.log(`[PlaylistStore] Queue Fetched!`, UserStore.getIsSpeaker(), this.queue[0].general, this.speakerSong.general);
 
         if (UserStore.getIsSpeaker() && this.queue[0].general.id !== `` && this.queue[0].general !== this.speakerSong.general) {
 

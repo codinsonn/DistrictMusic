@@ -65,6 +65,7 @@ export default class SongSummary extends Component {
   componentWillMount() {
     PlaylistStore.on(`SONG_CHANGED`, () => this.checkIndicatePlaying());
     PlaylistStore.on(`SPEAKER_SONG_CHANGED`, () => this.checkIndicatePlaying());
+    UserStore.on(`SYNCHED_CHANGED`, () => this.checkIndicatePlaying());
   }
 
   componentWillUnmount() {
@@ -146,10 +147,17 @@ export default class SongSummary extends Component {
               // success!
               console.log(`SUCCESS!`, res);
 
+              let {currentQueueScore} = this.state;
+              currentQueueScore = res.votes.currentQueueScore;
+
               if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
                 const message = `${voteType} successfull!`;
                 NotifActions.addSuccess(message);
               }
+
+              console.log(`CURRENTQUEUSCORE:`, currentQueueScore);
+
+              this.setState({currentQueueScore});
 
             }, failData => {
 

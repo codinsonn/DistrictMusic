@@ -182,6 +182,7 @@ module.exports = (req, res, done) => {
         }else if(this.uservote.voteType === 'veto_downvote'){
           song.queue.currentQueueScore = 0;
           song.queue.inQueue = false;
+          song.queue.isPlaying = false;
           SongHelper.removeVotesForSong(song.general.id);
         }
 
@@ -222,10 +223,10 @@ module.exports = (req, res, done) => {
 
   this.respondSuccess = (song) => {
 
-    console.log('- Broadcasting for update -');
+    console.log('- Broadcasting for update -', song.general.title);
     EmitHelper.broadcast('QUEUE_UPDATED', song);
 
-    console.log('- Song score updated! -');
+    console.log('- Song score updated! -', song.queue.votes.currentQueueScore);
     res.statusCode = 200;
     return res.json(song.queue);
 

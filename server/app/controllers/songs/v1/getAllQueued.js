@@ -19,7 +19,6 @@ module.exports = (req, res, done) => {
 
   SongModel.
     find({'queue.inQueue': true, 'general.isDownloaded': true}).
-    //where('queue.inQueue').equals(true).
     sort('-queue.votes.currentQueueScore').
     exec((err, data) => this.handleQueued(err, data))
   ;
@@ -91,13 +90,15 @@ module.exports = (req, res, done) => {
 
     });
 
+    console.log('[GetAllQueued] Playing?', this.returnQueue[0].general.title, ':', this.returnQueue[0].queue.isPlaying, ' & ', this.returnQueue[1].general.title, ':', this.returnQueue[1].queue.isPlaying);
+
     if(!this.returnQueue[0].queue.isPlaying){
 
       console.log('[GetAllQueued] Set as playing:', this.returnQueue[0].general.title);
       this.returnQueue[0].queue.isPlaying = true;
       var firstsong = this.returnQueue[0];
       SongModel.update(
-        {'general.id': firstsong.general.id, 'general.title': firstsong.general.title},
+        {'general.id': firstsong.general.id},
         {'queue.isPlaying': true}, {}, () => {
           console.log('[GetAllQueued] Updated playing song');
           this.respondQueue();
@@ -106,11 +107,11 @@ module.exports = (req, res, done) => {
 
     }else if(this.returnQueue[1].queue.isPlaying){
 
-      console.log('[GetAllQueued] Second song also playing? >', this.returnQueue[0].general.title);
+      console.log('[GetAllQueued] Second song also playing? >', this.returnQueue[1].general.title);
       this.returnQueue[1].queue.isPlaying = false;
       var secondSong = this.returnQueue[1];
       SongModel.update(
-        {'general.id': secondSong.general.id, 'general.title': secondSong.general.title},
+        {'general.id': secondSong.general.id},
         {'queue.isPlaying': false}, {}, () => {
           console.log('[GetAllQueued] Updated second song');
           this.respondQueue();
@@ -119,7 +120,7 @@ module.exports = (req, res, done) => {
 
     }else{
 
-      console.log('[GetAllQueued] First song playing:', this.returnQueue[0].queue.isPlaying);
+      console.log('[GetAllQueued] First song playing:', this.returnQueue[0].queue.isPlaying, 'SecondSongPlaying:', this.returnQueue[1].queue.isPlaying);
       this.respondQueue();
 
     }

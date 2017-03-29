@@ -47,6 +47,8 @@ export default class PlaylistQueue extends Component {
 
     currentQueue = PlaylistStore.getCurrentQueue();
 
+    console.log(`CURRENTQUEUE:`, currentQueue);
+
     this.hasFetchedQueue = true;
 
     this.setState({currentQueue});
@@ -75,7 +77,8 @@ export default class PlaylistQueue extends Component {
       return currentQueue.map(song => {
         i ++;
         if (!isLoggedIn) { song.uservote = {hasVoted: false}; }
-        return <SongSummary {...song} voteMode={voteMode} order={i} key={song.general.id} />;
+        const key = `${song.general.id}${i}`;
+        return <SongSummary {...song} voteMode={voteMode} order={i} key={key} />;
       });
 
     } else if (this.hasFetchedQueue) {
