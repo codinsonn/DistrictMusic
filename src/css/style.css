@@ -255,6 +255,13 @@ body {
   background-color: var(--gainsboro);
 }
 
+.song-summary.playing {
+  background-image: url(../assets/svg/PlayingIndicator.svg);
+  background-repeat: no-repeat;
+  background-position: right;
+  background-size: contain;
+}
+
 .song-summary section {
   position: absolute;
   display: inline-block;

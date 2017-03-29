@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import UserStore from '../stores/UserStore';
+import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
@@ -27,7 +28,8 @@ export default class SongSummary extends Component {
       originallyAddedBy: props.queue.originallyAddedBy,
       song: props,
       uservote: props.uservote,
-      voteMode: props.voteMode
+      voteMode: props.voteMode,
+      playing: false
     };
 
   }
@@ -61,7 +63,7 @@ export default class SongSummary extends Component {
   }
 
   componentWillMount() {
-
+    PlaylistStore.on(`SONG_CHANGED`, () => this.checkIndicatePlaying());
   }
 
   componentWillUnmount() {
@@ -81,6 +83,23 @@ export default class SongSummary extends Component {
     }
 
     setInterval(() => this.updateTimeFromThen(), intervalTime);
+
+  }
+
+  checkIndicatePlaying() {
+
+    const {id} = this.state;
+    let {playing} = this.state;
+
+    const songPlaying = PlaylistStore.getSong(UserStore.getSynched());
+
+    if (id === songPlaying.general.id) {
+      playing = true;
+    } else {
+      playing = false;
+    }
+
+    this.setState({playing});
 
   }
 
@@ -174,7 +193,7 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode} = this.state;
+    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode, playing} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
@@ -233,13 +252,18 @@ export default class SongSummary extends Component {
     const upvoteButtonClasses = `btn-upvote ${upvotedClass}${buttonsEnabled}`;
     const downvoteButtonClasses = `btn-downvote ${downvotedClass}${buttonsEnabled}`;
 
+    let playlistItemClasses = `song-summary`;
+    if (playing) {
+      playlistItemClasses = `song-summary playing`;
+    }
+
     let scoreWrapperClasses = `song-score-wrapper`;
     if (buttonsEnabled === `enabled`) {
       scoreWrapperClasses = `song-score-wrapper vote-mode-${voteMode}`;
     }
 
     return (
-      <article className='song-summary'>
+      <article className={playlistItemClasses}>
         <section className={scoreWrapperClasses}>
           <span className={upvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `upvote`)}>&nbsp;</span>
           <span className={scoreClasses}>{currentQueueScore}</span>

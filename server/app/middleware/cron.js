@@ -32,7 +32,7 @@ module.exports = function(timeZone) {
     SongModel.find(query).exec((err, unqueuedSongs) => {
 
       if(err){
-        console.log('-!- [CRON] An error occured while searching for random song -!-\n', err, '\n-!-');
+        console.log('-!- [CRONBOT] An error occured while searching for random song -!-\n', err, '\n-!-');
       }
 
       if(unqueuedSongs){
@@ -43,7 +43,7 @@ module.exports = function(timeZone) {
         SongModel.findOne(query).skip(rand).exec((err, song) => {
 
           if(err){
-            console.log('-!- [CRON] An error occured while queueing random song -!-\n', err, '\n-!-');
+            console.log('-!- [CRONBOT] An error occured while queueing random song -!-\n', err, '\n-!-');
           }
 
           if(song){
@@ -69,36 +69,59 @@ module.exports = function(timeZone) {
     var url = `https://www.youtube.com/watch?v=${song.general.id}`;
     var tempFolder = `${__base}uploads/temp/`;
     var audioFolder = `${__base}uploads/audio/`;
-    var audioFilename = `${song.general.id}${Math.random().toString().substr(2, 3)}.mp4`;
+    //var audioFilename = `${song.general.id}${Math.random().toString().substr(2, 3)}.mp4`;
+    var songTitleStripped = song.general.title;
+    songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
+    var audioFilename = `${song.general.id}_${songTitleStripped}.mp4`;
     var tempOutput = path.resolve(tempFolder, audioFilename);
     var audioOutput = path.resolve(audioFolder, audioFilename);
 
-    console.log('Attempting to save video as song in: ', tempOutput);
+    fs.stat(tempOutput, (err, stat) => {
 
-    ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
-      .on('response', (res) => {
-        var totalSize = res.headers['content-length'];
-        var dataRead = 0;
-        res.on('data', (data) => {
-          dataRead += data.length;
-          var percent = dataRead / totalSize;
-          var strPercent = (percent * 100).toFixed(2) + '%';
-          process.stdout.cursorTo(0);
-          process.stdout.clearLine(1);
-          process.stdout.write(strPercent);
-        });
-        res.on('end', () => {
-          process.stdout.write('\n');
-          fse.copySync(tempOutput, audioOutput);
-          fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-          fs.unlinkSync(tempOutput);
-          console.log('-f- Finished downloading song to:', audioOutput);
-          song.general.filename = audioFilename;
-          this.saveSong(song);
-        });
-      })
-      .pipe(fs.createWriteStream(tempOutput))
-    ;
+      if(err == null) { // file already exists
+
+        console.log('-!- [CRONBOT] File already exists -!-');
+        song.general.filename = audioFilename;
+        song.general.isDownloaded = true;
+        this.saveSong(song);
+
+      } else if(err.code == 'ENOENT') { // file doesn't exist
+
+        console.log('[CRONBOT] Attempting to save video as song in: ', tempOutput);
+
+        ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
+          .on('response', (res) => {
+            var totalSize = res.headers['content-length'];
+            var dataRead = 0;
+            res.on('data', (data) => {
+              dataRead += data.length;
+              var percent = dataRead / totalSize;
+              var strPercent = (percent * 100).toFixed(2) + '%';
+              process.stdout.cursorTo(0);
+              process.stdout.clearLine(1);
+              process.stdout.write(strPercent);
+            });
+            res.on('end', () => {
+              process.stdout.write('\n');
+              fse.copySync(tempOutput, audioOutput);
+              fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
+              fs.unlinkSync(tempOutput);
+              console.log('-f- Finished downloading song to:', audioOutput);
+              song.general.filename = audioFilename;
+              song.general.isDownloaded = true;
+              this.saveSong(song);
+            });
+          })
+          .pipe(fs.createWriteStream(tempOutput))
+        ;
+
+      } else { // other error
+
+        console.log('-!- [CRONBOT] Error occurred while testing audiofile -!-', err.code);
+
+      }
+
+    });
 
   }
 
@@ -119,7 +142,7 @@ module.exports = function(timeZone) {
         console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
       } else {
         EmitHelper.broadcast('QUEUE_UPDATED', song);
-        console.log('[CRON] Cronbot added', song.general.title, 'to the queue!');
+        console.log('[CRONBOT] Cronbot added', song.general.title, 'to the queue!');
       }
 
     });
