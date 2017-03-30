@@ -12,17 +12,23 @@ export default class DownloadProgress extends Component {
       downloadProgress: SocketStore.getDownloadProgress()
     };
 
+    // -- Non state vars ----
     this.prevProgress = 0;
+
+    // -- Events ----
+    this.evtSetAppearBusy = () => this.setAppearBusy();
+    this.evtUpdateDownloadProgress = () => this.updateDownloadProgress();
 
   }
 
   componentWillMount() {
-    SocketStore.on(`APPEAR_BUSY_CHANGED`, () => this.setAppearBusy());
-    SocketStore.on(`DOWNLOAD_PROGRESS_UPDATED`, () => this.updateDownloadProgress());
+    SocketStore.on(`APPEAR_BUSY_CHANGED`, this.evtSetAppearBusy);
+    SocketStore.on(`DOWNLOAD_PROGRESS_UPDATED`, this.evtUpdateDownloadProgress);
   }
 
   componentWillUnmount() {
-
+    SocketStore.removeListener(`APPEAR_BUSY_CHANGED`, this.evtSetAppearBusy);
+    SocketStore.removeListener(`DOWNLOAD_PROGRESS_UPDATED`, this.evtUpdateDownloadProgress);
   }
 
   componentDidMount() {

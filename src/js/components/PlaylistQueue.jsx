@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {SongSummary} from '../components';
 import PlaylistStore from '../stores/PlaylistStore';
 import UserStore from '../stores/UserStore';
-import SocketStore from '../stores/SocketStore';
+//import SocketStore from '../stores/SocketStore';
 import * as PlaylistActions from '../actions/PlaylistActions';
 
 export default class PlaylistQueue extends Component {
@@ -16,17 +16,23 @@ export default class PlaylistQueue extends Component {
       voteMode: UserStore.getVoteMode()
     };
 
+    // -- Non state vars ----
     this.hasFetchedQueue = false;
+
+    // -- Events ----
+    this.evtPlaylistActionUpdateQueue = () => PlaylistActions.updateQueue();
+    this.evtUpdateQueue = () => this.updateQueue();
+    this.evtUpdateVoteMode = () => this.updateVoteMode();
 
   }
 
   componentWillMount() {
 
     // listeners
-    SocketStore.on(`QUEUE_UPDATED`, () => PlaylistActions.updateQueue());
-    UserStore.on(`USER_PROFILE_CHANGED`, () => PlaylistActions.updateQueue());
-    PlaylistStore.on(`QUEUE_CHANGED`, () => this.updateQueue());
-    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
+    //SocketStore.on(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
+    UserStore.on(`USER_PROFILE_CHANGED`, this.evtPlaylistActionUpdateQueue);
+    PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateQueue);
+    UserStore.on(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);
 
     // fetch queue from api
     PlaylistActions.updateQueue();
@@ -34,6 +40,11 @@ export default class PlaylistQueue extends Component {
   }
 
   componentWillUnmount() {
+
+    //SocketStore.removeListener(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
+    UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtPlaylistActionUpdateQueue);
+    PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateQueue);
+    UserStore.removeListener(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);
 
   }
 
@@ -73,10 +84,19 @@ export default class PlaylistQueue extends Component {
 
       let i = 0;
       return currentQueue.map(song => {
+
         i ++;
-        if (!isLoggedIn) { song.uservote = {hasVoted: false}; }
-        const key = `${song.general.id}${i}`;
+
+        if (!isLoggedIn) {
+          song.uservote = {hasVoted: false};
+        } else if (!song.uservote) {
+          song.uservote = {hasVoted: false};
+        }
+
+        const key = `${song.general.id}`;
+
         return <SongSummary {...song} voteMode={voteMode} order={i} key={key} />;
+
       });
 
     } else if (this.hasFetchedQueue) {

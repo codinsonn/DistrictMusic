@@ -13,18 +13,24 @@ export default class Notification extends Component {
       message: ``
     };
 
+    // -- Non state vars ----
     this.hidden = true;
     this.cancelTimeout = false;
+
+    // -- Events ----
+    this.evtUpdateNotification = () => this.updateNotification();
+    this.evtHideNotification = () => this.hideNotification();
 
   }
 
   componentWillMount() {
-    NotificationsStore.on(`NOTIFICATIONS_CHANGED`, () => this.updateNotification());
-    NotificationsStore.on(`HIDE_NOTIFICATION`, () => this.hideNotification());
+    NotificationsStore.on(`NOTIFICATIONS_CHANGED`, this.evtUpdateNotification);
+    NotificationsStore.on(`HIDE_NOTIFICATION`, this.evtHideNotification);
   }
 
   componentWillUnmount() {
-
+    NotificationsStore.removeListener(`NOTIFICATIONS_CHANGED`, this.evtUpdateNotification);
+    NotificationsStore.removeListener(`HIDE_NOTIFICATION`, this.evtHideNotification);
   }
 
   componentDidMount() {

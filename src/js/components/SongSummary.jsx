@@ -32,6 +32,9 @@ export default class SongSummary extends Component {
       playing: false
     };
 
+    // -- Events ----
+    this.evtCheckIndicatePlaying = () => this.checkIndicatePlaying();
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,13 +66,15 @@ export default class SongSummary extends Component {
   }
 
   componentWillMount() {
-    PlaylistStore.on(`SONG_CHANGED`, () => this.checkIndicatePlaying());
-    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, () => this.checkIndicatePlaying());
-    UserStore.on(`SYNCHED_CHANGED`, () => this.checkIndicatePlaying());
+    PlaylistStore.on(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    UserStore.on(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
   }
 
   componentWillUnmount() {
-
+    PlaylistStore.removeListener(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    PlaylistStore.removeListener(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
   }
 
   componentDidMount() {
@@ -144,18 +149,17 @@ export default class SongSummary extends Component {
           songs.voteSong(id, title, voteType)
             .then(res => {
 
-              // success!
-              console.log(`SUCCESS!`, res);
-
               let {currentQueueScore} = this.state;
               currentQueueScore = res.votes.currentQueueScore;
 
-              if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+              /*if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
                 const message = `${voteType} successfull!`;
                 NotifActions.addSuccess(message);
-              }
+              }*/
 
-              console.log(`CURRENTQUEUSCORE:`, currentQueueScore);
+              //console.log(`CURRENTQUEUSCORE:`, currentQueueScore);
+
+              PlaylistActions.updateQueue();
 
               this.setState({currentQueueScore});
 

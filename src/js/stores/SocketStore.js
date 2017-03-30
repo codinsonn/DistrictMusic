@@ -22,7 +22,8 @@ class SocketStore extends EventEmitter {
     this.socket.on(`UPDATED_SOCKET_ID`, socketId => UserStore.updateSessionSocketId(socketId));
     this.socket.on(`DOWNLOAD_PROGRESS`, data => this.updateDownloadProgress(data));
     this.socket.on(`DOWNLOAD_DONE`, data => this.updateDownloadProgress(data));
-    this.socket.on(`QUEUE_UPDATED`, () => this.emit(`QUEUE_UPDATED`));
+    this.socket.on(`QUEUE_UPDATED`, currentQueue => PlaylistStore.handleSocketQueueUpdate(currentQueue));
+    this.socket.on(`CHECK_SPEAKER_QUEUE`, currentQueue => PlaylistStore.checkSpeakerQueue(currentQueue));
     this.socket.on(`PROFILE_UPDATED`, user => UserStore.updateUserProfile(user));
     this.socket.on(`SPEAKER_RESET`, () => PlaylistStore.updateSpeakerConnected(true));
     this.socket.on(`SPEAKER_UNSET`, () => PlaylistStore.updateSpeakerConnected(false));

@@ -19,16 +19,23 @@ export default class PlaylistDash extends Component {
       userProfile: UserStore.getProfile()
     };
 
+    // -- Events ----
+    this.evtUpdateUserProfile = () => this.updateUserProfile();
+    this.evtSetAsSpeaker = () => this.setSpeaker(true);
+    this.evtUnsetAsSpeaker = () => this.setSpeaker(false);
+
   }
 
   componentWillMount() {
-    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
-    UserStore.on(`SET_AS_SPEAKER`, () => this.setSpeaker(true));
-    UserStore.on(`UNSET_AS_SPEAKER`, () => this.setSpeaker(false));
+    UserStore.on(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
+    UserStore.on(`SET_AS_SPEAKER`, this.evtSetAsSpeaker);
+    UserStore.on(`UNSET_AS_SPEAKER`, this.evtUnsetAsSpeaker);
   }
 
   componentWillUnmount() {
-
+    UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
+    UserStore.removeListener(`SET_AS_SPEAKER`, this.evtSetAsSpeaker);
+    UserStore.removeListener(`UNSET_AS_SPEAKER`, this.evtUnsetAsSpeaker);
   }
 
   componentDidMount() {

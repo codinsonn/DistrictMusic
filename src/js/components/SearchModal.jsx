@@ -14,10 +14,6 @@ export default class SearchModal extends Component {
 
     super(props, context);
 
-    this.inputPaused = false;
-    this.inputChanged = false;
-    this.cancelDelayed = false;
-
     this.state = {
       visible: PlaylistStore.getShowSearchModal(),
       isLoggedIn: UserStore.getLoggedIn(),
@@ -25,16 +21,28 @@ export default class SearchModal extends Component {
       currentSuggestions: []
     };
 
+    // -- Non state vars ----
+    this.inputPaused = false;
+    this.inputChanged = false;
+    this.cancelDelayed = false;
+
+    // -- Events ----
+    this.evtUpdateLoggedIn = () => this.updateLoggedIn();
+    this.evtResetSearchBar = () => this.resetSearchbar();
+    this.evtSetVisible = () => this.setVisible();
+
   }
 
   componentWillMount() {
-    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateLoggedIn());
-    PlaylistStore.on(`RESET_SEARCH_BAR`, () => this.resetSearchbar());
-    PlaylistStore.on(`SHOW_SEARCH_MODAL_CHANGED`, () => this.setVisible());
+    UserStore.on(`USER_PROFILE_CHANGED`, this.evtUpdateLoggedIn);
+    PlaylistStore.on(`RESET_SEARCH_BAR`, this.evtResetSearchBar);
+    PlaylistStore.on(`SHOW_SEARCH_MODAL_CHANGED`, this.evtSetVisible);
   }
 
   componentWillUnmount() {
-
+    UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtUpdateLoggedIn);
+    PlaylistStore.removeListener(`RESET_SEARCH_BAR`, this.evtResetSearchBar);
+    PlaylistStore.removeListener(`SHOW_SEARCH_MODAL_CHANGED`, this.evtSetVisible);
   }
 
   componentDidMount() {

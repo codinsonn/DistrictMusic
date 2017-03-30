@@ -96,6 +96,8 @@ server.listen(port, function() {
 
 process.on('uncaughtException', (err) => {
 
+  console.log('-!- Uncaught exception -!-', err);
+
   if(err && err.code != 'EADDRINUSE'){
     //console.log('-!- Uncaught exception -!-', err);
     //io.close();
@@ -110,6 +112,7 @@ process.on('SIGTERM', () => {
 
   io.close();
   server.close();
+  process.exit();
 
 });
 
@@ -119,6 +122,7 @@ process.on('SIGINT', () => {
 
   io.close();
   server.close();
+  process.exit();
 
 });
 

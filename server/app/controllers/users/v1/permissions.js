@@ -76,7 +76,7 @@ module.exports.checkVotesLeft = (req, res, next) => {
           case "veto_upvote":
           case "veto_downvote":
             if(user.permissions.vetosLeft > 0){
-              user.permissions.vetosLeft = 0;
+              user.permissions.vetosLeft = user.permissions.vetosLeft - 1;
               user.save((err) => {
 
                 if (err) {

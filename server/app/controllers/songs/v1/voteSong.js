@@ -2,6 +2,10 @@
 require("rootpath")();
 var _ = require("lodash");
 
+// Config
+var config = require(__base + "config");
+
+// Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
@@ -186,6 +190,14 @@ module.exports = (req, res, done) => {
           SongHelper.removeVotesForSong(song.general.id);
         }
 
+        // -- check if under minimum vote score ----
+        if(song.queue.votes.currentQueueScore < config.auto.minVoteScore){
+          song.queue.currentQueueScore = 0;
+          song.queue.inQueue = false;
+          song.queue.isPlaying = false;
+          SongHelper.removeVotesForSong(song.general.id);
+        }
+
         // -- save to db -------
         song.save((err) => {
 
@@ -223,10 +235,14 @@ module.exports = (req, res, done) => {
 
   this.respondSuccess = (song) => {
 
-    console.log('- Broadcasting for update -', song.general.title);
-    EmitHelper.broadcast('QUEUE_UPDATED', song);
+    SongHelper.getCurrentQueue.then((currentQueue) => {
+      console.log('- [VoteSong] Vote successfull! Broadcasting for update -');
+      EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
+    }, (failData) => {
+      console.log('[VoteSong] Failed:', failData);
+    });
 
-    console.log('- Song score updated! -', song.queue.votes.currentQueueScore);
+    console.log('- [VoteSong] Song score updated! -', song.queue.votes.currentQueueScore);
     res.statusCode = 200;
     return res.json(song.queue);
 

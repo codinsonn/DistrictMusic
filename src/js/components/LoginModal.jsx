@@ -1,4 +1,4 @@
-import React, {Component/*, PropTypes*/} from 'react';
+import React, {Component} from 'react';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
@@ -13,18 +13,21 @@ export default class LoginModal extends Component {
       visible: UserStore.getShowLoginModal()
     };
 
+    // -- Events ----
+    this.evtSetVisible = () => this.setVisible();
+
   }
 
   componentWillMount() {
-
+    UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, this.evtSetVisible);
   }
 
   componentWillUnmount() {
-
+    UserStore.removeListener(`SHOW_LOGIN_MODAL_CHANGED`, this.evtSetVisible);
   }
 
   componentDidMount() {
-    UserStore.on(`SHOW_LOGIN_MODAL_CHANGED`, () => this.setVisible());
+
   }
 
   setVisible() {
@@ -78,7 +81,3 @@ export default class LoginModal extends Component {
   }
 
 }
-
-/*LoginModal.propTypes = {
-  visible: PropTypes.string
-};*/

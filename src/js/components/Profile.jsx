@@ -18,18 +18,26 @@ export default class Profile extends Component {
       showProfileOptions: false
     };
 
+    // -- Non state vars ----
     this.hasChangedVoteMode = false;
+
+    // -- Events ----
+    this.evtUpdateUserProfile = () => this.updateUserProfile();
+    this.evtUpdateVoteMode = () => this.updateVoteMode();
+    this.evtUpdateSynched = () => this.updateSynched();
 
   }
 
   componentWillMount() {
-    UserStore.on(`USER_PROFILE_CHANGED`, () => this.updateUserProfile());
-    UserStore.on(`VOTE_MODE_CHANGED`, () => this.updateVoteMode());
-    UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
+    UserStore.on(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
+    UserStore.on(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);
+    UserStore.on(`SYNCHED_CHANGED`, this.evtUpdateSynched);
   }
 
   componentWillUnmount() {
-
+    UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
+    UserStore.removeListener(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);
+    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtUpdateSynched);
   }
 
   componentDidMount() {

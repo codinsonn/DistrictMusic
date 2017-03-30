@@ -16,20 +16,27 @@ export default class YoutubeVideo extends Component {
       isSynched: UserStore.getSynched()
     };
 
+    // -- Events ----
+    this.evtUpdateLayout = () => this.updateLayout();
+    this.evtUpdateCurrentVideo = () => this.updateCurrentVideo();
+    this.evtUpdateSynched = () => this.updateSynched();
+
   }
 
   componentWillMount() {
-
+    PlaylistStore.on(`YOUTUBE_LAYOUT_TOGGLED`, this.evtUpdateLayout);
+    PlaylistStore.on(`SONG_CHANGED`, this.evtUpdateCurrentVideo);
+    UserStore.on(`SYNCHED_CHANGED`, this.evtUpdateSynched);
   }
 
   componentWillUnmount() {
-
+    PlaylistStore.removeListener(`YOUTUBE_LAYOUT_TOGGLED`, this.evtUpdateLayout);
+    PlaylistStore.removeListener(`SONG_CHANGED`, this.evtUpdateCurrentVideo);
+    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtUpdateSynched);
   }
 
   componentDidMount() {
-    PlaylistStore.on(`YOUTUBE_LAYOUT_TOGGLED`, () => this.updateLayout());
-    PlaylistStore.on(`SONG_CHANGED`, () => this.updateCurrentVideo());
-    UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
+
   }
 
   updateLayout() {

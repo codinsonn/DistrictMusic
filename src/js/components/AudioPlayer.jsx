@@ -30,36 +30,45 @@ export default class AudioPlayer extends Component {
       progressColor: `#fecb58`
     };
 
-    /*this.synchedWaveOptions = {
-      height: 32,
-      normalize: true,
-      scrollParent: true,
-      hideScrollBar: true,
-      cursorColor: `#ffffff`,
-      waveColor: `#c6c6c6`,
-      progressColor: `#fecb58`
-    };*/
-
+    // -- non state vars ----
     this.prevSongId = ``;
     this.songHasStarted = false;
     this.prevTimeString = `00:00`;
 
+    // -- events ----
+    this.evtUpdateSong = () => this.updateSong();
+    this.evtCheckSongUpdate = () => this.checkSongUpdate();
+    this.evtUpdateSpeaker = () => this.updateSpeaker();
+    this.evtUpdateSynched = () => this.updateSynched();
+    this.evtSpeakerNotConnected = () => NotifActions.addError(`Speaker not connected`);
+    this.evtSpeakerDisconnected = () => NotifActions.addError(`Speaker disconnected`);
+    this.evtShowNowPlaying = () => this.showNowPlaying();
+    this.evtPausePlay = () => this.pausePlay();
+
   }
 
   componentWillMount() {
-    PlaylistStore.on(`SONG_CHANGED`, () => this.updateSong());
-    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, () => this.checkSongUpdate());
-    UserStore.on(`SET_AS_SPEAKER`, () => this.updateSpeaker(true));
-    UserStore.on(`UNSET_AS_SPEAKER`, () => this.updateSpeaker(false));
-    UserStore.on(`SYNCHED_CHANGED`, () => this.updateSynched());
-    UserStore.on(`SPEAKER_NOT_CONNECTED`, () => NotifActions.addError(`Speaker not connected`));
-    PlaylistStore.on(`SPEAKER_DISCONNECTED`, () => NotifActions.addError(`Speaker disconnected`));
-    PlaylistStore.on(`SHOW_SONG_UPDATE`, () => this.showNowPlaying());
-    PlaylistStore.on(`PAUSE_PLAY`, () => this.pausePlay());
+    PlaylistStore.on(`SONG_CHANGED`, this.evtUpdateSong);
+    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, this.evtCheckSongUpdate);
+    UserStore.on(`SET_AS_SPEAKER`, this.evtUpdateSpeaker);
+    UserStore.on(`UNSET_AS_SPEAKER`, this.evtUpdateSpeaker);
+    UserStore.on(`SYNCHED_CHANGED`, this.evtUpdateSynched);
+    UserStore.on(`SPEAKER_NOT_CONNECTED`, this.evtSpeakerNotConnected);
+    PlaylistStore.on(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
+    PlaylistStore.on(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
+    PlaylistStore.on(`PAUSE_PLAY`, this.evtPausePlay);
   }
 
   componentWillUnmount() {
-
+    PlaylistStore.removeListener(`SONG_CHANGED`, this.evtUpdateSong);
+    PlaylistStore.removeListener(`SPEAKER_SONG_CHANGED`, this.evtCheckSongUpdate);
+    UserStore.removeListener(`SET_AS_SPEAKER`, this.evtUpdateSpeaker);
+    UserStore.removeListener(`UNSET_AS_SPEAKER`, this.evtUpdateSpeaker);
+    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtUpdateSynched);
+    UserStore.removeListener(`SPEAKER_NOT_CONNECTED`, this.evtSpeakerNotConnected);
+    PlaylistStore.removeListener(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
+    PlaylistStore.removeListener(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
+    PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPausePlay);
   }
 
   componentDidMount() {
@@ -104,13 +113,13 @@ export default class AudioPlayer extends Component {
 
   }
 
-  updateSpeaker(blnIsSpeaker) {
+  updateSpeaker() {
 
     //console.log(`[updateSpeaker]`);
 
     let {isSpeaker} = this.state;
 
-    isSpeaker = blnIsSpeaker;
+    isSpeaker = UserStore.getIsSpeaker();
 
     this.setState({isSpeaker});
 

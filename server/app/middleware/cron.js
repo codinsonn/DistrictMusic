@@ -1,32 +1,39 @@
+// Config
+var config = require(__base + "config");
+
+// Packages
 var _ = require("lodash");
 var CronJob = require('cron').CronJob;
-
 var path = require('path');
 var fs = require('fs');
 var fse = require('fs-extra');
 var ytdl = require('ytdl-core');
 var ffmpeg = require('fluent-ffmpeg');
 
+// Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
+var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
+// Models
 var UserModel = require(__base + "app/models/user");
 var SongModel = require(__base + "app/models/song");
+var SpeakerModel = require(__base + "app/models/speaker");
 
 module.exports = function(timeZone) {
 
-  var everyMinute = '00 * * * * 1-60'; // testing
-  var everyHourAtTheFirstMinute = '00 01 * * * 1-24'; // testing
-  var everyHourAtTheLastMinute = '00 59 * * * 1-24'; // testing
-  var everyHour = '00 00 * * * 1-24'; // testing
-  var everyWeekdayInTheMorning = '00 00 09 * * 1-5';
-  var everyMondayMorning = '00 00 09 * * 1';
-  var everySundayNight = '00 00 23 * * 7';
+  //var everyMinute = '00 * * * * 1-60'; // testing
+  //var everyHourAtTheFirstMinute = '00 01 * * * 1-24'; // testing
+  //var everyHourAtTheLastMinute = '00 59 * * * 1-24'; // testing
+  //var everyHour = '00 00 * * * 1-24'; // testing
+  //var everyWeekdayInTheMorning = '00 00 09 * * 1-5';
+  //var everyMondayMorning = '00 00 09 * * 1';
+  //var everySundayNight = '00 00 23 * * 7';
 
   /* --- Functions ----------------------------------------------------------------------------------------- */
 
   this.addRandomSongToQueue = () => {
 
-    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: 2 } };
+    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: config.auto.minLegacyScore } };
 
     // Find random unqueued song with legacy score greater than 10
     SongModel.find(query).exec((err, unqueuedSongs) => {
@@ -143,7 +150,7 @@ module.exports = function(timeZone) {
         console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
       } else {
         console.log('[CRONBOT] About to emit for update');
-        EmitHelper.broadcast('QUEUE_UPDATED', song);
+        this.emitCurrentQueue();
         console.log('[CRONBOT] Cronbot added', song.general.title, 'to the queue and emitted!');
       }
 
@@ -151,9 +158,52 @@ module.exports = function(timeZone) {
 
   }
 
-  /* --- Every Minute: Check if songs need to be added to queue -------------------------------------------- */
+  this.checkSpeakerQueue = (currentQueue) => {
 
-  this.checkQueueEmpty = new CronJob(everyMinute, () => {
+    currentQueue.sort((song1, song2) => {
+
+      var s1 = 0;
+      if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
+      if(song1.queue.isVetoed) s1 += 10; // sort by veto
+      if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+      if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+      if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+      var s2 = 0;
+      if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+      if(song2.queue.isVetoed) s2 += 10;
+      if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+      if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+      return s2 - s1;
+
+    });
+
+    SpeakerModel.findOne().exec((err, speaker) => {
+
+      if(speaker && speaker.meta.socketIds.length >= 1){
+        EmitHelper.emit('CHECK_SPEAKER_QUEUE', speaker.meta.socketIds, currentQueue);
+      }
+
+    });
+
+  }
+
+  this.emitCurrentQueue = () => {
+
+    SongHelper.getCurrentQueue.then((currentQueue) => {
+      console.log('- [CRON] Broadcasting for queue update -');
+      EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
+    }, (failData) => {
+      console.log('[CRON] Queue fetch failed:', failData);
+    });
+
+  }
+
+  /* --- Every Ten Seconds: Check if speaker queue is up to date -------------------------------------------- */
+
+  this.cronCheckSpeakerQueueUpdate = new CronJob(config.auto.cronPatternCheckSpeakerQueueUpdate, () => {
 
     console.log('-CRON- Checking if queue is empty -CRON-');
 
@@ -164,14 +214,42 @@ module.exports = function(timeZone) {
           console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
         }
 
-        if(songs && songs.length < 2){
+        if(songs){
+
+          this.checkSpeakerQueue(songs);
+
+        }
+
+      });
+
+    }, () => { // Callback after job is done
+
+    },
+    true, // Start the job right now
+    timeZone // Time zone of this job
+
+  );
+
+  /* --- Every Minute: Check if songs need to be added to queue -------------------------------------------- */
+
+  this.cronCheckQueueEmpty = new CronJob(config.auto.cronPatternCheckQueueEmpty, () => {
+
+    console.log('-CRON- Checking if queue is empty -CRON-');
+
+      // If one or no song in queue
+      SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
+
+        if(err){
+          console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
+        }
+
+        if(songs && songs.length < config.auto.minSongsInQueue){
 
           this.addRandomSongToQueue();
 
         }else{
 
-          console.log('[CRON] Queue not empty, Emitting for mandatory queue update');
-          EmitHelper.broadcast('QUEUE_UPDATED');
+          this.checkSpeakerQueue(songs);
 
         }
 
@@ -187,7 +265,7 @@ module.exports = function(timeZone) {
 
   /* --- Daily: Add random song to queue -------------------------------------------- */
 
-  this.addRandomSongEveryday = new CronJob(everyWeekdayInTheMorning, () => {
+  this.cronAddRandomSong = new CronJob(config.auto.cronPatternAddRandomSong, () => {
 
     console.log('-CRON- Adding random song to queue -CRON-');
 
@@ -203,12 +281,12 @@ module.exports = function(timeZone) {
 
   /* --- Weekly: Reset Veto & Super Votes ------------------------------------------------------------------ */
 
-  this.resetVotes = new CronJob(everyHour, () => {
+  this.cronResetVotes = new CronJob(config.auto.cronPatternResetVotes, () => {
 
     console.log('-CRON- Resetting weekly special votes -CRON-');
 
       var conditions = {};
-      var query = { permissions: { vetosLeft: 1, superVotesLeft: 2 } };
+      var query = { permissions: { vetosLeft: config.auto.resetVetos, superVotesLeft: config.auto.resetSuperVotes } };
       var options = {};
 
       UserModel.update(conditions, query, options, () => {
@@ -229,7 +307,7 @@ module.exports = function(timeZone) {
 
   /* --- Weekly: Schedule unqueued files for removal ----------------------------------------------------------- */
 
-  this.scheduleFilesToBeRemoved = new CronJob(everyHourAtTheFirstMinute, () => {
+  this.cronScheduleFilesToBeRemoved = new CronJob(config.auto.cronPatternScheduleFilesToBeRemoved, () => {
 
     console.log('-CRON- Scheduling files for removal -CRON-');
 
@@ -253,7 +331,7 @@ module.exports = function(timeZone) {
 
   /* --- Weekly: Remove files scheduled for removal  ---------------------------------------------------------- */
 
-  this.removeScheduledFiles = new CronJob(everyHourAtTheLastMinute, () => {
+  this.cronRemoveScheduledFiles = new CronJob(config.auto.cronPatternRemoveScheduledFiles, () => {
 
     console.log('-CRON- Removing files scheduled for removal -CRON-');
 
@@ -296,7 +374,7 @@ module.exports = function(timeZone) {
       SongModel.update(removeConditions, removeQuery, removeOptions, () => {
 
         console.log('-!- [CRON] Files removed -!-');
-        EmitHelper.broadcast('QUEUE_UPDATED');
+        this.emitCurrentQueue();
 
       });
 

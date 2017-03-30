@@ -32,6 +32,10 @@ var set = module.exports.set = (type) => {
         return "PROFILE_UPDATED";
         break;
 
+      case "CHECK_SPEAKER_QUEUE":
+        return "CHECK_SPEAKER_QUEUE";
+        break;
+
       case "SPEAKER_RESET":
         return "SPEAKER_RESET";
         break;

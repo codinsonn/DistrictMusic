@@ -18,18 +18,21 @@ export default class SuggestionDetail extends Component {
       suggestion: PlaylistStore.getCurrentSuggestion()
     };
 
+    // -- Events ----
+    this.evtSetSuggestionDetail = () => this.setSuggestionDetail();
+
   }
 
   componentWillMount() {
-
+    PlaylistStore.on(`SHOW_SUGGESTION_DETAIL_CHANGED`, this.evtSetSuggestionDetail);
   }
 
   componentWillUnmount() {
-
+    PlaylistStore.removeListener(`SHOW_SUGGESTION_DETAIL_CHANGED`, this.evtSetSuggestionDetail);
   }
 
   componentDidMount() {
-    PlaylistStore.on(`SHOW_SUGGESTION_DETAIL_CHANGED`, () => this.setSuggestionDetail());
+
   }
 
   setSuggestionDetail() {
