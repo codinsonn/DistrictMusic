@@ -33334,8 +33334,6 @@ var NotificationsStore = function (_EventEmitter) {
   function NotificationsStore() {
     _classCallCheck(this, NotificationsStore);
 
-    //this.gapiClientLoaded = false;
-
     var _this = _possibleConstructorReturn(this, _EventEmitter.call(this));
 
     _this.notifs = [];
@@ -33349,45 +33347,62 @@ var NotificationsStore = function (_EventEmitter) {
     this.emit('NOTIFICATIONS_CHANGED');
   };
 
-  NotificationsStore.prototype.setGapiClientLoaded = function setGapiClientLoaded() {
-
-    //this.gapiClientLoaded = true;
-
-    this.emit('GAPI_CLIENT_READY');
-  };
-
   NotificationsStore.prototype.addSuccess = function addSuccess(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'success', message: message });
+    //this.notifs.push({type: `success`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('success', message);
   };
 
   NotificationsStore.prototype.addNotification = function addNotification(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'info', message: message });
+    //this.notifs.push({type: `info`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('info', message);
   };
 
   NotificationsStore.prototype.addError = function addError(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'error', message: message });
+    //this.notifs.push({type: `error`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('error', message);
+  };
+
+  NotificationsStore.prototype.queueNotification = function queueNotification(type, message) {
+    var _this2 = this;
+
+    this.removeCurrentNotification(false);
+
+    this.notifs.push({ type: type, message: message });
+
+    setTimeout(function () {
+      return _this2.emitNotifChange;
+    }, 10);
+
+    console.log('[NotificationsStore] Queued New notification:', type, message);
   };
 
   NotificationsStore.prototype.removeCurrentNotification = function removeCurrentNotification() {
+    var emit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 
     this.notifs.splice(0, 1); // remove current notification
 
-    this.emitNotifChange();
+    if (emit) {
+      this.emitNotifChange();
+    }
   };
 
   NotificationsStore.prototype.hideNotification = function hideNotification() {
@@ -52115,6 +52130,9 @@ var SongSummary = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_SONG_CHANGED', function () {
       return _this2.checkIndicatePlaying();
     });
+    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SYNCHED_CHANGED', function () {
+      return _this2.checkIndicatePlaying();
+    });
   };
 
   SongSummary.prototype.componentWillUnmount = function componentWillUnmount() {};
@@ -52337,14 +52355,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: playlistItemClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 274
+          lineNumber: 275
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 275
+            lineNumber: 276
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52353,7 +52371,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 276
+              lineNumber: 277
             }
           },
           '\xA0'
@@ -52362,7 +52380,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 277
+              lineNumber: 278
             }
           },
           currentQueueScore
@@ -52373,7 +52391,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 278
+              lineNumber: 279
             }
           },
           '\xA0'
@@ -52383,14 +52401,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 280
+            lineNumber: 281
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 281
+              lineNumber: 282
             }
           },
           duration
@@ -52402,14 +52420,14 @@ var SongSummary = function (_Component) {
             return _this6.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 283
+            lineNumber: 284
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 284
+              lineNumber: 285
             }
           },
           tags,
@@ -52419,7 +52437,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 285
+              lineNumber: 286
             }
           },
           'Submitted ',
@@ -52427,7 +52445,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 285
+                lineNumber: 286
               }
             },
             fromNow
@@ -52438,7 +52456,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 285
+                lineNumber: 286
               }
             },
             lastAddedBy.userName
@@ -79159,4 +79177,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.394d1e5b2d341cd4bcee.js.map
+//# sourceMappingURL=main.cc97fa4da18f35c06669.js.map

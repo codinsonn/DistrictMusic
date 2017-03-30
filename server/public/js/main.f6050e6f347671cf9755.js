@@ -8146,13 +8146,13 @@ module.exports = function(module) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(27);
-/* harmony export (immutable) */ __webpack_exports__["j"] = showSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["e"] = hideSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["i"] = showSuggestionDetail;
-/* harmony export (immutable) */ __webpack_exports__["f"] = hideSuggestionDetail;
-/* harmony export (immutable) */ __webpack_exports__["g"] = resetSearchbar;
-/* unused harmony export updateQueue */
-/* harmony export (immutable) */ __webpack_exports__["h"] = pausePlay;
+/* harmony export (immutable) */ __webpack_exports__["k"] = showSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["f"] = hideSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["j"] = showSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["g"] = hideSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["h"] = resetSearchbar;
+/* harmony export (immutable) */ __webpack_exports__["e"] = updateQueue;
+/* harmony export (immutable) */ __webpack_exports__["i"] = pausePlay;
 /* harmony export (immutable) */ __webpack_exports__["d"] = setSong;
 /* harmony export (immutable) */ __webpack_exports__["a"] = setAudioPos;
 /* unused harmony export setVideoPos */
@@ -12490,16 +12490,15 @@ module.exports = setInnerHTML;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SearchModal__ = __webpack_require__(310);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__SearchModal__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Suggestion__ = __webpack_require__(312);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_4__Suggestion__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_4__Suggestion__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SuggestionDetail__ = __webpack_require__(313);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_5__SuggestionDetail__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__DownloadProgress__ = __webpack_require__(305);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_6__DownloadProgress__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx__ = __webpack_require__(308);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx__);
-/* harmony reexport (binding) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx__, "default")) __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx__["default"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_7__PlaylistQueue_jsx__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SongSummary__ = __webpack_require__(311);
-/* unused harmony reexport SongSummary */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_8__SongSummary__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AudioPlayer__ = __webpack_require__(304);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_9__AudioPlayer__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__YoutubeVideo__ = __webpack_require__(314);
@@ -33335,8 +33334,6 @@ var NotificationsStore = function (_EventEmitter) {
   function NotificationsStore() {
     _classCallCheck(this, NotificationsStore);
 
-    //this.gapiClientLoaded = false;
-
     var _this = _possibleConstructorReturn(this, _EventEmitter.call(this));
 
     _this.notifs = [];
@@ -33350,45 +33347,62 @@ var NotificationsStore = function (_EventEmitter) {
     this.emit('NOTIFICATIONS_CHANGED');
   };
 
-  NotificationsStore.prototype.setGapiClientLoaded = function setGapiClientLoaded() {
-
-    //this.gapiClientLoaded = true;
-
-    this.emit('GAPI_CLIENT_READY');
-  };
-
   NotificationsStore.prototype.addSuccess = function addSuccess(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'success', message: message });
+    //this.notifs.push({type: `success`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('success', message);
   };
 
   NotificationsStore.prototype.addNotification = function addNotification(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'info', message: message });
+    //this.notifs.push({type: `info`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('info', message);
   };
 
   NotificationsStore.prototype.addError = function addError(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
+    //this.notifs.splice(0, 1); // remove current notification
 
-    this.notifs.push({ type: 'error', message: message });
+    //this.notifs.push({type: `error`, message: message});
 
-    this.emitNotifChange();
+    //this.emitNotifChange();
+
+    this.queueNotification('error', message);
+  };
+
+  NotificationsStore.prototype.queueNotification = function queueNotification(type, message) {
+    var _this2 = this;
+
+    this.removeCurrentNotification(false);
+
+    this.notifs.push({ type: type, message: message });
+
+    setTimeout(function () {
+      return _this2.emitNotifChange;
+    }, 1);
+
+    console.log('[NotificationsStore] Queued New notification:', type, message);
   };
 
   NotificationsStore.prototype.removeCurrentNotification = function removeCurrentNotification() {
+    var emit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 
     this.notifs.splice(0, 1); // remove current notification
 
-    this.emitNotifChange();
+    if (emit) {
+      this.emitNotifChange();
+    }
   };
 
   NotificationsStore.prototype.hideNotification = function hideNotification() {
@@ -51089,10 +51103,196 @@ var Notification = function (_Component) {
 
 /***/ }),
 /* 308 */
-/***/ (function(module, __webpack_exports__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-throw new Error("Module build failed: SyntaxError: JSX attributes must only be assigned a non-empty expression (79:72)\n\n\u001b[0m \u001b[90m 77 | \u001b[39m        \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39misLoggedIn) { song\u001b[33m.\u001b[39muservote \u001b[33m=\u001b[39m {hasVoted\u001b[33m:\u001b[39m \u001b[36mfalse\u001b[39m}\u001b[33m;\u001b[39m }\n \u001b[90m 78 | \u001b[39m        let key \u001b[33m=\u001b[39m \u001b[32m`${song.general.id}${i}`\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 79 | \u001b[39m        \u001b[36mreturn\u001b[39m \u001b[33m<\u001b[39m\u001b[33mSongSummary\u001b[39m {\u001b[33m...\u001b[39msong} voteMode\u001b[33m=\u001b[39m{voteMode} order\u001b[33m=\u001b[39m{i} key\u001b[33m=\u001b[39m{} \u001b[33m/\u001b[39m\u001b[33m>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    | \u001b[39m                                                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 80 | \u001b[39m      })\u001b[33m;\u001b[39m\n \u001b[90m 81 | \u001b[39m\n \u001b[90m 82 | \u001b[39m    } \u001b[36melse\u001b[39m \u001b[36mif\u001b[39m (\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mhasFetchedQueue) {\u001b[0m\n");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__ = __webpack_require__(32);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/PlaylistQueue.jsx';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+var PlaylistQueue = function (_Component) {
+  _inherits(PlaylistQueue, _Component);
+
+  function PlaylistQueue(props, context) {
+    _classCallCheck(this, PlaylistQueue);
+
+    var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
+
+    _this.state = {
+      currentQueue: __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].getCurrentQueue(),
+      voteMode: __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getVoteMode()
+    };
+
+    _this.hasFetchedQueue = false;
+
+    return _this;
+  }
+
+  PlaylistQueue.prototype.componentWillMount = function componentWillMount() {
+    var _this2 = this;
+
+    // listeners
+    __WEBPACK_IMPORTED_MODULE_4__stores_SocketStore__["a" /* default */].on('QUEUE_UPDATED', function () {
+      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["e" /* updateQueue */]();
+    });
+    __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('USER_PROFILE_CHANGED', function () {
+      return __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["e" /* updateQueue */]();
+    });
+    __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].on('QUEUE_CHANGED', function () {
+      return _this2.updateQueue();
+    });
+    __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('VOTE_MODE_CHANGED', function () {
+      return _this2.updateVoteMode();
+    });
+
+    // fetch queue from api
+    __WEBPACK_IMPORTED_MODULE_5__actions_PlaylistActions__["e" /* updateQueue */]();
+  };
+
+  PlaylistQueue.prototype.componentWillUnmount = function componentWillUnmount() {};
+
+  PlaylistQueue.prototype.componentDidMount = function componentDidMount() {};
+
+  PlaylistQueue.prototype.updateQueue = function updateQueue() {
+    var currentQueue = this.state.currentQueue;
+
+
+    currentQueue = __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].getCurrentQueue();
+
+    console.log('CURRENTQUEUE:', currentQueue);
+
+    this.hasFetchedQueue = true;
+
+    this.setState({ currentQueue: currentQueue });
+  };
+
+  PlaylistQueue.prototype.updateVoteMode = function updateVoteMode() {
+    var voteMode = this.state.voteMode;
+
+
+    voteMode = __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getVoteMode();
+
+    this.setState({ voteMode: voteMode });
+  };
+
+  PlaylistQueue.prototype.renderCurrentQueue = function renderCurrentQueue(currentQueue) {
+    var _this3 = this;
+
+    if (currentQueue.length > 0) {
+      var _ret = function () {
+        var voteMode = _this3.state.voteMode;
+
+
+        var isLoggedIn = __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getLoggedIn();
+
+        var i = 0;
+        return {
+          v: currentQueue.map(function (song) {
+            i++;
+            if (!isLoggedIn) {
+              song.uservote = { hasVoted: false };
+            }
+            var key = '' + song.general.id + i;
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["i" /* SongSummary */], _extends({}, song, { voteMode: voteMode, order: i, key: key, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 81
+              }
+            }));
+          })
+        };
+      }();
+
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    } else if (this.hasFetchedQueue) {
+
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'no-songs-notif', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 87
+          }
+        },
+        'No songs currently in queue'
+      );
+    }
+  };
+
+  PlaylistQueue.prototype.render = function render() {
+    var currentQueue = this.state.currentQueue;
+
+
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'article',
+      { className: 'playlist-queue', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 99
+        }
+      },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'section',
+        { className: 'playlist-header', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 100
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'h2',
+          { className: 'active', __source: {
+              fileName: _jsxFileName,
+              lineNumber: 101
+            }
+          },
+          'In Queue'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'h2',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 102
+            }
+          },
+          'Alltime best'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'section',
+        { className: 'current-queue', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 104
+          }
+        },
+        this.renderCurrentQueue(currentQueue)
+      )
+    );
+  };
+
+  return PlaylistQueue;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = PlaylistQueue;
 
 /***/ }),
 /* 309 */
@@ -51595,7 +51795,7 @@ var SearchModal = function (_Component) {
     currentSuggestions = [];
     //document.querySelector(`.search-query`).value = ``;
     setTimeout(function () {
-      return __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["e" /* hideSearchModal */]();
+      return __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["f" /* hideSearchModal */]();
     }, 10);
 
     this.setState({ currentSuggestions: currentSuggestions });
@@ -51607,7 +51807,7 @@ var SearchModal = function (_Component) {
     var showSuggestionDetail = __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
 
     if (isLoggedIn && !showSuggestionDetail) {
-      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["j" /* showSearchModal */]();
+      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["k" /* showSearchModal */]();
       this.onInputChanged(false);
     } else if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["d" /* showLoginModal */]();
@@ -51728,7 +51928,7 @@ var SearchModal = function (_Component) {
     if (currentSuggestions.length > 0) {
 
       return currentSuggestions.map(function (suggestion) {
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["i" /* Suggestion */], _extends({}, suggestion, { key: suggestion.id, __source: {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["j" /* Suggestion */], _extends({}, suggestion, { key: suggestion.id, __source: {
             fileName: _jsxFileName,
             lineNumber: 239
           }
@@ -51928,6 +52128,9 @@ var SongSummary = function (_Component) {
       return _this2.checkIndicatePlaying();
     });
     __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].on('SPEAKER_SONG_CHANGED', function () {
+      return _this2.checkIndicatePlaying();
+    });
+    __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].on('SYNCHED_CHANGED', function () {
       return _this2.checkIndicatePlaying();
     });
   };
@@ -52152,14 +52355,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: playlistItemClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 274
+          lineNumber: 275
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 275
+            lineNumber: 276
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52168,7 +52371,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 276
+              lineNumber: 277
             }
           },
           '\xA0'
@@ -52177,7 +52380,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 277
+              lineNumber: 278
             }
           },
           currentQueueScore
@@ -52188,7 +52391,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 278
+              lineNumber: 279
             }
           },
           '\xA0'
@@ -52198,14 +52401,14 @@ var SongSummary = function (_Component) {
         'section',
         { className: 'song-thumb', style: thumbStyle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 280
+            lineNumber: 281
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 281
+              lineNumber: 282
             }
           },
           duration
@@ -52217,14 +52420,14 @@ var SongSummary = function (_Component) {
             return _this6.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 283
+            lineNumber: 284
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 284
+              lineNumber: 285
             }
           },
           tags,
@@ -52234,7 +52437,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 285
+              lineNumber: 286
             }
           },
           'Submitted ',
@@ -52242,7 +52445,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 285
+                lineNumber: 286
               }
             },
             fromNow
@@ -52253,7 +52456,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 285
+                lineNumber: 286
               }
             },
             lastAddedBy.userName
@@ -52266,7 +52469,7 @@ var SongSummary = function (_Component) {
   return SongSummary;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
-/* unused harmony default export */ var _unused_webpack_default_export = SongSummary;
+/* harmony default export */ __webpack_exports__["a"] = SongSummary;
 
 
 SongSummary.propTypes = {
@@ -52332,8 +52535,8 @@ var Suggestion = function (_Component) {
 
     var data = { id: id, title: title, channel: channel, thumbs: thumbs, duration: duration };
 
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["e" /* hideSearchModal */]();
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["i" /* showSuggestionDetail */](data);
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["f" /* hideSearchModal */]();
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["j" /* showSuggestionDetail */](data);
   };
 
   Suggestion.prototype.render = function render() {
@@ -52491,7 +52694,7 @@ var SuggestionDetail = function (_Component) {
     visible = __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
     if (!visible) {
       setTimeout(function () {
-        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["e" /* hideSearchModal */]();
+        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSearchModal */]();
       }, 10);
     }
 
@@ -52503,13 +52706,13 @@ var SuggestionDetail = function (_Component) {
 
 
     __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["c" /* addNotification */]('Uploading song to queue...');
-    __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+    __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
 
     __WEBPACK_IMPORTED_MODULE_5__api_songs__["a" /* default */].addToQueue(suggestion).then(function (res) {
 
       __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */]('Submission added to queue!');
 
-      __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* resetSearchbar */]();
+      __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["h" /* resetSearchbar */]();
 
       console.log('Success!', res);
     }, function (failData) {
@@ -52555,7 +52758,7 @@ var SuggestionDetail = function (_Component) {
         'class': 'yt-player',
         opts: opts,
         onPlay: function onPlay() {
-          return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["h" /* pausePlay */]();
+          return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["i" /* pausePlay */]();
         },
         onReady: this.handleOnVideoReady,
         __source: {
@@ -52587,7 +52790,7 @@ var SuggestionDetail = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lightbox', onClick: function onClick() {
-            return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+            return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 132
@@ -52631,7 +52834,7 @@ var SuggestionDetail = function (_Component) {
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'button',
             { className: 'btn-cancel', onClick: function onClick() {
-                return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["f" /* hideSuggestionDetail */]();
+                return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
                 lineNumber: 137
@@ -78974,4 +79177,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.18da3a3f52406cb599dd.js.map
+//# sourceMappingURL=main.f6050e6f347671cf9755.js.map

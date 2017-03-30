@@ -52,11 +52,9 @@ module.exports = (req, res, done) => {
 
           if(song.general.isDownloaded){
             console.log('[AddSongToQueue] About to update song in db');
-            //this.updateInDb();
             this.updateInDb(song);
           }else{
             console.log('[AddSongToQueue] About to re-download song');
-            //this.downloadSong(false); // songIsNew => false => song is already in db
             this.downloadSong(false, req.body, song); // songIsNew => false => song is already in db
           }
 
@@ -66,7 +64,6 @@ module.exports = (req, res, done) => {
 
         console.log('[AddSongToQueue] About to download song');
 
-        //this.downloadSong(true); // songIsNew => true => song not yet in db
         this.downloadSong(true, req.body); // songIsNew => true => song not yet in db
 
       }
@@ -155,10 +152,8 @@ module.exports = (req, res, done) => {
               fs.unlinkSync(tempOutput);
               console.log('-f- Finished downloading song to:', audioOutput);
               UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
-                req.session.isUploading = false;
                 EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
               });
-              req.session.isUploading = false;
               suggestion.filename = audioFilename;
               this.finishedDownload(songIsNew, suggestion, song);
             });
@@ -321,6 +316,8 @@ module.exports = (req, res, done) => {
   }
 
   this.respondSong = (song) => {
+
+    req.session.isUploading = false;
 
     console.log('Broadcasting for update');
     EmitHelper.broadcast('QUEUE_UPDATED', song);

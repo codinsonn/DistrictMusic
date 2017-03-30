@@ -7,8 +7,6 @@ class NotificationsStore extends EventEmitter {
 
     super();
 
-    //this.gapiClientLoaded = false;
-
     this.notifs = [];
     this.emptyNotif = {type: ``, message: ``};
 
@@ -20,49 +18,43 @@ class NotificationsStore extends EventEmitter {
 
   }
 
-  setGapiClientLoaded() {
-
-    //this.gapiClientLoaded = true;
-
-    this.emit(`GAPI_CLIENT_READY`);
-
-  }
-
   addSuccess(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
-
-    this.notifs.push({type: `success`, message: message});
-
-    this.emitNotifChange();
+    this.queueNotification(`success`, message);
 
   }
 
   addNotification(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
-
-    this.notifs.push({type: `info`, message: message});
-
-    this.emitNotifChange();
+    this.queueNotification(`info`, message);
 
   }
 
   addError(message) {
 
-    this.notifs.splice(0, 1); // remove current notification
-
-    this.notifs.push({type: `error`, message: message});
-
-    this.emitNotifChange();
+    this.queueNotification(`error`, message);
 
   }
 
-  removeCurrentNotification() {
+  queueNotification(type, message) {
+
+    this.removeCurrentNotification(false);
+
+    this.notifs.push({type: type, message: message});
+
+    setTimeout(() => this.emitNotifChange(), 10);
+
+    console.log(`[NotificationsStore] Queued New notification:`, type, message);
+
+  }
+
+  removeCurrentNotification(emit = true) {
 
     this.notifs.splice(0, 1); // remove current notification
 
-    this.emitNotifChange();
+    if (emit) {
+      this.emitNotifChange();
+    }
 
   }
 
