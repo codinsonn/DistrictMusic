@@ -75,7 +75,6 @@ export function endSongAndPlayNext(song) {
 }
 
 export function startNextSongUnsynched(songId) {
-  console.log(`SongId:`, songId);
   dispatcher.dispatch({
     type: `START_NEXT_SONG_UNSYNCHED`,
     data: songId

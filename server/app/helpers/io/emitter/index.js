@@ -25,7 +25,6 @@ var set = module.exports.set = (type) => {
         break;
 
       case "QUEUE_UPDATED":
-        console.log('[Emitter] QUEUE_UPDATED');
         return "QUEUE_UPDATED";
         break;
 

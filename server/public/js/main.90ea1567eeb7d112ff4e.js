@@ -5607,12 +5607,14 @@ module.exports = emptyFunction;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dispatcher__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SocketStore__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__api___ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api___ = __webpack_require__(118);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -5650,9 +5652,9 @@ var UserStore = function (_EventEmitter) {
   UserStore.prototype.updateSessionSocketId = function updateSessionSocketId(socketId) {
     var _this2 = this;
 
-    __WEBPACK_IMPORTED_MODULE_4__api___["b" /* users */].updateSessionSocketId(socketId).then(function (res) {
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].updateSessionSocketId(socketId).then(function (res) {
 
-      console.log('Updated session socketId', res.meta.socketIds);
+      //console.log(`Updated session socketId`, res.meta.socketIds);
 
       _this2.isLoggedIn = true;
       _this2.userProfile = res;
@@ -5666,13 +5668,19 @@ var UserStore = function (_EventEmitter) {
 
     this.userProfile = user;
 
+    if (this.voteMode === 'veto' && user.permissions.vetosLeft <= 0) {
+      this.setVoteMode('normal');
+    } else if (this.voteMode === 'super' && user.permissions.superVotesLeft <= 0) {
+      this.setVoteMode('normal');
+    }
+
     this.emit('USER_PROFILE_CHANGED');
   };
 
   UserStore.prototype.setProfileSession = function setProfileSession() {
     var _this3 = this;
 
-    __WEBPACK_IMPORTED_MODULE_4__api___["b" /* users */].getSessionProfile().then(function (res) {
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].getSessionProfile().then(function (res) {
 
       _this3.isLoggedIn = true;
       _this3.userProfile = res;
@@ -5746,7 +5754,7 @@ var UserStore = function (_EventEmitter) {
 
         var socket = __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].getSocket();
 
-        __WEBPACK_IMPORTED_MODULE_4__api___["b" /* users */].setSpeaker(false, socket.id).then(function (res) {
+        __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].setSpeaker(false, socket.id).then(function (res) {
 
           // Success!
           console.log('[SPEAKER] UNSET AS SPEAKER', res);
@@ -5769,7 +5777,20 @@ var UserStore = function (_EventEmitter) {
       case 'veto':
       case 'super':
         if (voteMode !== this.voteMode) {
-          this.voteMode = voteMode;
+
+          if (voteMode === 'veto' && this.userProfile.permissions.vetosLeft >= 1) {
+            this.voteMode = voteMode;
+          } else {
+            this.voteMode = 'normal';
+            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No vetos left');
+          }
+
+          if (voteMode === 'super' && this.userProfile.permissions.superVotesLeft >= 1) {
+            this.voteMode = voteMode;
+          } else {
+            this.voteMode = 'normal';
+            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No super votes left');
+          }
         } else {
           this.voteMode = 'normal';
         }
@@ -5798,12 +5819,13 @@ var UserStore = function (_EventEmitter) {
   UserStore.prototype.logout = function logout() {
     var _this6 = this;
 
-    __WEBPACK_IMPORTED_MODULE_4__api___["b" /* users */].logout().then(function (res) {
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].logout().then(function (res) {
 
       console.log('Succesfully logged out', res);
 
       _this6.isLoggedIn = false;
       _this6.userProfile = _this6.defaultProfile;
+      _this6.voteMode = 'normal';
 
       _this6.emit('USER_PROFILE_CHANGED');
     }, function (failData) {
@@ -6595,7 +6617,7 @@ var PlaylistStore = function (_EventEmitter) {
   PlaylistStore.prototype.updateQueue = function updateQueue() {
     var _this2 = this;
 
-    console.log('[PlaylistStore] About to update queue...');
+    //console.log(`[PlaylistStore] About to update queue...`);
 
     __WEBPACK_IMPORTED_MODULE_3__api___["a" /* songs */].getAllQueued().then(function (res) {
 
@@ -6609,7 +6631,7 @@ var PlaylistStore = function (_EventEmitter) {
         _this2.updateSpeakerSong();
       } else if (_this2.speakerSong.general !== '' && _this2.queue[0].general.id !== _this2.speakerSong.general.id) {
 
-        console.log('[PlaylistStore] About to update speakersong');
+        //console.log(`[PlaylistStore] About to update speakersong`);
 
         if (_this2.userChosenSong.general === '') {
           _this2.updateUserChosenSong(_this2.queue[0]);
@@ -6618,7 +6640,7 @@ var PlaylistStore = function (_EventEmitter) {
         _this2.updateSpeakerSong();
       } else if (!_this2.hasFetchedQueue && _this2.queue[0]) {
 
-        console.log('[PlaylistStore] About to update user chosen song');
+        //console.log(`[PlaylistStore] About to update user chosen song`);
 
         _this2.updateSpeakerSong(_this2.queue[0]);
         _this2.updateUserChosenSong(_this2.queue[0]);
@@ -6639,7 +6661,7 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.endSongAndPlayNext = function endSongAndPlayNext(song) {
 
-    console.log('[Speaker] About to end song and play next');
+    //console.log(`[Speaker] About to end song and play next`);
 
     __WEBPACK_IMPORTED_MODULE_3__api___["a" /* songs */].endSongAndPlayNext(song).then(function (res) {
 
@@ -6653,23 +6675,17 @@ var PlaylistStore = function (_EventEmitter) {
   PlaylistStore.prototype.startNextSongUnsynched = function startNextSongUnsynched(prevSongId) {
     var _this3 = this;
 
-    console.log('[NEXT] Starting next song in queue, prev:', prevSongId);
-
     var i = 0;
     var nextSongIndex = 0;
     __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.forEach(this.queue, function (queItem) {
 
-      console.log('[NEXT] Checking:', prevSongId, queItem.general.id);
-
       if (queItem.general.id === prevSongId && i !== _this3.queue.length - 1) {
-        console.log('[NEXT] HIT!!!');
         nextSongIndex = i + 1;
       }
 
       i++;
 
       if (i === _this3.queue.length) {
-        console.log('[NEXT] Ending loop:', nextSongIndex, _this3.queue.length, _this3.queue[nextSongIndex].general.title);
         _this3.setUserChosenSong(_this3.queue[nextSongIndex]);
       }
     });
@@ -6710,7 +6726,7 @@ var PlaylistStore = function (_EventEmitter) {
 
     if (this.speakerSong.general === '' || this.speakerSong.general.id !== this.queue[0].general.id) {
 
-      console.log('[PlaylistStore] Updating speakersong');
+      //console.log(`[PlaylistStore] Updating speakersong`);
 
       this.speakerSong = this.queue[0];
 
@@ -6839,22 +6855,22 @@ var PlaylistStore = function (_EventEmitter) {
     var _this5 = this;
 
     if (synched && this.speakerSong.general !== '') {
-      console.log('Returning speaker song:', this.speakerSong.general.title);
+      console.log('[PlaylistStore] Returning speaker song:', this.speakerSong.general.title);
       setTimeout(function () {
         return _this5.emit('SHOW_SONG_UPDATE');
       }, 1000);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== '') {
-      console.log('Returning user chosen song:', this.userChosenSong.general.title);
+      console.log('[PlaylistStore] Returning user chosen song:', this.userChosenSong.general.title);
       setTimeout(function () {
         return _this5.emit('SHOW_SONG_UPDATE');
       }, 1000);
       return this.userChosenSong;
     } else if (this.queue[0]) {
-      console.log('Returning first in queue:', this.queue[0].general.title);
+      console.log('[PlaylistStore] Returning first in queue:', this.queue[0].general.title);
       return this.queue[0];
     } else {
-      console.log('Returning default empty song');
+      //console.log(`Returning default empty song`);
       return this.defaultSong;
     }
   };
@@ -6908,7 +6924,6 @@ var PlaylistStore = function (_EventEmitter) {
         break;
 
       case 'PAUSE_PLAY':
-        console.log('Pausing play');
         this.emit('PAUSE_PLAY');
         break;
 
@@ -33349,33 +33364,15 @@ var NotificationsStore = function (_EventEmitter) {
 
   NotificationsStore.prototype.addSuccess = function addSuccess(message) {
 
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `success`, message: message});
-
-    //this.emitNotifChange();
-
     this.queueNotification('success', message);
   };
 
   NotificationsStore.prototype.addNotification = function addNotification(message) {
 
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `info`, message: message});
-
-    //this.emitNotifChange();
-
     this.queueNotification('info', message);
   };
 
   NotificationsStore.prototype.addError = function addError(message) {
-
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `error`, message: message});
-
-    //this.emitNotifChange();
 
     this.queueNotification('error', message);
   };
@@ -33388,7 +33385,7 @@ var NotificationsStore = function (_EventEmitter) {
     this.notifs.push({ type: type, message: message });
 
     setTimeout(function () {
-      return _this2.emitNotifChange;
+      return _this2.emitNotifChange();
     }, 10);
 
     console.log('[NotificationsStore] Queued New notification:', type, message);
@@ -50201,8 +50198,7 @@ var AudioPlayer = function (_Component) {
         pos = _state2.pos,
         playing = _state2.playing;
 
-
-    console.log('[AudioPlayer] UPDATING SONG');
+    //console.log(`[AudioPlayer] UPDATING SONG`);
 
     if (asSynched) {
       song = __WEBPACK_IMPORTED_MODULE_3__stores_PlaylistStore__["a" /* default */].getSong(true);
@@ -50222,7 +50218,7 @@ var AudioPlayer = function (_Component) {
 
   AudioPlayer.prototype.updateSpeaker = function updateSpeaker(blnIsSpeaker) {
 
-    console.log('[updateSpeaker]');
+    //console.log(`[updateSpeaker]`);
 
     var isSpeaker = this.state.isSpeaker;
 
@@ -50238,7 +50234,7 @@ var AudioPlayer = function (_Component) {
 
     isSynched = __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getSynched();
 
-    console.log('[updateSynched] synched:', isSynched);
+    //console.log(`[updateSynched] synched:`, isSynched);
 
     if (isSynched) {
       this.synchPosToSpeakerAndPlay();
@@ -50249,7 +50245,7 @@ var AudioPlayer = function (_Component) {
 
   AudioPlayer.prototype.synchPosToSpeakerAndPlay = function synchPosToSpeakerAndPlay() {
 
-    console.log('[synchPosToSpeakerAndPlay]');
+    //console.log(`[synchPosToSpeakerAndPlay]`);
 
     var _state3 = this.state,
         playing = _state3.playing,
@@ -50277,7 +50273,7 @@ var AudioPlayer = function (_Component) {
         song = _state4.song;
 
 
-    console.log('[AudioPlayer] SPEAKER: synched =', isSynched, ', playing =', playing);
+    console.log('[AudioPlayer] SPEAKER => synched:', isSynched, ', playing:', playing);
 
     if (playing) {
       // x2 to trigger waveform play
@@ -50290,7 +50286,7 @@ var AudioPlayer = function (_Component) {
 
   AudioPlayer.prototype.pausePlay = function pausePlay() {
 
-    console.log('pausing play');
+    //console.log(`pausing play`);
 
     var playing = this.state.playing;
 
@@ -50388,7 +50384,7 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
     var _this5 = this;
 
-    console.log('[toggleSynched]');
+    //console.log(`[toggleSynched]`);
 
     var _state10 = this.state,
         isSpeaker = _state10.isSpeaker,
@@ -50416,7 +50412,7 @@ var AudioPlayer = function (_Component) {
     var clickTriggered = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-    console.log('[togglePlay]');
+    //console.log(`[togglePlay]`);
 
     var _state12 = this.state,
         isSynched = _state12.isSynched,
@@ -50648,6 +50644,8 @@ var DownloadProgress = function (_Component) {
       downloadProgress: __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress()
     };
 
+    _this.prevProgress = 0;
+
     return _this;
   }
 
@@ -50679,9 +50677,11 @@ var DownloadProgress = function (_Component) {
     var downloadProgress = this.state.downloadProgress;
 
 
-    downloadProgress = __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress();
-
-    this.setState({ downloadProgress: downloadProgress });
+    if (__WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress() > this.prevProgress) {
+      this.prevProgress = downloadProgress;
+      downloadProgress = __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress();
+      this.setState({ downloadProgress: downloadProgress });
+    }
   };
 
   DownloadProgress.prototype.render = function render() {
@@ -50711,13 +50711,16 @@ var DownloadProgress = function (_Component) {
       }
 
       progressStyle = { width: window.innerWidth * downloadProgress + 'px' };
+    } else {
+
+      this.prevProgress = 0;
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: progressClasses, style: progressStyle, __source: {
           fileName: _jsxFileName,
-          lineNumber: 78
+          lineNumber: 86
         }
       },
       '\xA0'
@@ -51181,8 +51184,6 @@ var PlaylistQueue = function (_Component) {
 
     currentQueue = __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].getCurrentQueue();
 
-    console.log('CURRENTQUEUE:', currentQueue);
-
     this.hasFetchedQueue = true;
 
     this.setState({ currentQueue: currentQueue });
@@ -51217,7 +51218,7 @@ var PlaylistQueue = function (_Component) {
             var key = '' + song.general.id + i;
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["i" /* SongSummary */], _extends({}, song, { voteMode: voteMode, order: i, key: key, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 81
+                lineNumber: 79
               }
             }));
           })
@@ -51231,7 +51232,7 @@ var PlaylistQueue = function (_Component) {
         'div',
         { className: 'no-songs-notif', __source: {
             fileName: _jsxFileName,
-            lineNumber: 87
+            lineNumber: 85
           }
         },
         'No songs currently in queue'
@@ -51247,21 +51248,21 @@ var PlaylistQueue = function (_Component) {
       'article',
       { className: 'playlist-queue', __source: {
           fileName: _jsxFileName,
-          lineNumber: 99
+          lineNumber: 97
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'playlist-header', __source: {
             fileName: _jsxFileName,
-            lineNumber: 100
+            lineNumber: 98
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'h2',
           { className: 'active', __source: {
               fileName: _jsxFileName,
-              lineNumber: 101
+              lineNumber: 99
             }
           },
           'In Queue'
@@ -51271,7 +51272,7 @@ var PlaylistQueue = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 102
+              lineNumber: 100
             }
           },
           'Alltime best'
@@ -51281,7 +51282,7 @@ var PlaylistQueue = function (_Component) {
         'section',
         { className: 'current-queue', __source: {
             fileName: _jsxFileName,
-            lineNumber: 104
+            lineNumber: 102
           }
         },
         this.renderCurrentQueue(currentQueue)
@@ -52717,11 +52718,7 @@ var SuggestionDetail = function (_Component) {
       console.log('Success!', res);
     }, function (failData) {
 
-      if (failData.errors[0] === 'Song already in queue') {
-        __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](failData.errors[0]);
-      } else {
-        __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */]('Couldn\'t add song to queue');
-      }
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](failData.errors[0]);
 
       console.log('Failed', failData);
     });
@@ -52763,7 +52760,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 107
+          lineNumber: 103
         }
       });
     }
@@ -52784,7 +52781,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 131
+          lineNumber: 127
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52793,7 +52790,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 132
+            lineNumber: 128
           }
         },
         '\xA0'
@@ -52802,14 +52799,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 133
+            lineNumber: 129
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 134
+              lineNumber: 130
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52817,7 +52814,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 134
+                lineNumber: 130
               }
             },
             'Add to queue?'
@@ -52828,7 +52825,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 136
+              lineNumber: 132
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52837,7 +52834,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 137
+                lineNumber: 133
               }
             },
             'Cancel'
@@ -52848,7 +52845,7 @@ var SuggestionDetail = function (_Component) {
                 return _this3.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 138
+                lineNumber: 134
               }
             },
             'Add song'
@@ -79177,4 +79174,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.cc97fa4da18f35c06669.js.map
+//# sourceMappingURL=main.90ea1567eeb7d112ff4e.js.map

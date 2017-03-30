@@ -44,8 +44,6 @@ class NotificationsStore extends EventEmitter {
 
     setTimeout(() => this.emitNotifChange(), 10);
 
-    console.log(`[NotificationsStore] Queued New notification:`, type, message);
-
   }
 
   removeCurrentNotification(emit = true) {

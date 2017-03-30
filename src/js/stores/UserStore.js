@@ -2,6 +2,7 @@ import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 import SocketStore from './SocketStore';
 import PlaylistStore from './PlaylistStore';
+import NotificationsStore from './NotificationsStore';
 import {users} from '../api/';
 
 class UserStore extends EventEmitter {
@@ -33,7 +34,7 @@ class UserStore extends EventEmitter {
     users.updateSessionSocketId(socketId)
       .then(res => {
 
-        console.log(`Updated session socketId`, res.meta.socketIds);
+        //console.log(`Updated session socketId`, res.meta.socketIds);
 
         this.isLoggedIn = true;
         this.userProfile = res;
@@ -50,6 +51,12 @@ class UserStore extends EventEmitter {
   updateUserProfile(user) {
 
     this.userProfile = user;
+
+    if (this.voteMode === `veto` && user.permissions.vetosLeft <= 0) {
+      this.setVoteMode(`normal`);
+    } else if (this.voteMode === `super` && user.permissions.superVotesLeft <= 0) {
+      this.setVoteMode(`normal`);
+    }
 
     this.emit(`USER_PROFILE_CHANGED`);
 
@@ -169,7 +176,21 @@ class UserStore extends EventEmitter {
     case `veto`:
     case `super`:
       if (voteMode !== this.voteMode) {
-        this.voteMode = voteMode;
+
+        if (voteMode === `veto` && this.userProfile.permissions.vetosLeft >= 1) {
+          this.voteMode = voteMode;
+        } else if (voteMode === `veto`) {
+          this.voteMode = `normal`;
+          NotificationsStore.queueNotification(`error`, `No vetos left`);
+        }
+
+        if (voteMode === `super` && this.userProfile.permissions.superVotesLeft >= 1) {
+          this.voteMode = voteMode;
+        } else if (voteMode === `super`) {
+          this.voteMode = `normal`;
+          NotificationsStore.queueNotification(`error`, `No super votes left`);
+        }
+
       } else {
         this.voteMode = `normal`;
       }
@@ -206,6 +227,7 @@ class UserStore extends EventEmitter {
 
         this.isLoggedIn = false;
         this.userProfile = this.defaultProfile;
+        this.voteMode = `normal`;
 
         this.emit(`USER_PROFILE_CHANGED`);
 

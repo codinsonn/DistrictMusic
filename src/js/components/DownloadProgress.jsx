@@ -12,6 +12,8 @@ export default class DownloadProgress extends Component {
       downloadProgress: SocketStore.getDownloadProgress()
     };
 
+    this.prevProgress = 0;
+
   }
 
   componentWillMount() {
@@ -41,9 +43,11 @@ export default class DownloadProgress extends Component {
 
     let {downloadProgress} = this.state;
 
-    downloadProgress = SocketStore.getDownloadProgress();
-
-    this.setState({downloadProgress});
+    if (SocketStore.getDownloadProgress() > this.prevProgress) {
+      this.prevProgress = downloadProgress;
+      downloadProgress = SocketStore.getDownloadProgress();
+      this.setState({downloadProgress});
+    }
 
   }
 
@@ -71,6 +75,10 @@ export default class DownloadProgress extends Component {
       }
 
       progressStyle = {width: `${window.innerWidth * downloadProgress}px`};
+
+    } else {
+
+      this.prevProgress = 0;
 
     }
 

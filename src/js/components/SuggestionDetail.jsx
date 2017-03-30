@@ -67,11 +67,7 @@ export default class SuggestionDetail extends Component {
 
       }, failData => {
 
-        if (failData.errors[0] === `Song already in queue`) {
-          NotifActions.addError(failData.errors[0]);
-        } else {
-          NotifActions.addError(`Couldn't add song to queue`);
-        }
+        NotifActions.addError(failData.errors[0]);
 
         console.log(`Failed`, failData);
 

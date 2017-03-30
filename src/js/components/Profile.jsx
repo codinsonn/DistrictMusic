@@ -93,7 +93,7 @@ export default class Profile extends Component {
       showProfileOptions = !showProfileOptions;
       this.setState({showProfileOptions});
     } else if (!UserStore.getIsSpeaker()) {
-      console.log(`Must login to continue...`);
+      console.log(`[Profile] Must login to continue...`);
       document.querySelector(`.profile`).blur();
       UserActions.showLoginModal();
     } else {
@@ -157,7 +157,7 @@ export default class Profile extends Component {
 
       if (voteMode === `veto` || voteMode === `super`) {
         setTimeout(NotifActions.addNotification(`Entered ${voteMode} mode`), 0);
-      } else {
+      } else if (voteMode === `normal` && prevVoteMode !== `normal`) {
         setTimeout(NotifActions.addNotification(`Exited ${prevVoteMode} mode`), 0);
       }
 

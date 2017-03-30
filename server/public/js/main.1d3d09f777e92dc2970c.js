@@ -5666,6 +5666,12 @@ var UserStore = function (_EventEmitter) {
 
     this.userProfile = user;
 
+    if (this.voteMode === 'veto' && user.permissions.vetosLeft <= 0) {
+      this.setVoteMode('normal');
+    } else if (this.voteMode === 'super' && user.permissions.superVotesLeft <= 0) {
+      this.setVoteMode('normal');
+    }
+
     this.emit('USER_PROFILE_CHANGED');
   };
 
@@ -33349,33 +33355,15 @@ var NotificationsStore = function (_EventEmitter) {
 
   NotificationsStore.prototype.addSuccess = function addSuccess(message) {
 
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `success`, message: message});
-
-    //this.emitNotifChange();
-
     this.queueNotification('success', message);
   };
 
   NotificationsStore.prototype.addNotification = function addNotification(message) {
 
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `info`, message: message});
-
-    //this.emitNotifChange();
-
     this.queueNotification('info', message);
   };
 
   NotificationsStore.prototype.addError = function addError(message) {
-
-    //this.notifs.splice(0, 1); // remove current notification
-
-    //this.notifs.push({type: `error`, message: message});
-
-    //this.emitNotifChange();
 
     this.queueNotification('error', message);
   };
@@ -50645,7 +50633,8 @@ var DownloadProgress = function (_Component) {
 
     _this.state = {
       appearBusy: __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getAppearBusy(),
-      downloadProgress: __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress()
+      downloadProgress: __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress(),
+      prevProgress: 0
     };
 
     return _this;
@@ -50676,18 +50665,22 @@ var DownloadProgress = function (_Component) {
   };
 
   DownloadProgress.prototype.updateDownloadProgress = function updateDownloadProgress() {
-    var downloadProgress = this.state.downloadProgress;
+    var _state = this.state,
+        downloadProgress = _state.downloadProgress,
+        prevProgress = _state.prevProgress;
 
 
-    downloadProgress = __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress();
-
-    this.setState({ downloadProgress: downloadProgress });
+    if (downloadProgress > prevProgress) {
+      prevProgress = downloadProgress;
+      downloadProgress = __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].getDownloadProgress();
+      this.setState({ downloadProgress: downloadProgress, prevProgress: prevProgress });
+    }
   };
 
   DownloadProgress.prototype.render = function render() {
-    var _state = this.state,
-        appearBusy = _state.appearBusy,
-        downloadProgress = _state.downloadProgress;
+    var _state2 = this.state,
+        appearBusy = _state2.appearBusy,
+        downloadProgress = _state2.downloadProgress;
 
 
     var progressClasses = 'progress hidden';
@@ -50717,7 +50710,7 @@ var DownloadProgress = function (_Component) {
       'div',
       { className: progressClasses, style: progressStyle, __source: {
           fileName: _jsxFileName,
-          lineNumber: 78
+          lineNumber: 81
         }
       },
       '\xA0'
@@ -52717,11 +52710,7 @@ var SuggestionDetail = function (_Component) {
       console.log('Success!', res);
     }, function (failData) {
 
-      if (failData.errors[0] === 'Song already in queue') {
-        __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](failData.errors[0]);
-      } else {
-        __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */]('Couldn\'t add song to queue');
-      }
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["a" /* addError */](failData.errors[0]);
 
       console.log('Failed', failData);
     });
@@ -52763,7 +52752,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 107
+          lineNumber: 103
         }
       });
     }
@@ -52784,7 +52773,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 131
+          lineNumber: 127
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52793,7 +52782,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 132
+            lineNumber: 128
           }
         },
         '\xA0'
@@ -52802,14 +52791,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 133
+            lineNumber: 129
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 134
+              lineNumber: 130
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52817,7 +52806,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 134
+                lineNumber: 130
               }
             },
             'Add to queue?'
@@ -52828,7 +52817,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 136
+              lineNumber: 132
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52837,7 +52826,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["g" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 137
+                lineNumber: 133
               }
             },
             'Cancel'
@@ -52848,7 +52837,7 @@ var SuggestionDetail = function (_Component) {
                 return _this3.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 138
+                lineNumber: 134
               }
             },
             'Add song'
@@ -79177,4 +79166,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.56b58bdd891ccc59663e.js.map
+//# sourceMappingURL=main.1d3d09f777e92dc2970c.js.map

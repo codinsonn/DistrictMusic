@@ -85,7 +85,7 @@ export default class AudioPlayer extends Component {
     const {isSynched} = this.state;
     let {song, pos, playing} = this.state;
 
-    console.log(`[AudioPlayer] UPDATING SONG`);
+    //console.log(`[AudioPlayer] UPDATING SONG`);
 
     if (asSynched) {
       song = PlaylistStore.getSong(true);
@@ -106,7 +106,7 @@ export default class AudioPlayer extends Component {
 
   updateSpeaker(blnIsSpeaker) {
 
-    console.log(`[updateSpeaker]`);
+    //console.log(`[updateSpeaker]`);
 
     let {isSpeaker} = this.state;
 
@@ -122,7 +122,7 @@ export default class AudioPlayer extends Component {
 
     isSynched = UserStore.getSynched();
 
-    console.log(`[updateSynched] synched:`, isSynched);
+    //console.log(`[updateSynched] synched:`, isSynched);
 
     if (isSynched) {
       this.synchPosToSpeakerAndPlay();
@@ -134,7 +134,7 @@ export default class AudioPlayer extends Component {
 
   synchPosToSpeakerAndPlay() {
 
-    console.log(`[synchPosToSpeakerAndPlay]`);
+    //console.log(`[synchPosToSpeakerAndPlay]`);
 
     let {playing, pos} = this.state;
 
@@ -156,7 +156,7 @@ export default class AudioPlayer extends Component {
 
     const {isSynched, playing, song} = this.state;
 
-    console.log(`[AudioPlayer] SPEAKER: synched =`, isSynched, `, playing =`, playing);
+    console.log(`[AudioPlayer] SPEAKER => synched:`, isSynched, `, playing:`, playing);
 
     if (playing) { // x2 to trigger waveform play
       this.togglePlay(false);
@@ -169,7 +169,7 @@ export default class AudioPlayer extends Component {
 
   pausePlay() {
 
-    console.log(`pausing play`);
+    //console.log(`pausing play`);
 
     const {playing} = this.state;
 
@@ -233,7 +233,7 @@ export default class AudioPlayer extends Component {
       const {isSynched, isSpeaker} = this.state;
       let {song, pos} = this.state;
 
-      console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
+      //console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
 
       this.prevSongId = song.general.id;
 
@@ -241,7 +241,7 @@ export default class AudioPlayer extends Component {
         song.socketId = SocketStore.getSocketId();
         PlaylistActions.endSongAndPlayNext(song);
       } else if (!isSynched) {
-        console.log(`PREVSONGID:`, this.prevSongId);
+        //console.log(`PREVSONGID:`, this.prevSongId);
         setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
       }
 
@@ -258,7 +258,7 @@ export default class AudioPlayer extends Component {
 
   toggleSynched() {
 
-    console.log(`[toggleSynched]`);
+    //console.log(`[toggleSynched]`);
 
     const {isSpeaker, isSynched} = this.state;
     let {song, pos} = this.state;
@@ -278,7 +278,7 @@ export default class AudioPlayer extends Component {
 
   togglePlay(clickTriggered = false) {
 
-    console.log(`[togglePlay]`);
+    //console.log(`[togglePlay]`);
 
     const {isSynched, isSpeaker} = this.state;
     let {playing} = this.state;

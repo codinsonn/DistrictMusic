@@ -90,7 +90,7 @@ module.exports = (req, res, done) => {
 
     });
 
-    console.log('[GetAllQueued] Playing?', this.returnQueue[0].general.title, ':', this.returnQueue[0].queue.isPlaying, ' & ', this.returnQueue[1].general.title, ':', this.returnQueue[1].queue.isPlaying);
+    //console.log('[GetAllQueued] Playing?', this.returnQueue[0].general.title, ':', this.returnQueue[0].queue.isPlaying, ' & ', this.returnQueue[1].general.title, ':', this.returnQueue[1].queue.isPlaying);
 
     if(!this.returnQueue[0].queue.isPlaying){
 

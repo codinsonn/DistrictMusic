@@ -47,8 +47,6 @@ export default class PlaylistQueue extends Component {
 
     currentQueue = PlaylistStore.getCurrentQueue();
 
-    console.log(`CURRENTQUEUE:`, currentQueue);
-
     this.hasFetchedQueue = true;
 
     this.setState({currentQueue});
