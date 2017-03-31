@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {SongSummary} from '../components';
 import PlaylistStore from '../stores/PlaylistStore';
 import UserStore from '../stores/UserStore';
-//import SocketStore from '../stores/SocketStore';
 import * as PlaylistActions from '../actions/PlaylistActions';
 
 export default class PlaylistQueue extends Component {
@@ -29,7 +28,6 @@ export default class PlaylistQueue extends Component {
   componentWillMount() {
 
     // listeners
-    //SocketStore.on(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
     UserStore.on(`USER_PROFILE_CHANGED`, this.evtPlaylistActionUpdateQueue);
     PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateQueue);
     UserStore.on(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);
@@ -41,7 +39,6 @@ export default class PlaylistQueue extends Component {
 
   componentWillUnmount() {
 
-    //SocketStore.removeListener(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
     UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtPlaylistActionUpdateQueue);
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateQueue);
     UserStore.removeListener(`VOTE_MODE_CHANGED`, this.evtUpdateVoteMode);

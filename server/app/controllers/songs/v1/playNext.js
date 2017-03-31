@@ -11,27 +11,21 @@ var SongModel = require(__base + "app/models/song");
 
 module.exports = (req, res, done) => {
 
-  this.prevSong = req.body;
+  console.log('--- [PlayNext] --- Removing current song from queue...', req.body.general.id, req.body.general.title, '---');
 
-  console.log('[PlayNext] ...Removing current song from queue...', this.prevSong.general.id, this.prevSong.general.title);
-
-  SongModel.findOne({ 'general.id': this.prevSong.general.id, "general.title": this.prevSong.general.title }, (err, song) => {
+  SongModel.findOne({ 'queue.isPlaying': true }, (err, song) => {
 
     if (err){
 
-      console.log('-!- Error occured while searching for song: -!-\n', err, '\n-!-');
+      console.log('-!- [PlayNext:20] -!- Error occured while searching for current song:\n', err, '\n-!-');
       res.statusCode = 400;
-      return res.json({
-        errors: [
-          'Could not search for song in db'
-        ]
-      });
+      return res.json({ errors: [ 'Could not search for song in db' ] });
 
     }
 
     if (song) { // song exists in db
 
-      console.log('[PlayNext] ...Found current song...');
+      console.log('[PlayNext:32] Found current song:', song.general.title, song.queue.isPlaying);
 
       // reset queue score
       song.queue.votes.currentQueueScore = 0;
@@ -42,41 +36,121 @@ module.exports = (req, res, done) => {
       song.queue.inQueue = false;
 
       // Save the song to put back in queue
-      return song.save((err) => {
+      song.save((err) => {
 
         if (err) {
 
-          console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
+          console.log('-!- [PlayNext:47] -!- Error occured while updating song:\n', err, '\n-!-');
           res.statusCode = 500;
-          return res.json({
-            errors: [
-              'Could not update song'
-            ]
-          });
+          return res.json({ errors: [ 'Could not update song' ] });
+
+        }else{
+
+          console.log('[PlayNext:57] Removing votes for current song...');
+          SongHelper.removeVotesForSong(song.general.id);
+
+          console.log('[PlayNext:60] About to update to next song...');
+          this.updateCurrentQueue();
 
         }
 
-        SongHelper.removeVotesForSong(song.general.id);
-        this.respondSong(song);
-
       });
 
-    } else { // create new song to add to queue
+    } else {
 
-      console.log('-!- Song not found -!-');
+      console.log('-?- [PlayNext:69] -?- Song not found, adding random song to queue');
+      SongHelper.addRandomSongToQueue(true); // playing = true
 
     }
 
   });
 
-  this.respondSong = (song) => {
+  this.updateCurrentQueue = () => {
 
-    console.log('[PlayNext] Broadcasting for update');
-    EmitHelper.broadcast('QUEUE_UPDATED', song);
+    console.log('[PlayNext:78] Attempting to update to next song...');
 
-    console.log('[PlayNext] Song removed from queue, time for update');
-    res.statusCode = 200;
-    return res.json(song);
+    SongHelper.getCurrentQueue().then((currentQueue) => {
+
+      console.log('[PlayNext:82] Fetched current queue! First song:', currentQueue[0].general.title, currentQueue[0].queue.isPlaying);
+
+      SongModel.findOne({'general.id': currentQueue[0].general.id, 'general.title': currentQueue[0].general.title}, (err, nextSong) => {
+
+        if (err){
+
+          console.log('-!- [PlayNext:88] -!- Error occured while searching for next song:\n', err, '\n-!-');
+          res.statusCode = 400;
+          return res.json({ errors: [ 'Could not search for song in db' ] });
+
+        } else if (nextSong) {
+
+          console.log('[PlayNext:98] Found next song:', nextSong.general.title, nextSong.queue.isPlaying);
+
+          // Update current queue
+          currentQueue[0].queue.isPlaying = true;
+          nextSong.queue.isPlaying = true;
+
+          // Save the nextSong to put back in queue
+          nextSong.save((err) => {
+
+            if (err) {
+
+              console.log('-!- [PlayNext:109] -!- Error occured while updating next song: -!-\n', err, '\n-!-');
+              res.statusCode = 500;
+              return res.json({ errors: [ 'Could not update next song' ] });
+
+            }else{
+
+              currentQueue.sort((song1, song2) => {
+
+                var s1 = 0;
+                if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
+                if(song1.queue.isVetoed) s1 += 10; // sort by veto
+                if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+                if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+                if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+                var s2 = 0;
+                if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+                if(song2.queue.isVetoed) s2 += 10;
+                if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+                if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+                if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+                return s2 - s1;
+
+              });
+
+              console.log('-e- [PlayNext:119] -e- Broadcasting for queue update:', currentQueue[0].general.title, '-e-');
+              EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
+
+              console.log('-/- [PlayNext] -/- Song removed from queue, time for update');
+              res.setHeader('Last-Modified', (new Date()).toUTCString());
+              res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+              res.setHeader("Pragma", "no-cache");
+              res.setHeader("Expires", 0);
+              res.statusCode = 200;
+              return res.json(currentQueue);
+
+            }
+
+          });
+
+        } else { // No song to be played next
+
+          console.log('-?- [PlayNext:132] -?- No next song in queue, adding random song');
+          SongHelper.addRandomSongToQueue(true); // playing = true
+
+        }
+
+      });
+
+    }, (failData) => {
+
+      console.log('-!- [PlayNext:141] -!- Queue fetch failed:', failData);
+      res.statusCode = 404;
+      return res.json({ errors: [ failData ] });
+
+    });
 
   }
 

@@ -29,7 +29,7 @@ module.exports.require = (req, res, next) => {
           ]
         });
 
-        next();
+        //next();
 
       }
 
@@ -50,7 +50,7 @@ module.exports.require = (req, res, next) => {
           ]
         });
 
-        next();
+        //next();
 
       }
 
@@ -67,7 +67,7 @@ module.exports.require = (req, res, next) => {
       ]
     });
 
-    next();
+    //next();
 
   }
 

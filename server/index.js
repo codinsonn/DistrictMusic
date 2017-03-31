@@ -90,7 +90,7 @@ require("./app/middleware/resetspeaker")();
 
 server.listen(port, function() {
 
-  console.log("-- DistrictMusic app listening on %s in %s mode. --", port, process.env.NODE_ENV);
+  console.log("+++ DistrictMusic app listening on %s in %s mode. +++", port, process.env.NODE_ENV);
 
 });
 

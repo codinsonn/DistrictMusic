@@ -1,7 +1,7 @@
 require("rootpath")();
 
 module.exports = {
-    production: false,
+    production: true,
     logs: true,
     server: {
       port: 3020,
@@ -9,9 +9,14 @@ module.exports = {
       frontend: "http://localhost:3020/",
       frontendPath: "public/"
     },
-    mongo: {
+    /*mongo: {
       db: "district-music-local",
       url: "localhost" //"127.0.0.1:27017"
+    },*/
+    mongo: {
+      admin: 'DistrictMusicAdmin',
+      password: 'mus1cadm1n',
+      db: 'districtmusic'
     },
     session: {
       domain: ""

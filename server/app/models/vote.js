@@ -1,9 +1,6 @@
 require("rootpath")();
 
-//var config = require("config");
 var mongoose = require("mongoose");
-//var bcrypt = require("bcryptjs");
-//var salt = bcrypt.genSaltSync(10);
 var Schema = mongoose.Schema;
 
 var VoteSchema = new Schema({

@@ -51229,7 +51229,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
-//import SocketStore from '../stores/SocketStore';
 
 
 var PlaylistQueue = function (_Component) {
@@ -51265,7 +51264,6 @@ var PlaylistQueue = function (_Component) {
   PlaylistQueue.prototype.componentWillMount = function componentWillMount() {
 
     // listeners
-    //SocketStore.on(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('USER_PROFILE_CHANGED', this.evtPlaylistActionUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].on('QUEUE_CHANGED', this.evtUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].on('VOTE_MODE_CHANGED', this.evtUpdateVoteMode);
@@ -51276,7 +51274,6 @@ var PlaylistQueue = function (_Component) {
 
   PlaylistQueue.prototype.componentWillUnmount = function componentWillUnmount() {
 
-    //SocketStore.removeListener(`QUEUE_UPDATED`, this.evtPlaylistActionUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].removeListener('USER_PROFILE_CHANGED', this.evtPlaylistActionUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].removeListener('QUEUE_CHANGED', this.evtUpdateQueue);
     __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].removeListener('VOTE_MODE_CHANGED', this.evtUpdateVoteMode);
@@ -51330,7 +51327,7 @@ var PlaylistQueue = function (_Component) {
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__components__["i" /* SongSummary */], _extends({}, song, { voteMode: voteMode, order: i, key: key, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 98
+                lineNumber: 95
               }
             }));
           })
@@ -51344,7 +51341,7 @@ var PlaylistQueue = function (_Component) {
         'div',
         { className: 'no-songs-notif', __source: {
             fileName: _jsxFileName,
-            lineNumber: 105
+            lineNumber: 102
           }
         },
         'No songs currently in queue'
@@ -51360,21 +51357,21 @@ var PlaylistQueue = function (_Component) {
       'article',
       { className: 'playlist-queue', __source: {
           fileName: _jsxFileName,
-          lineNumber: 117
+          lineNumber: 114
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: 'playlist-header', __source: {
             fileName: _jsxFileName,
-            lineNumber: 118
+            lineNumber: 115
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'h2',
           { className: 'active', __source: {
               fileName: _jsxFileName,
-              lineNumber: 119
+              lineNumber: 116
             }
           },
           'In Queue'
@@ -51384,7 +51381,7 @@ var PlaylistQueue = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 120
+              lineNumber: 117
             }
           },
           'Alltime best'
@@ -51394,7 +51391,7 @@ var PlaylistQueue = function (_Component) {
         'section',
         { className: 'current-queue', __source: {
             fileName: _jsxFileName,
-            lineNumber: 122
+            lineNumber: 119
           }
         },
         this.renderCurrentQueue(currentQueue)
@@ -79318,4 +79315,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.4aff6b3acaee3f24b618.js.map
+//# sourceMappingURL=main.3caee91f6b164cddcaf4.js.map

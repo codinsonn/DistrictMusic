@@ -16,7 +16,7 @@ module.exports.requireSpeaker = (req, res, next) => {
     if(err){
       console.log('-!- [SPEAKER] Error while searching for speaker -!-');
       res.statusCode = 500;
-      return done(null, res.json({ error: err }));
+      return next(null, res.json({ error: err }));
     }
 
     if(speaker && speaker.meta.socketIds.length >= 1 && speaker.meta.socketIds[0] === data.socketId){
@@ -37,7 +37,7 @@ module.exports.requireSpeaker = (req, res, next) => {
         ]
       });
 
-      next();
+      //next();
 
     }
 
@@ -57,13 +57,13 @@ module.exports.checkVotesLeft = (req, res, next) => {
 
         console.log('Error occured while searching user:', err);
         res.statusCode = 500;
-        res.json({
+        return res.json({
           errors: [
             'Could not search for user'
           ]
         });
 
-        next();
+        //next();
 
       }
 
@@ -156,30 +156,17 @@ module.exports.checkVotesLeft = (req, res, next) => {
         console.log('- Unknown user -');
 
         res.statusCode = 401;
-        res.json({
+        return res.json({
           errors: [
             'Unknown user'
           ]
         });
 
-        next();
+        //next();
 
       }
 
     });
-
-  } else {
-
-    console.log('- Profile not in session -');
-
-    res.statusCode = 401;
-    res.json({
-      errors: [
-        'No user in session'
-      ]
-    });
-
-    next();
 
   }
 

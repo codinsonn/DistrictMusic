@@ -5,10 +5,6 @@ var config = require(__base + "config");
 var _ = require("lodash");
 var CronJob = require('cron').CronJob;
 var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var ytdl = require('ytdl-core');
-var ffmpeg = require('fluent-ffmpeg');
 
 // Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
@@ -31,134 +27,7 @@ module.exports = function(timeZone) {
 
   /* --- Functions ----------------------------------------------------------------------------------------- */
 
-  this.addRandomSongToQueue = () => {
-
-    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: config.auto.minLegacyScore } };
-
-    // Find random unqueued song with legacy score greater than 10
-    SongModel.find(query).exec((err, unqueuedSongs) => {
-
-      if(err){
-        console.log('-!- [CRONBOT] An error occured while searching for random song -!-\n', err, '\n-!-');
-      }
-
-      if(unqueuedSongs){
-
-        var rand = Math.floor(Math.random() * unqueuedSongs.length);
-
-        // Requeue random unqueued song
-        SongModel.findOne(query).skip(rand).exec((err, song) => {
-
-          if(err){
-            console.log('-!- [CRONBOT] An error occured while queueing random song -!-\n', err, '\n-!-');
-          }
-
-          if(song){
-
-            if(song.general.isDownloaded){
-              this.saveSong(song);
-            }else{
-              this.downloadSong(song);
-            }
-
-          }
-
-        });
-
-      }
-
-    });
-
-  }
-
-  this.downloadSong = (song) => {
-
-    var url = `https://www.youtube.com/watch?v=${song.general.id}`;
-    var tempFolder = `${__base}uploads/temp/`;
-    var audioFolder = `${__base}uploads/audio/`;
-    var songTitleStripped = song.general.title;
-    songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-    var audioFilename = `${song.general.id}_${songTitleStripped}.mp4`;
-    var tempOutput = path.resolve(tempFolder, audioFilename);
-    var audioOutput = path.resolve(audioFolder, audioFilename);
-
-    fs.stat(tempOutput, (err, stat) => {
-
-      if(err == null) { // file already exists
-
-        console.log('-!- [CRONBOT] File already exists -!-');
-        song.general.filename = audioFilename;
-        song.general.isDownloaded = true;
-        this.saveSong(song);
-
-      } else if(err.code == 'ENOENT') { // file doesn't exist
-
-        console.log('[CRONBOT] Attempting to save video as song in: ', tempOutput);
-
-        ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
-          .on('response', (res) => {
-            var totalSize = res.headers['content-length'];
-            var dataRead = 0;
-            res.on('data', (data) => {
-              dataRead += data.length;
-              var percent = dataRead / totalSize;
-              var strPercent = (percent * 100).toFixed(2) + '%';
-              process.stdout.cursorTo(0);
-              process.stdout.clearLine(1);
-              process.stdout.write(strPercent);
-            });
-            res.on('end', () => {
-              process.stdout.write('\n');
-              fse.copySync(tempOutput, audioOutput);
-              fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-              fs.unlinkSync(tempOutput);
-              console.log('-f- Finished downloading song to:', audioOutput);
-              song.general.filename = audioFilename;
-              song.general.isDownloaded = true;
-              this.saveSong(song);
-            });
-          })
-          .pipe(fs.createWriteStream(tempOutput))
-        ;
-
-      } else { // other error
-
-        console.log('-!- [CRONBOT] Error occurred while testing audiofile -!-', err.code);
-
-      }
-
-    });
-
-  }
-
-  this.saveSong = (song) => {
-
-    song.general.isDownloaded = true;
-    song.general.isFileAboutToBeRemoved = false;
-    song.queue.votes.currentQueueScore = 0;
-    song.queue.lastAddedBy.googleId = 'cronbot';
-    song.queue.lastAddedBy.userName = 'cronbot';
-    song.queue.lastAddedBy.profileImage = '/assets/img/defaultProfile.png';
-    song.queue.lastAddedBy.added = (new Date()).getTime();
-    song.queue.isPlaying = false;
-    song.queue.isVetoed = false;
-    song.queue.inQueue = true;
-
-    return song.save((err) => {
-
-      if (err) {
-        console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
-      } else {
-        console.log('[CRONBOT] About to emit for update');
-        this.emitCurrentQueue();
-        console.log('[CRONBOT] Cronbot added', song.general.title, 'to the queue and emitted!');
-      }
-
-    });
-
-  }
-
-  this.checkSpeakerQueue = (currentQueue) => {
+  this.emitSpeakerQueueUpdate = (currentQueue) => {
 
     currentQueue.sort((song1, song2) => {
 
@@ -192,11 +61,11 @@ module.exports = function(timeZone) {
 
   this.emitCurrentQueue = () => {
 
-    SongHelper.getCurrentQueue.then((currentQueue) => {
-      console.log('- [CRON] Broadcasting for queue update -');
+    SongHelper.getCurrentQueue().then((currentQueue) => {
+      console.log('-e- [CRON:65] -e- Broadcasting for queue update ( length:', currentQueue.length, ')');
       EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
     }, (failData) => {
-      console.log('[CRON] Queue fetch failed:', failData);
+      console.log('[CRON:68] Queue fetch failed:', failData);
     });
 
   }
@@ -205,24 +74,27 @@ module.exports = function(timeZone) {
 
   this.cronCheckSpeakerQueueUpdate = new CronJob(config.auto.cronPatternCheckSpeakerQueueUpdate, () => {
 
-    console.log('-CRON- Checking if queue is empty -CRON-');
+    console.log('-CRON- Emitting for speaker queue update -CRON-');
 
-      // If one or no song in queue
+      // If one or no songs in queue
       SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
 
         if(err){
-          console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
+          console.log('-!- [CRON:83] An error occured while checking the current queue for speaker -!-\n', err, '\n-!-');
         }
 
         if(songs){
 
-          this.checkSpeakerQueue(songs);
+          console.log('[CRON:88] About to check speaker queue ...');
+          this.emitSpeakerQueueUpdate(songs);
 
         }
 
       });
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished emitting speaker queue update -/CRON/-');
 
     },
     true, // Start the job right now
@@ -240,22 +112,26 @@ module.exports = function(timeZone) {
       SongModel.find().where('queue.inQueue').equals(true).exec((err, songs) => {
 
         if(err){
-          console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
+          console.log('-!- [CRON:115] An error occured while checking the current queue -!-\n', err, '\n-!-');
         }
 
         if(songs && songs.length < config.auto.minSongsInQueue){
 
-          this.addRandomSongToQueue();
+          console.log('[CRON:120] About to add random song to queue... ( minSongsInQueue:', config.auto.minSongsInQueue, ')');
+          SongHelper.addRandomSong();
 
         }else{
 
-          this.checkSpeakerQueue(songs);
+          console.log('[CRON:125] Queue has', songs.length, 'songs in queue, emitting for mandatory update');
+          this.emitCurrentQueue();
 
         }
 
       });
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished checking if queue is empty -/CRON/-');
 
     },
     true, // Start the job right now
@@ -269,9 +145,12 @@ module.exports = function(timeZone) {
 
     console.log('-CRON- Adding random song to queue -CRON-');
 
-      this.addRandomSongToQueue();
+      //this.addRandomSongToQueue();
+      SongHelper.addRandomSong();
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished adding random song to queue -/CRON/-');
 
     },
     true, // Start the job right now
@@ -291,13 +170,15 @@ module.exports = function(timeZone) {
 
       UserModel.update(conditions, query, options, () => {
 
-        console.log('-!- [CRON] Vetos Reset -!-');
+        console.log('-!- [CRON:173] Vetos Reset -!-');
         EmitHelper.broadcast('USER_PROFILE_CHANGED');
-        console.log('-!- [CRON] Super Votes Reset -!-');
+        console.log('-!- [CRON:175] Super Votes Reset -!-');
 
       });
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished resetting weekly special votes -/CRON/-');
 
     },
     true, // Start the job right now
@@ -317,11 +198,13 @@ module.exports = function(timeZone) {
 
       SongModel.update(updateConditions, updateQuery, updateOptions, () => {
 
-        console.log('-!- [CRON] Files scheduled for removal -!-');
+        console.log('-!- [CRON:201] Files scheduled for removal -!-');
 
       });
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished scheduling files for removal -/CRON/-');
 
     },
     true, // Start the job right now
@@ -342,12 +225,12 @@ module.exports = function(timeZone) {
       SongModel.find(removeConditions).exec((err, songs) => {
 
         if(err){
-          console.log('-!- [CRON] An error occured while removing files -!-\n', err, '\n-!-');
+          console.log('-!- [CRON:228] An error occured while removing files -!-\n', err, '\n-!-');
         }
 
         if(songs){
 
-          console.log('-?- [CRON] Songs to be removed: ', songs.length,' -?-');
+          console.log('-?- [CRON:233] Songs to be removed: ', songs.length,' -?-');
 
           _.forEach(songs, (song) => {
 
@@ -373,12 +256,14 @@ module.exports = function(timeZone) {
 
       SongModel.update(removeConditions, removeQuery, removeOptions, () => {
 
-        console.log('-!- [CRON] Files removed -!-');
+        console.log('-!- [CRON:259] Files removed -!-');
         this.emitCurrentQueue();
 
       });
 
     }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished removing files scheduled for removal -/CRON/-');
 
     },
     true, // Start the job right now

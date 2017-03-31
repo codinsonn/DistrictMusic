@@ -1,10 +1,11 @@
 // Packages
 require("rootpath")();
 var _ = require("lodash");
-
 var path = require('path');
 
-//var EmitHelper = require(__base + "app/helpers/io/emitter");
+// Helpers
+var EmitHelper = require(__base + "app/helpers/io/emitter");
+var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
 // Models
 var SongModel = require(__base + "app/models/song");
@@ -12,161 +13,126 @@ var VoteModel = require(__base + "app/models/vote");
 
 module.exports = (req, res, done) => {
 
-  console.log('-?- Attempting to fetch queued songs -?-');
+  console.log('--- [GetAllQueued] --- Attempting to fetch queued songs ---');
 
-  this.currentQueue = [];
-  this.returnQueue = [];
+  SongHelper.getCurrentQueue().then((currentQueue) => {
 
-  SongModel.
-    find({'queue.inQueue': true, 'general.isDownloaded': true}).
-    sort('-queue.votes.currentQueueScore').
-    exec((err, data) => this.handleQueued(err, data))
-  ;
+    if(req.session.profile && currentQueue && currentQueue.length >= 1){ // Add Uservotes
 
-  this.handleQueued = (err, playlistQueue) => {
+      console.log('[GetAllQueued:22] User logged in, adding uservotes ...');
 
-    if(err){
+      var i = 0;
+      var returnQueue = [];
 
-      console.log('-!- An Error occured while fetching queued songs -!-\n', err);
+      console.log('[GetAllQueued:27] CurrentQueue length:', currentQueue.length);
 
-      res.statusCode = 500;
-      return done(null, res.json(err));
+      _.forEach(currentQueue, (queueItem) => {
 
-    }
+        console.log('[GetAllQueued:31] Checking uservote for:', queueItem.general.title);
 
-    if(playlistQueue){
+        VoteModel.findOne({ 'user.googleId': req.session.profile.meta.googleId, 'song.id': queueItem.general.id }, (err, uservote) => {
 
-      if(req.session.profile){
+          if (err) {
+            console.log('-!- [GetAllQueued:36] -!- Error occured:\n', err, '-!-');
+          }
 
-        //console.log('[GetAllQueued] Profile in session');
+          var newQueueItem = {
+            uservote: {
+              hasVoted: false
+            }
+          };
 
-        this.currentQueue = playlistQueue;
+          if (uservote) {
+            newQueueItem.uservote = uservote;
+            newQueueItem.uservote.hasVoted = true;
+          } else {
+            newQueueItem.uservote.hasVoted = false;
+          }
 
-        var i = 0;
-        _.forEach(playlistQueue, (queItem) => {
+          newQueueItem.general = queueItem.general;
+          newQueueItem.queue = queueItem.queue;
+          newQueueItem.thumbs = queueItem.thumbs;
 
-          this.addUserVote(i, queItem.general.id);
-          i++;
+          returnQueue.push(newQueueItem);
+
+          if(returnQueue.length === currentQueue.length){
+
+            returnQueue.sort((song1, song2) => {
+
+              var s1 = 0;
+              if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
+              if(song1.queue.isVetoed) s1 += 10; // sort by veto
+              if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+              if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+              if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+              var s2 = 0;
+              if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+              if(song2.queue.isVetoed) s2 += 10;
+              if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+              if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+              if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+              return s2 - s1;
+
+            });
+
+            console.log('[GetAllQueued:60] Returning queue (length:', returnQueue.length, ')');
+
+            res.setHeader('Last-Modified', (new Date()).toUTCString());
+            res.statusCode = 200;
+            return done(null, res.json(returnQueue));
+
+          }
 
         });
 
-      }else{
+        i++;
 
-        this.returnQueue = playlistQueue;
-        this.sortQueue();
+      });
 
-      }
+    }else{ // Return Queue
 
-    }else{
+      console.log('[GetAllQueued:96] About to sort current Queue');
 
-      console.log('-?- No songs in queue -?-');
+      currentQueue.sort((song1, song2) => {
 
+        var s1 = 0;
+        if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
+        if(song1.queue.isVetoed) s1 += 10; // sort by veto
+        if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+        if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+        if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+        var s2 = 0;
+        if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+        if(song2.queue.isVetoed) s2 += 10;
+        if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+        if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+        if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+        return s2 - s1;
+
+      });
+
+      console.log('-/- [GetAllQueued] -/- Returning queue ... ( length:', currentQueue.length, '| first:', currentQueue[0].general.title, '| firstIsPlaying:', currentQueue[0].queue.isPlaying, ')');
+
+      res.setHeader('Last-Modified', (new Date()).toUTCString());
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", 0);
       res.statusCode = 200;
-      return done(null, res.json(playlistQueue));
+      return res.json(currentQueue);
 
     }
 
-  }
+  }, (failData) => { // No songs in Queue
 
-  this.sortQueue = () => {
+    console.log('-?- [GetAllQueued:84] -?- Promise Failed: No songs in queue');
 
-    this.returnQueue.sort((song1, song2) => {
+    res.statusCode = 404;
+    return res.json(failData);
 
-      var s1 = 0;
-      if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
-      if(song1.queue.isVetoed) s1 += 10; // sort by veto
-      if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-      if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
-      if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
-
-      var s2 = 0;
-      if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
-      if(song2.queue.isVetoed) s2 += 10;
-      if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
-      if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
-
-      return s2 - s1;
-
-    });
-
-    //console.log('[GetAllQueued] Playing?', this.returnQueue[0].general.title, ':', this.returnQueue[0].queue.isPlaying, ' & ', this.returnQueue[1].general.title, ':', this.returnQueue[1].queue.isPlaying);
-
-    if(!this.returnQueue[0].queue.isPlaying){
-
-      console.log('[GetAllQueued] Set as playing:', this.returnQueue[0].general.title);
-      this.returnQueue[0].queue.isPlaying = true;
-      var firstsong = this.returnQueue[0];
-      SongModel.update(
-        {'general.id': firstsong.general.id},
-        {'queue.isPlaying': true}, {}, () => {
-          console.log('[GetAllQueued] Updated playing song');
-          this.respondQueue();
-        }
-      );
-
-    }else if(this.returnQueue[1].queue.isPlaying){
-
-      console.log('[GetAllQueued] Second song also playing? >', this.returnQueue[1].general.title);
-      this.returnQueue[1].queue.isPlaying = false;
-      var secondSong = this.returnQueue[1];
-      SongModel.update(
-        {'general.id': secondSong.general.id},
-        {'queue.isPlaying': false}, {}, () => {
-          console.log('[GetAllQueued] Updated second song');
-          this.respondQueue();
-        }
-      );
-
-    }else{
-
-      console.log('[GetAllQueued] First song playing:', this.returnQueue[0].queue.isPlaying, 'SecondSongPlaying:', this.returnQueue[1].queue.isPlaying);
-      this.respondQueue();
-
-    }
-
-  }
-
-  this.respondQueue = () => {
-
-    res.statusCode = 200;
-    return done(null, res.json(this.returnQueue));
-
-  }
-
-  this.addUserVote = (index, songId) => {
-
-    VoteModel.findOne({ 'user.googleId': req.session.profile.meta.googleId, 'song.id': songId }, (err, uservote) => {
-
-      if(err){
-        console.log('Error occured', err);
-      }
-
-      var queueItem = {
-        uservote: {
-          hasVoted: false
-        }
-      };
-
-      if(uservote){
-        queueItem.uservote = uservote;
-        queueItem.uservote.hasVoted = true;
-      }else{
-        queueItem.uservote.hasVoted = false;
-      }
-
-      queueItem.general = this.currentQueue[index].general;
-      queueItem.queue = this.currentQueue[index].queue;
-      queueItem.thumbs = this.currentQueue[index].thumbs;
-
-      this.returnQueue.push(queueItem);
-
-      if(this.returnQueue.length === this.currentQueue.length){
-        this.sortQueue();
-      }
-
-    });
-
-  }
+  });
 
 };

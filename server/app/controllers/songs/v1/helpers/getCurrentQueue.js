@@ -1,4 +1,5 @@
 // Packages
+var _ = require("lodash");
 require("rootpath")();
 
 // Helpers
@@ -7,16 +8,18 @@ var EmitHelper = require(__base + "app/helpers/io/emitter");
 // Models
 var SongModel = require(__base + "app/models/song");
 
-module.exports = new Promise((resolve, reject) => {
+module.exports = () => new Promise((resolve, reject) => {
+
+  console.log('--- [GetCurrentQueue] --- Attempting to get all queued songs ---');
 
   // If one or no song in queue
   SongModel.find({'queue.inQueue': true, 'general.isDownloaded': true}).sort('-queue.votes.currentQueueScore').exec((err, songs) => {
 
     if(err){
-      console.log('-!- [CRON] An error occured while checking the current queue -!-\n', err, '\n-!-');
+      console.log('-!- [GetCurrentQueue:18] -!- An error occured while checking the current queue:\n', err, '\n-!-');
     }
 
-    if(songs){
+    if(songs && songs.length >= 1){
 
       songs.sort((song1, song2) => {
 
@@ -38,41 +41,17 @@ module.exports = new Promise((resolve, reject) => {
 
       });
 
-      if(!songs[0].queue.isPlaying){
+      // Temp: log results
+      _.forEach(songs, (song) => {
+        console.log('[CurrentQueue]', song.general.title, '|', song.queue.votes.currentQueueScore);
+      });
 
-        console.log('[GetAllQueued] Set as playing:', songs[0].general.title);
-        songs[0].queue.isPlaying = true;
-        var firstsong = songs[0];
-        SongModel.update(
-          {'general.id': firstsong.general.id},
-          {'queue.isPlaying': true}, {}, () => {
-            console.log('[GetAllQueued] Updated playing song');
-            resolve(songs);
-          }
-        );
-
-      }else if(songs[1] && songs[1].queue.isPlaying){
-
-        console.log('[GetAllQueued] Second song also playing? >', songs[1].general.title);
-        songs[1].queue.isPlaying = false;
-        var secondSong = songs[1];
-        SongModel.update(
-          {'general.id': secondSong.general.id},
-          {'queue.isPlaying': false}, {}, () => {
-            console.log('[GetAllQueued] Updated second song');
-            resolve(songs);
-          }
-        );
-
-      }else{
-
-        console.log('[GetAllQueued] First song playing:', songs[0].queue.isPlaying, 'SecondSongPlaying:', songs[1].queue.isPlaying);
-        resolve(songs);
-
-      }
+      console.log('-/- [GetCurrentQueue] -/- Resolving Promise ( length:', songs.length, '| first:', songs[0].general.title, '| firstIsPlaying:', songs[0].queue.isPlaying, ')');
+      resolve(songs);
 
     }else{
 
+      console.log('-!- [GetCurrentQueue:48] -!- Promise Rejected: No songs in queue');
       reject('No songs in queue');
 
     }

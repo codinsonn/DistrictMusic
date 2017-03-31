@@ -25,19 +25,15 @@ module.exports = (req, res, done) => {
 
       if (err){
 
-        console.log('-!- Error occured while searching for vote: -!-\n', err, '\n-!-');
+        console.log('-!- [VoteSong:28] -!- Error occured while searching for vote:\n', err, '\n-!-');
         res.statusCode = 400;
-        return res.json({
-          errors: [
-            'Error while searching for vote'
-          ]
-        });
+        return res.json({ errors: [ 'Error while searching for vote' ] });
 
       }
 
       if (vote) { // already voted ( exists in db )
 
-        console.log('[VoteSong] User already voted, changing vote value');
+        console.log('[VoteSong:36] User already voted, changing vote value');
 
         if(vote.voteType != this.uservote.voteType){
 
@@ -55,13 +51,9 @@ module.exports = (req, res, done) => {
 
             if (err) {
 
-              console.log('-!- Error occured while updating uservote: -!-\n', err, '\n-!-');
+              console.log('-!- [VoteSong:54] -!- Error occured while updating uservote:\n', err, '\n-!-');
               res.statusCode = 500;
-              return res.json({
-                errors: [
-                  'Could not update uservote'
-                ]
-              });
+              return res.json({ errors: [ 'Could not update uservote' ] });
 
             }
 
@@ -78,13 +70,9 @@ module.exports = (req, res, done) => {
 
             if (err) {
 
-              console.log('-!- Error occured while removing current vote: -!-\n', err, '\n-!-');
+              console.log('-!- [VoteSong:73] -!- Error occured while removing current vote:\n', err, '\n-!-');
               res.statusCode = 500;
-              return res.json({
-                errors: [
-                  'Could not remove previous vote'
-                ]
-              });
+              return res.json({ errors: [ 'Could not remove previous vote' ] });
 
             }
 
@@ -98,32 +86,32 @@ module.exports = (req, res, done) => {
 
       } else {
 
-        console.log('[VoteSong] Adding new vote');
+        console.log('[VoteSong:89] Adding new vote');
 
         var newVote = new VoteModel();
 
         // -- general ----------
-        console.log('[VoteSong] Setting vote type');
+        console.log('[VoteSong:94] Setting vote type');
         newVote.voteType = this.uservote.voteType;
 
-        console.log('[VoteSong] Setting vote value');
+        console.log('[VoteSong:97] Setting vote value');
         newVote.voteValue = SongHelper.getVoteValue(this.uservote.voteType);
 
         // -- user info --------
-        console.log('[VoteSong] Setting user googleId');
+        console.log('[VoteSong:101] Setting user googleId');
         newVote.user.googleId = this.profile.meta.googleId;
 
-        console.log('[VoteSong] Setting user email');
+        console.log('[VoteSong:104] Setting user email');
         newVote.user.email = this.profile.general.email;
 
-        console.log('[VoteSong] Setting user googleId');
-        newVote.user.googleId = this.profile.meta.googleId;
+        console.log('[VoteSong:107] Setting user full name');
+        newVote.user.fullName = this.profile.general.fullName;
 
         // -- song info --------
-        console.log('[VoteSong] Setting song id');
+        console.log('[VoteSong:111] Setting song id');
         newVote.song.id = this.uservote.songId;
 
-        console.log('[VoteSong] Setting song title');
+        console.log('[VoteSong:114] Setting song title');
         newVote.song.title = this.uservote.songTitle;
 
         // -- save to db -------
@@ -131,13 +119,9 @@ module.exports = (req, res, done) => {
 
           if (err) {
 
-            console.log('-!- Error occured while adding new vote: -!-\n', err, '\n-!-');
+            console.log('-!- [VoteSong:122] -!- Error occured while adding new vote:\n', err, '\n-!-');
             res.statusCode = 500;
-            return res.json({
-              errors: [
-                'Could not add new vote'
-              ]
-            });
+            return res.json({ errors: [ 'Could not add new vote' ] });
 
           }
 
@@ -152,7 +136,7 @@ module.exports = (req, res, done) => {
 
   }else{
 
-    console.log('-!- [VoteSong] Invalid vote type -!-');
+    console.log('-!- [VoteSong:139] -!- Invalid vote type');
 
   }
 
@@ -162,13 +146,9 @@ module.exports = (req, res, done) => {
 
       if (err){
 
-        console.log('-!- Error occured while searching for song: -!-\n', err, '\n-!-');
+        console.log('-!- [VoteSong:149] -!- Error occured while searching for song:\n', err, '\n-!-');
         res.statusCode = 400;
-        return res.json({
-          errors: [
-            'Error while searching for song'
-          ]
-        });
+        return res.json({ errors: [ 'Error while searching for song' ] });
 
       }
 
@@ -203,13 +183,9 @@ module.exports = (req, res, done) => {
 
           if (err) {
 
-            console.log('-!- Error occured while updating song score: -!-\n', err, '\n-!-');
+            console.log('-!- [VoteSong:186] -!- Error occured while updating song score:\n', err, '\n-!-');
             res.statusCode = 500;
-            return res.json({
-              errors: [
-                'Could not update song score'
-              ]
-            });
+            return res.json({ errors: [ 'Could not update song score' ] });
 
           }
 
@@ -219,13 +195,9 @@ module.exports = (req, res, done) => {
 
       }else{
 
-        console.log('-!- [VoteSong] Can\'t find song -!-');
+        console.log('-!- [VoteSong:198] -!- Can\'t find song');
         res.statusCode = 412;
-        return res.json({
-          errors: [
-            'Song not found'
-          ]
-        });/**/
+        return res.json({ errors: [ 'Song not found' ] });
 
       }
 
@@ -235,16 +207,24 @@ module.exports = (req, res, done) => {
 
   this.respondSuccess = (song) => {
 
-    SongHelper.getCurrentQueue.then((currentQueue) => {
-      console.log('- [VoteSong] Vote successfull! Broadcasting for update -');
-      EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
-    }, (failData) => {
-      console.log('[VoteSong] Failed:', failData);
-    });
+    SongHelper.getCurrentQueue().then((currentQueue) => {
 
-    console.log('- [VoteSong] Song score updated! -', song.queue.votes.currentQueueScore);
-    res.statusCode = 200;
-    return res.json(song.queue);
+      console.log('-e- [VoteSong] -e- Vote successfull! Broadcasting for update');
+      EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
+
+      console.log('-/- [VoteSong] -/- Song score updated! =>', song.queue.votes.currentQueueScore);
+      res.setHeader('Last-Modified', (new Date()).toUTCString());
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", 0);
+      res.statusCode = 200;
+      res.json(song.queue);
+
+    }, (failData) => {
+
+      console.log('-!- [VoteSong:214] -!- Failed:', failData);
+
+    });
 
   }
 

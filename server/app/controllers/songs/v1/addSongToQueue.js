@@ -10,6 +10,7 @@ var ffmpeg = require('fluent-ffmpeg');
 
 // Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
+var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
 // Models
 var SongModel = require(__base + "app/models/song");
@@ -17,11 +18,11 @@ var UserModel = require(__base + "app/models/user");
 
 module.exports = (req, res, done) => {
 
-  console.log('--- [AddSongToQueue] --------------------');
+  console.log('--- [AddSongToQueue] --- Attempting to add song to queue ---');
 
   if(!req.session.isUploading){
 
-    console.log('[AddSongToQueue] Not yet uploading');
+    console.log('[AddSongToQueue:24] Not yet uploading');
 
     this.profile = req.session.profile;
 
@@ -29,32 +30,28 @@ module.exports = (req, res, done) => {
 
       if (err){
 
-        console.log('-!- [AddSongToQueue] Error occured while searching for song: -!-\n', err, '\n-!-');
+        console.log('-!- [AddSongToQueue:32] -!- Error occured while searching for song:\n', err, '\n-!-');
         res.statusCode = 400;
-        return res.json({
-          errors: [
-            'Could not search for song in db'
-          ]
-        });
+        return res.json({ errors: [ 'Could not search for song in db' ] });
 
       }
 
       if (song) { // song exists in db
 
-        console.log('- [AddSongToQueue] Found Song: - \n', song);
+        console.log('[AddSongToQueue:44] Found Song:', song.general.title);
 
         if(song.queue.inQueue){ // song still in queue
 
-          console.log('[AddSongToQueue] Song still in queue');
+          console.log('[AddSongToQueue:48] Song still in queue');
           this.respondInQueue();
 
         }else{ // song no longer in queue / downloaded
 
           if(song.general.isDownloaded){
-            console.log('[AddSongToQueue] About to update song in db');
+            console.log('[AddSongToQueue:54] About to update song in db');
             this.updateInDb(song);
           }else{
-            console.log('[AddSongToQueue] About to re-download song');
+            console.log('[AddSongToQueue:57] About to re-download song');
             this.downloadSong(false, req.body, song); // songIsNew => false => song is already in db
           }
 
@@ -62,7 +59,7 @@ module.exports = (req, res, done) => {
 
       } else { // create new song to add to queue
 
-        console.log('[AddSongToQueue] About to download song');
+        console.log('[AddSongToQueue:65] About to download song');
 
         this.downloadSong(true, req.body); // songIsNew => true => song not yet in db
 
@@ -72,41 +69,37 @@ module.exports = (req, res, done) => {
 
   }else{
 
-    console.log('-!- [AddSongToQueue] Already uploading a song -!-');
+    console.log('-!- [AddSongToQueue:75] -!- Already uploading a song');
     res.statusCode = 412;
-    return res.json({
-      errors: [
-        'Already uploading song'
-      ]
-    });
+    return res.json({ errors: [ 'Already uploading song' ] });
 
   }
 
   this.downloadSong = (songIsNew, suggestion, song={}) => {
 
-    console.log('- [AddSongToQueue] Creating new song from suggestion -');
+    console.log('-?- [AddSongToQueue:87] -?- Creating new song from suggestion');
 
     var url = `https://www.youtube.com/watch?v=${suggestion.id}`;
     var tempFolder = `${__base}uploads/temp/`;
-    console.log('[AddSongToQueue] Setup folder for temp:', tempFolder);
+    console.log('[AddSongToQueue:91] Setup folder for temp:', tempFolder);
     var audioFolder = `${__base}uploads/audio/`;
-    console.log('[AddSongToQueue] Setup folder for audio:', audioFolder);
+    console.log('[AddSongToQueue:93] Setup folder for audio:', audioFolder);
     var songTitleStripped = suggestion.title;
-    console.log('[AddSongToQueue] Assigned title:', songTitleStripped);
+    console.log('[AddSongToQueue:95] Assigned title:', songTitleStripped);
     songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-    console.log('[AddSongToQueue] Stripped title:', songTitleStripped);
+    console.log('[AddSongToQueue:97] Stripped title:', songTitleStripped);
     var audioFilename = `${suggestion.id}_${songTitleStripped}.mp4`;
-    console.log('[AddSongToQueue] Setup file naming for file:', audioFilename);
+    console.log('[AddSongToQueue:99] Setup file naming for file:', audioFilename);
     var tempOutput = path.resolve(tempFolder, audioFilename);
-    console.log('[AddSongToQueue] Setup file naming for temp:', tempOutput);
+    console.log('[AddSongToQueue:101] Setup file naming for temp:', tempOutput);
     var audioOutput = path.resolve(audioFolder, audioFilename);
-    console.log('[AddSongToQueue] Setup file naming for audio:', audioOutput);
+    console.log('[AddSongToQueue:103] Setup file naming for audio:', audioOutput);
 
     fs.stat(tempOutput, (err, stat) => {
 
       if(err == null) { // file already exists
 
-        console.log('-!- [AddSongToQueue] File already exists -!-');
+        console.log('-!- [AddSongToQueue:109] -!- File already exists');
         if(!songIsNew){
 
           song.general.filename = audioFilename;
@@ -114,13 +107,9 @@ module.exports = (req, res, done) => {
 
         }else{
 
-          console.log('-!- [AddSongToQueue] File exists on server, but not in db, weird -!-');
+          console.log('-!- [AddSongToQueue:117] -!- File exists on server, but not in db, weird!');
           res.statusCode = 412;
-          return res.json({
-            errors: [
-              'Song exists on server, but not in db, weird...'
-            ]
-          });
+          return res.json({ errors: [ 'Song exists on server, but not in db, weird...' ] });
 
         }
 
@@ -128,7 +117,7 @@ module.exports = (req, res, done) => {
 
         req.session.isUploading = true;
 
-        console.log('[AddSongToQueue] Attempting to save video as song in: ', req.session.isUploading, tempOutput);
+        console.log('[AddSongToQueue:131] Attempting to save video as song in: ', req.session.isUploading, tempOutput);
 
         ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
           .on('response', (res) => {
@@ -163,7 +152,7 @@ module.exports = (req, res, done) => {
 
       } else { // other error
 
-        console.log('-!- Error occurred while testing audiofile -!-', err.code);
+        console.log('-!- [AddSongToQueue:166] -!- Error occurred while testing audiofile', err.code);
 
       }
 
@@ -173,19 +162,15 @@ module.exports = (req, res, done) => {
 
   this.respondInQueue = () => {
 
-    console.log('-!- Song already in queue -!-');
+    console.log('-!- [AddSongToQueue:176] -!- Song already in queue');
     res.statusCode = 412;
-    return res.json({
-      errors: [
-        'Song already in queue'
-      ]
-    });
+    return res.json({ errors: [ 'Song already in queue' ] });
 
   }
 
   this.finishedDownload = (songIsNew, suggestion, song) => {
 
-    console.log('[AddSongToQueue] Download finished');
+    console.log('[AddSongToQueue:188] Download finished');
 
     if(songIsNew){
       this.saveToDb(suggestion);
@@ -200,7 +185,7 @@ module.exports = (req, res, done) => {
 
   this.updateInDb = (song) => {
 
-    console.log('[AddSongToQueue] Updating song in db');
+    console.log('[AddSongToQueue:203] Updating song in db');
 
     // update last submitter
     song.queue.lastAddedBy.googleId = this.profile.meta.googleId;
@@ -221,17 +206,13 @@ module.exports = (req, res, done) => {
 
       if (err) {
 
-        console.log('-!- Error occured while updating song: -!-\n', err, '\n-!-');
+        console.log('-!- [AddSongToQueue:224] -!- Error occured while updating song:\n', err, '\n-!-');
         res.statusCode = 500;
-        return res.json({
-          errors: [
-            'Could not update song'
-          ]
-        });
+        return res.json({ errors: [ 'Could not update song' ] });
 
       }
 
-      this.respondSong(song);
+      this.checkSong(song);
 
     });
 
@@ -239,59 +220,36 @@ module.exports = (req, res, done) => {
 
   this.saveToDb = (suggestion) => {
 
-    console.log('[AddSongToQueue] Saving song to queue');
+    console.log('[AddSongToQueue:242] Saving song to queue');
 
     var newSong = new SongModel();
 
     // -- file settings --------
-    console.log('Adding filename');
     newSong.general.filename = suggestion.filename;
-
-    console.log('Setting downloaded');
     newSong.general.isDownloaded = true;
-
-    console.log('Setting file about to be removed');
     newSong.general.isFileAboutToBeRemoved = false;
 
     // -- general info ---------
-    console.log('Adding youtube id');
     newSong.general.id = suggestion.id;
-
-    console.log('Adding youtube title');
     newSong.general.title = suggestion.title;
-
-    console.log('Adding youtube channel');
     newSong.general.channel = suggestion.channel;
-
-    console.log('Adding youtube duration');
     newSong.general.duration = suggestion.duration;
 
     // -- queue info ------------
-    console.log('Setting user to original uploader');
     newSong.queue.originallyAddedBy.googleId = this.profile.meta.googleId;
     newSong.queue.originallyAddedBy.userName = this.profile.general.fullName;
     newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
     newSong.queue.originallyAddedBy.added = (new Date()).getTime();
     newSong.queue.lastAddedBy = newSong.queue.originallyAddedBy;
-
-    console.log('Setting votes to default values');
     newSong.queue.votes.legacyScore = 0;
     newSong.queue.votes.currentQueueScore = 0;
 
     // -- thumbs info ---------
-    console.log('Adding thumbnails');
     newSong.thumbs = suggestion.thumbs;
 
     // -- Save to queue / db --
-    console.log('Setting vetoed');
     newSong.queue.isPlaying = false;
-
-    // -- Save to queue / db --
-    console.log('Setting vetoed');
     newSong.queue.isVetoed = false;
-
-    // -- Save to queue / db --
-    console.log('Adding to queue');
     newSong.queue.inQueue = true;
 
     // Save the song to put back in queue
@@ -299,30 +257,107 @@ module.exports = (req, res, done) => {
 
       if (err) {
 
-        console.log('-!- Error occured while saving new song: -!-\n', err, '\n-!-');
+        console.log('-!- [AddSongToQueue:279] -!- Error occured while saving new song:\n', err, '\n-!-');
         res.statusCode = 400;
-        return res.json({
-          errors: [
-            'Could not save song'
-          ]
-        });
+        return res.json({ errors: [ 'Could not save song' ] });
 
       }
 
-      this.respondSong(newSong);
+      console.log('[AddSongToQueue:289] Returning newly added song:', newSong.general.title);
+      this.checkSong(newSong);
 
     });
 
   }
 
-  this.respondSong = (song) => {
+  this.checkSong = (song) => {
 
     req.session.isUploading = false;
 
-    console.log('Broadcasting for update');
-    EmitHelper.broadcast('QUEUE_UPDATED', song);
+    SongHelper.getCurrentQueue().then((currentQueue) => {
 
-    console.log('- New song added to queue -');
+      if(currentQueue.length === 1 && !currentQueue[0].queue.isPlaying){
+
+        console.log('[AddSongToQueue:305] No song playing yet, setting this song as playing');
+
+        SongModel.findOne({'queue.inQueue': true}).exec((err, song) => {
+
+          if(err){
+            console.log('[AddSongToQueue:310] Err:', err);
+          }
+
+          if(song){
+
+            currentQueue[0].queue.isPlaying = true;
+            song.queue.isPlaying = true;
+
+            song.save((err) => {
+
+              if (err) {
+
+                console.log('-!- [AddSongToQueue:321] -!- Error occured while saving first song:\n', err, '\n-!-');
+                res.statusCode = 400;
+                return res.json({ errors: [ 'Could not save song' ] });
+
+              }else{
+
+                console.log('[AddSongToQueue:331] Returning updated first song:', song.general.title);
+                this.respondSong(currentQueue, song);
+
+              }
+
+            });
+
+          }
+
+        });
+
+      }else{
+
+        this.respondSong(currentQueue, song);
+
+      }
+
+    }, (failData) => {
+
+      console.log('-!- [AddSongToQueue:315] -!- Something went wrong while adding new song');
+      res.statusCode = 400;
+      return res.json({ errors: [ 'Something went wrong' ] });
+
+    });
+
+  }
+
+  this.respondSong = (currentQueue, song) => {
+
+    currentQueue.sort((song1, song2) => {
+
+      var s1 = 0;
+      if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
+      if(song1.queue.isVetoed) s1 += 10; // sort by veto
+      if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
+      if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+      if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
+
+      var s2 = 0;
+      if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
+      if(song2.queue.isVetoed) s2 += 10;
+      if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
+      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+      if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
+
+      return s2 - s1;
+
+    });
+
+    console.log('-e- [AddSongToQueue] -e- Broadcasting for update (length:', currentQueue.length, ')');
+    EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
+
+    console.log('-/- [AddSongToQueue] -/- New song added to queue');
+    res.setHeader('Last-Modified', (new Date()).toUTCString());
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", 0);
     res.statusCode = 200;
     return res.json(song);
 

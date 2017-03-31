@@ -6,8 +6,10 @@ var GridFS = require(__base + "app/middleware/gridfs");
 
 let connectUrl = `mongodb://${config.mongo.url}/${config.mongo.db}`;
 if(config.production){
-  connectUrl = `mongodb://${config.mongo.admin}:${config.mongo.password}@${config.mongo.cluster}-shard-00-00-zdfxx.mongodb.net:27017,${config.mongo.cluster}-shard-00-01-zdfxx.mongodb.net:27017,${config.mongo.cluster}-shard-00-02-zdfxx.mongodb.net:27017/${config.mongo.db}?ssl=true&replicaSet=${config.mongo.cluster}-shard-0&authSource=admin`;
+  connectUrl = `mongodb://${config.mongo.admin}:${config.mongo.password}@ds145750.mlab.com:45750/${config.mongo.db}`;
 }
+
+console.log('[Middleware:DB] Attempting to connect to mongodb:', connectUrl);
 
 // Connect to db
 mongoose.connect(connectUrl);

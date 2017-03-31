@@ -12,9 +12,8 @@ module.exports = {
     },
     mongo: {
       admin: 'DistrictMusicAdmin',
-      password: '$mus1c@dm1n',
-      cluster: 'district-music',
-      db: 'district-music'
+      password: 'mus1cadm1n',
+      db: 'districtmusic'
     },
     session: {
       domain: "districtmusic"
