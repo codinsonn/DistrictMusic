@@ -91,7 +91,7 @@ module.exports = (req, res, done) => {
 
       });
 
-    }else{ // Return Queue
+    }else{ // User not in session, return queue without uservotes
 
       console.log('[GetAllQueued:96] About to sort current Queue');
 
@@ -128,7 +128,7 @@ module.exports = (req, res, done) => {
 
   }, (failData) => { // No songs in Queue
 
-    console.log('-?- [GetAllQueued:84] -?- Promise Failed: No songs in queue');
+    console.log('-?- [GetAllQueued:131] -?- Promise Failed: No songs in queue');
 
     res.statusCode = 404;
     return res.json(failData);

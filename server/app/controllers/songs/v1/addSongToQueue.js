@@ -38,20 +38,20 @@ module.exports = (req, res, done) => {
 
       if (song) { // song exists in db
 
-        console.log('[AddSongToQueue:44] Found Song:', song.general.title);
+        console.log('[AddSongToQueue:41] Found Song:', song.general.title);
 
         if(song.queue.inQueue){ // song still in queue
 
-          console.log('[AddSongToQueue:48] Song still in queue');
+          console.log('[AddSongToQueue:45] Song still in queue');
           this.respondInQueue();
 
         }else{ // song no longer in queue / downloaded
 
           if(song.general.isDownloaded){
-            console.log('[AddSongToQueue:54] About to update song in db');
+            console.log('[AddSongToQueue:51] About to update song in db');
             this.updateInDb(song);
           }else{
-            console.log('[AddSongToQueue:57] About to re-download song');
+            console.log('[AddSongToQueue:54] About to re-download song');
             this.downloadSong(false, req.body, song); // songIsNew => false => song is already in db
           }
 
@@ -59,7 +59,7 @@ module.exports = (req, res, done) => {
 
       } else { // create new song to add to queue
 
-        console.log('[AddSongToQueue:65] About to download song');
+        console.log('[AddSongToQueue:62] About to download song');
 
         this.downloadSong(true, req.body); // songIsNew => true => song not yet in db
 
@@ -69,7 +69,7 @@ module.exports = (req, res, done) => {
 
   }else{
 
-    console.log('-!- [AddSongToQueue:75] -!- Already uploading a song');
+    console.log('-!- [AddSongToQueue:72] -!- Already uploading a song');
     res.statusCode = 412;
     return res.json({ errors: [ 'Already uploading song' ] });
 
@@ -99,7 +99,7 @@ module.exports = (req, res, done) => {
 
       if(err == null) { // file already exists
 
-        console.log('-!- [AddSongToQueue:109] -!- File already exists');
+        console.log('-!- [AddSongToQueue:102] -!- File already exists');
         if(!songIsNew){
 
           song.general.filename = audioFilename;
@@ -107,7 +107,7 @@ module.exports = (req, res, done) => {
 
         }else{
 
-          console.log('-!- [AddSongToQueue:117] -!- File exists on server, but not in db, weird!');
+          console.log('-!- [AddSongToQueue:110] -!- File exists on server, but not in db, weird!');
           res.statusCode = 412;
           return res.json({ errors: [ 'Song exists on server, but not in db, weird...' ] });
 
@@ -124,27 +124,35 @@ module.exports = (req, res, done) => {
             var totalSize = res.headers['content-length'];
             var dataRead = 0;
             res.on('data', (data) => {
+
               dataRead += data.length;
               var percent = dataRead / totalSize;
               var strPercent = (percent * 100).toFixed(2) + '%';
+
               UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
                 EmitHelper.emit('DOWNLOAD_PROGRESS', user.meta.socketIds, {percent: percent, str: strPercent});
               });
+
               process.stdout.cursorTo(0);
               process.stdout.clearLine(1);
               process.stdout.write(strPercent);
+
             });
             res.on('end', () => {
+
               process.stdout.write('\n');
               fse.copySync(tempOutput, audioOutput);
               fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
               fs.unlinkSync(tempOutput);
+
               console.log('-f- Finished downloading song to:', audioOutput);
               UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
                 EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
               });
+
               suggestion.filename = audioFilename;
               this.finishedDownload(songIsNew, suggestion, song);
+
             });
           })
           .pipe(fs.createWriteStream(tempOutput))
@@ -185,7 +193,7 @@ module.exports = (req, res, done) => {
 
   this.updateInDb = (song) => {
 
-    console.log('[AddSongToQueue:203] Updating song in db');
+    console.log('[AddSongToQueue:188] Updating song in db');
 
     // update last submitter
     song.queue.lastAddedBy.googleId = this.profile.meta.googleId;
@@ -206,7 +214,7 @@ module.exports = (req, res, done) => {
 
       if (err) {
 
-        console.log('-!- [AddSongToQueue:224] -!- Error occured while updating song:\n', err, '\n-!-');
+        console.log('-!- [AddSongToQueue:209] -!- Error occured while updating song:\n', err, '\n-!-');
         res.statusCode = 500;
         return res.json({ errors: [ 'Could not update song' ] });
 
@@ -295,13 +303,13 @@ module.exports = (req, res, done) => {
 
               if (err) {
 
-                console.log('-!- [AddSongToQueue:321] -!- Error occured while saving first song:\n', err, '\n-!-');
+                console.log('-!- [AddSongToQueue:298] -!- Error occured while saving first song:\n', err, '\n-!-');
                 res.statusCode = 400;
                 return res.json({ errors: [ 'Could not save song' ] });
 
               }else{
 
-                console.log('[AddSongToQueue:331] Returning updated first song:', song.general.title);
+                console.log('[AddSongToQueue:304] Returning updated first song:', song.general.title);
                 this.respondSong(currentQueue, song);
 
               }

@@ -15,7 +15,7 @@ var EmitHelper = require(__base + "app/helpers/io/emitter");
 var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
 // Models
-var SongModel = require(__base + "app/models/vote");
+var SongModel = require(__base + "app/models/song");
 
 module.exports = (setPlaying=false) => {
 
@@ -29,8 +29,8 @@ module.exports = (setPlaying=false) => {
 
     var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: config.auto.minLegacyScore } };
 
-    // Find random unqueued song with legacy score greater than 10
-    SongModel.find(query).exec((err, songs) => {
+    // Find fetch list of best songs of all time
+    SongModel.find(query).sort('-queue.votes.legacyScore').exec((err, songs) => {
 
       if(err){
         console.log('-!- [AddRandomSong:37] -!- An error occured while searching for random song: \n', err, '\n-!-');
@@ -40,12 +40,17 @@ module.exports = (setPlaying=false) => {
 
         console.log('[AddRandomSong:42] Found unqueued songs!', songs.length, songs);
 
-        var rand = Math.floor(Math.random() * songs.length);
+        var limit = config.auto.maxRandomBestPool;
+        if(limit > songs.length){
+          limit = songs.length;
+        }
+        var rand = Math.floor(Math.random() * limit);
+        var randomSong = songs[rand];
 
-        console.log('[AddRandomSong:46] Attempting to update random song, skipping:', rand);
+        console.log('[AddRandomSong:46] Attempting to update random song, skipping', rand, 'songs');
 
-        // Requeue random unqueued song
-        SongModel.findOne(query).skip(rand).exec((err, song) => {
+        // Requeue random unqueued song from list of best of all times
+        SongModel.findOne({ 'general.id': randomSong.general.id, 'general.title': randomSong.general.title }).exec((err, song) => {
 
           console.log('[AddRandomSong:51] Query Finished!');
 
@@ -112,22 +117,29 @@ module.exports = (setPlaying=false) => {
             var totalSize = res.headers['content-length'];
             var dataRead = 0;
             res.on('data', (data) => {
+
               dataRead += data.length;
               var percent = dataRead / totalSize;
               var strPercent = (percent * 100).toFixed(2) + '%';
+
               process.stdout.cursorTo(0);
               process.stdout.clearLine(1);
               process.stdout.write(strPercent);
+
             });
             res.on('end', () => {
+
               process.stdout.write('\n');
               fse.copySync(tempOutput, audioOutput);
               fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
               fs.unlinkSync(tempOutput);
+
               console.log('-f- [AddRandomSong:127] -f- Finished downloading song to:', audioOutput);
               song.general.filename = audioFilename;
               song.general.isDownloaded = true;
+
               this.saveSong(song);
+
             });
           })
           .pipe(fs.createWriteStream(tempOutput))
@@ -173,6 +185,8 @@ module.exports = (setPlaying=false) => {
   }
 
   this.emitCurrentQueue = () => {
+
+    var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 
     SongHelper.getCurrentQueue().then((currentQueue) => {
       console.log('-/- [AddRandomSong] -/- Broadcasting for queue update (length:', currentQueue.length, ')');

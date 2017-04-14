@@ -13,7 +13,8 @@ module.exports = (req, res, done) => {
 
   console.log('--- [PlayNext] --- Removing current song from queue...', req.body.general.id, req.body.general.title, '---');
 
-  SongModel.findOne({ 'queue.isPlaying': true }, (err, song) => {
+  //SongModel.findOne({ 'queue.isPlaying': true }, (err, song) => {
+  SongModel.findOne({ 'general.id': req.body.general.id, 'general.title': req.body.general.title }, (err, song) => {
 
     if (err){
 
@@ -46,10 +47,10 @@ module.exports = (req, res, done) => {
 
         }else{
 
-          console.log('[PlayNext:57] Removing votes for current song...');
+          console.log('[PlayNext:50] Removing votes for current song...');
           SongHelper.removeVotesForSong(song.general.id);
 
-          console.log('[PlayNext:60] About to update to next song...');
+          console.log('[PlayNext:53] About to update to next song...');
           this.updateCurrentQueue();
 
         }
@@ -58,8 +59,8 @@ module.exports = (req, res, done) => {
 
     } else {
 
-      console.log('-?- [PlayNext:69] -?- Song not found, adding random song to queue');
-      SongHelper.addRandomSongToQueue(true); // playing = true
+      console.log('-?- [PlayNext:62] -?- Song not found, adding random song to queue');
+      SongHelper.addRandomSong(true); // playing = true
 
     }
 
@@ -67,23 +68,23 @@ module.exports = (req, res, done) => {
 
   this.updateCurrentQueue = () => {
 
-    console.log('[PlayNext:78] Attempting to update to next song...');
+    console.log('[PlayNext:71] Attempting to update to next song...');
 
     SongHelper.getCurrentQueue().then((currentQueue) => {
 
-      console.log('[PlayNext:82] Fetched current queue! First song:', currentQueue[0].general.title, currentQueue[0].queue.isPlaying);
+      console.log('[PlayNext:75] Fetched current queue! First song:', currentQueue[0].general.title, currentQueue[0].queue.isPlaying);
 
       SongModel.findOne({'general.id': currentQueue[0].general.id, 'general.title': currentQueue[0].general.title}, (err, nextSong) => {
 
         if (err){
 
-          console.log('-!- [PlayNext:88] -!- Error occured while searching for next song:\n', err, '\n-!-');
+          console.log('-!- [PlayNext:81] -!- Error occured while searching for next song:\n', err, '\n-!-');
           res.statusCode = 400;
           return res.json({ errors: [ 'Could not search for song in db' ] });
 
         } else if (nextSong) {
 
-          console.log('[PlayNext:98] Found next song:', nextSong.general.title, nextSong.queue.isPlaying);
+          console.log('[PlayNext:87] Found next song:', nextSong.general.title, nextSong.queue.isPlaying);
 
           // Update current queue
           currentQueue[0].queue.isPlaying = true;
@@ -94,7 +95,7 @@ module.exports = (req, res, done) => {
 
             if (err) {
 
-              console.log('-!- [PlayNext:109] -!- Error occured while updating next song: -!-\n', err, '\n-!-');
+              console.log('-!- [PlayNext:98] -!- Error occured while updating next song: -!-\n', err, '\n-!-');
               res.statusCode = 500;
               return res.json({ errors: [ 'Could not update next song' ] });
 
@@ -120,7 +121,7 @@ module.exports = (req, res, done) => {
 
               });
 
-              console.log('-e- [PlayNext:119] -e- Broadcasting for queue update:', currentQueue[0].general.title, '-e-');
+              console.log('-e- [PlayNext:124] -e- Broadcasting for queue update:', currentQueue[0].general.title, '-e-');
               EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
 
               console.log('-/- [PlayNext] -/- Song removed from queue, time for update');
@@ -137,8 +138,8 @@ module.exports = (req, res, done) => {
 
         } else { // No song to be played next
 
-          console.log('-?- [PlayNext:132] -?- No next song in queue, adding random song');
-          SongHelper.addRandomSongToQueue(true); // playing = true
+          console.log('-?- [PlayNext:141] -?- No next song in queue, adding random song');
+          SongHelper.addRandomSong(true); // playing = true
 
         }
 
@@ -146,7 +147,7 @@ module.exports = (req, res, done) => {
 
     }, (failData) => {
 
-      console.log('-!- [PlayNext:141] -!- Queue fetch failed:', failData);
+      console.log('-!- [PlayNext:150] -!- Queue fetch failed:', failData);
       res.statusCode = 404;
       return res.json({ errors: [ failData ] });
 
