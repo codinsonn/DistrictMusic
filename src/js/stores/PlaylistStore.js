@@ -71,6 +71,8 @@ class PlaylistStore extends EventEmitter {
       let i = 0;
       _.forEach(currentQueue, socketQueueItem => {
 
+        console.log(`[PlaylistStore] Checking uservote for`, socketQueueItem.general.id);
+
         _.forEach(this.queue, queItem => {
 
           if (
@@ -84,7 +86,8 @@ class PlaylistStore extends EventEmitter {
 
         i ++;
 
-        if (i === this.queue.length) {
+        if (i === currentQueue.length) {
+          console.log(`[PlaylistStore] About to handle queue change`);
           this.handleQueueChange(currentQueue);
         }
 

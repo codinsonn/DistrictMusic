@@ -38,7 +38,7 @@ module.exports = (setPlaying=false) => {
 
       if(songs && songs.length >= 1){
 
-        console.log('[AddRandomSong:42] Found unqueued songs!', songs.length, songs);
+        console.log('[AddRandomSong:42] Found unqueued songs!');
 
         var limit = config.auto.maxRandomBestPool;
         if(limit > songs.length){
