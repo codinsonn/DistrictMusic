@@ -6658,7 +6658,7 @@ var PlaylistStore = function (_EventEmitter) {
 
           i++;
 
-          if (i === _this3.queue.length) {
+          if (i === currentQueue.length) {
             console.log('[PlaylistStore] About to handle queue change');
             _this3.handleQueueChange(currentQueue);
           }
@@ -79318,4 +79318,4 @@ module.exports = __webpack_require__(300);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.d6111d5bd4482dfd5b1c.js.map
+//# sourceMappingURL=main.fa1a02c0663f36450454.js.map

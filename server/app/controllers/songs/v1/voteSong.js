@@ -18,6 +18,8 @@ module.exports = (req, res, done) => {
   this.uservote = req.body;
   this.profile = req.session.profile;
 
+  console.log('--- [VoteSong] --- Adding or updating vote ---');
+
   if(SongHelper.validateVoteType(this.uservote.voteType)){
 
     // check if vote doesn't already exist in db

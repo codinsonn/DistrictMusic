@@ -212,9 +212,9 @@ module.exports = function(timeZone) {
 
   );
 
-  /* --- Weekly: Remove files scheduled for removal  ---------------------------------------------------------- */
+  /* --- Weekly: Reset 'isDownloaded' for files scheduled for removal  ---------------------------------------------------------- */
 
-  this.cronRemoveScheduledFiles = new CronJob(config.auto.cronPatternRemoveScheduledFiles, () => {
+  this.cronRemoveScheduledFilesInDb = new CronJob(config.auto.cronPatternRemoveScheduledFiles, () => {
 
     console.log('-CRON- Removing files scheduled for removal -CRON-');
 
@@ -222,7 +222,7 @@ module.exports = function(timeZone) {
       var removeQuery = { 'general.isDownloaded': false, 'general.isFileAboutToBeRemoved': false };
       var removeOptions = {};
 
-      SongModel.find(removeConditions).exec((err, songs) => {
+      /*SongModel.find(removeConditions).exec((err, songs) => {
 
         if(err){
           console.log('-!- [CRON:228] An error occured while removing files -!-\n', err, '\n-!-');
@@ -252,18 +252,98 @@ module.exports = function(timeZone) {
 
         }
 
-      });
+      });*/
 
       SongModel.update(removeConditions, removeQuery, removeOptions, () => {
 
         console.log('-!- [CRON:259] Files removed -!-');
-        this.emitCurrentQueue();
+        //this.emitCurrentQueue();
 
       });
 
     }, () => { // Callback after job is done
 
       console.log('-/CRON/- Finished removing files scheduled for removal -/CRON/-');
+
+    },
+    true, // Start the job right now
+    timeZone // Time zone of this job
+
+  );
+
+/* --- Weekly: Remove unused audio files  ---------------------------------------------------------- */
+
+  this.cronRemoveUnusedFiles = new CronJob(config.auto.cronPatternRemoveUnusedFiles, () => {
+
+    console.log('-CRON- Removing files scheduled for removal -CRON-');
+
+      var removeConditions = { 'queue.inQueue': false, 'general.isDownloaded': false };
+
+      SongModel.find(removeConditions).exec((err, songs) => {
+
+        if(err){
+          console.log('-!- [CRON:287] An error occured while removing files -!-\n', err, '\n-!-');
+        }
+
+        if(songs){
+
+          console.log('-?- [CRON:292] Songs to be checked for removal: ', songs.length,' -?-');
+
+
+
+          _.forEach(songs, (song) => {
+
+            var audioFilename = song.general.filename;
+
+            var uploadsFolder = `${__base}uploads/audio/`;
+            var uploadedFilePath = path.resolve(uploadsFolder, audioFilename);
+
+            var publicFolder = `${__base}public/assets/audio/`;
+            var publicFilePath = path.resolve(publicFolder, audioFilename);
+
+            // Check in public/assets/audio folder and remove if found
+            fs.stat(uploadedFilePath, (err, stat) => {
+
+              if(err == null) { // file exists on server
+
+                console.log('-!- [CRON:310] -!- File already exists');
+                fs.unlinkSync(uploadedFilePath);
+                console.log('[CRON] Removed file:', uploadedFilePath);
+
+              } else if(err.code == 'ENOENT') { // file doesn't exist on server
+                // Do nothing
+              } else { // other error
+                console.log('-!- [CRON:342] -!- Error occurred while testing audiofile', err.code);
+              }
+
+            });
+
+            // Check in uploads folder and remove if found
+            fs.stat(uploadedFilePath, (err, stat) => {
+
+              if(err == null) { // file exists on server
+
+                console.log('-!- [CRON:327] -!- File already exists');
+                fs.unlinkSync(publicFilePath);
+                console.log('[CRON] Removed file:', publicFilePath);
+
+              } else if(err.code == 'ENOENT') { // file doesn't exist on server
+                // Do nothing
+              } else { // other error
+                console.log('-!- [CRON:342] -!- Error occurred while testing audiofile', err.code);
+              }
+
+            });
+
+          });
+
+        }
+
+      });
+
+    }, () => { // Callback after job is done
+
+      console.log('-/CRON/- Finished removing unused audio files -/CRON/-');
 
     },
     true, // Start the job right now

@@ -10,7 +10,7 @@ var SongModel = require(__base + "app/models/song");
 
 module.exports = () => new Promise((resolve, reject) => {
 
-  console.log('--- [GetCurrentQueue] --- Attempting to get all queued songs ---');
+  //console.log('--- [GetCurrentQueue] --- Attempting to get all queued songs ---');
 
   // If one or no song in queue
   SongModel.find({'queue.inQueue': true, 'general.isDownloaded': true}).sort('-queue.votes.currentQueueScore').exec((err, songs) => {
@@ -41,12 +41,7 @@ module.exports = () => new Promise((resolve, reject) => {
 
       });
 
-      // Temp: log results
-      _.forEach(songs, (song) => {
-        console.log('[CurrentQueue]', song.general.title, '|', song.queue.votes.currentQueueScore);
-      });
-
-      console.log('-/- [GetCurrentQueue] -/- Resolving Promise ( length:', songs.length, '| first:', songs[0].general.title, '| firstIsPlaying:', songs[0].queue.isPlaying, ')');
+      //console.log('-/- [GetCurrentQueue] -/- Resolving Promise ( length:', songs.length, '| first:', songs[0].general.title, '| firstIsPlaying:', songs[0].queue.isPlaying, ')');
       resolve(songs);
 
     }else{

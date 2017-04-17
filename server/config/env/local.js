@@ -33,6 +33,7 @@ module.exports = {
       cronPatternAddRandomSong: '00 00 09 * * 1-5', // every weekday in the morning at 9:00
       cronPatternResetVotes: '00 00 * * * 1-24', // every hour
       cronPatternScheduleFilesToBeRemoved: '00 01 * * * 1-24', // every hour at the first minute
-      cronPatternRemoveScheduledFiles: '00 59 * * * 1-24' // every hour at the last minute
+      cronPatternRemoveScheduledFiles: '00 59 * * * 1-24', // every hour at the last minute
+      cronPatternRemoveUnusedFiles: '00 00 * * * 1-24' // every hour
     }
 };

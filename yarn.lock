@@ -318,6 +318,12 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
+audio-visualizer@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/audio-visualizer/-/audio-visualizer-1.6.0.tgz#48d9d2720fb61444a9efc8845a9a844b2cad6547"
+  dependencies:
+    d3-selection "^1.0.2"
+
 autoprefixer@^6.0.0, autoprefixer@^6.0.2, autoprefixer@^6.3.1:
   version "6.7.2"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-6.7.2.tgz#172ab07b998ae9b957530928a59a40be54a45023"
@@ -2208,6 +2214,10 @@ cycle@1.0.x:
 cyclist@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"
+
+d3-selection@^1.0.2:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.0.5.tgz#948c73b41a44e28d1742ae2ff207c2aebca2734b"
 
 d@^0.1.1, d@~0.1.1:
   version "0.1.1"
