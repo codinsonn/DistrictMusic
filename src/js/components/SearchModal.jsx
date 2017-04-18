@@ -1,4 +1,4 @@
-import React, {Component/*, PropTypes*/} from 'react';
+import React, {Component} from 'react';
 import {Suggestion} from '../components';
 import UserStore from '../stores/UserStore';
 import NotificationsStore from '../stores/NotificationsStore';

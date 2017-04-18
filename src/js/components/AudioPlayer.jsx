@@ -6,6 +6,10 @@ import SocketStore from '../stores/SocketStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
+import {curveArrayAtRandom} from '../util/';
+
+const BAR_WIDTH = 4;
+const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
 
 export default class AudioPlayer extends Component {
 
@@ -19,21 +23,37 @@ export default class AudioPlayer extends Component {
       pos: 0,
       currentTimeString: `00:00`,
       isSpeaker: UserStore.getIsSpeaker(),
-      isSynched: UserStore.getSynched()
+      isSynched: UserStore.getSynched(),
+      playMode: PlaylistStore.getPlayMode()
     };
 
-    this.unSynchedWaveOptions = {
+    this.waveOptionsNormal = {
       height: 32,
       normalize: true,
       cursorColor: `#ffffff`,
       waveColor: `#c6c6c6`,
-      progressColor: `#fecb58`
+      progressColor: `#fecb58`,
+      backend: `MediaElement`,
+      mediaType: `audio`
+    };
+
+    this.waveOptionsFullscreen = {
+      height: 80,
+      normalize: true,
+      cursorColor: `#ffffff`,
+      waveColor: `#c6c6c6`,
+      progressColor: `#fecb58`,
+      backend: `MediaElement`,
+      mediaType: `audio`
     };
 
     // -- non state vars ----
     this.prevSongId = ``;
     this.songHasStarted = false;
     this.prevTimeString = `00:00`;
+    this.audioContextSet = false;
+    this.frequencyBarsDrawn = false;
+    this.frequencies = [];
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
@@ -44,6 +64,7 @@ export default class AudioPlayer extends Component {
     this.evtSpeakerDisconnected = () => NotifActions.addError(`Speaker disconnected`);
     this.evtShowNowPlaying = () => this.showNowPlaying();
     this.evtPausePlay = () => this.pausePlay();
+    this.evtUpdatePlayMode = () => this.updatePlayMode();
 
   }
 
@@ -57,6 +78,7 @@ export default class AudioPlayer extends Component {
     PlaylistStore.on(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
     PlaylistStore.on(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.on(`PAUSE_PLAY`, this.evtPausePlay);
+    PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
   }
 
   componentWillUnmount() {
@@ -69,10 +91,7 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
     PlaylistStore.removeListener(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPausePlay);
-  }
-
-  componentDidMount() {
-
+    PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
   }
 
   checkSongUpdate() {
@@ -108,6 +127,8 @@ export default class AudioPlayer extends Component {
     }
 
     this.songHasStarted = false;
+    this.audioContextSet = false;
+    this.frequencyBarsDrawn = false;
 
     this.setState({song, pos, playing});
 
@@ -141,6 +162,24 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updatePlayMode() {
+
+    let {song, playMode} = this.state;
+
+    playMode = PlaylistStore.getPlayMode();
+    song = {general: ``};
+
+    // To reset waveOptions
+    setTimeout(() => {
+      let {song} = this.state;
+      song = PlaylistStore.getSong(UserStore.getSynched());
+      this.setState({song});
+    }, 1);
+
+    this.setState({song, playMode});
+
+  }
+
   synchPosToSpeakerAndPlay() {
 
     //console.log(`[synchPosToSpeakerAndPlay]`);
@@ -150,7 +189,7 @@ export default class AudioPlayer extends Component {
     const speakerPos = PlaylistStore.getSpeakerPos();
 
     playing = true;
-    pos = speakerPos.speakerPos + 0.002 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
+    pos = speakerPos.speakerPos + 0.012 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
     //pos = speakerPos.speakerPos;
 
     console.log(`pos`, pos);
@@ -163,9 +202,22 @@ export default class AudioPlayer extends Component {
 
     //console.log(`[handleReadyToPlay]`);
 
-    const {isSynched, playing, song} = this.state;
+    const {playing, song} = this.state;
 
-    console.log(`[AudioPlayer] SPEAKER => synched:`, isSynched, `, playing:`, playing);
+    console.log(`[AudioPlayer:169] Setting up for audio visualisation...`);
+
+    if (!this.audioCtx) {
+      this.audioCtx = new AudioContext();
+    }
+    this.audio = document.querySelector(`audio`); // might not exist on constructor
+    this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
+    this.analyser = this.audioCtx.createAnalyser();
+    this.audioSrc.connect(this.analyser);
+    this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+    this.audioSrc.connect(this.audioCtx.destination);
+    this.canvas = document.querySelector(`.audio-visualisation`);
+    this.canvasCtx = this.canvas.getContext(`2d`);
+    this.audioContextSet = true;
 
     if (playing) { // x2 to trigger waveform play
       this.togglePlay(false);
@@ -209,7 +261,13 @@ export default class AudioPlayer extends Component {
     }
 
     if (playing) {
-      PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime());
+      setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 10);
+    }
+
+    // Update bar visualisations
+    if (this.audioContextSet) {
+      this.analyser.getByteFrequencyData(this.frequencyData);
+      window.requestAnimationFrame(() => this.updateAudioVisualisation());
     }
 
     this.setState({pos, currentTimeString});
@@ -258,6 +316,7 @@ export default class AudioPlayer extends Component {
       song = {general: ``};
       pos = 0;
       this.songHasStarted = false;
+      this.audioContextSet = false;
 
       this.setState({song, pos});
 
@@ -320,14 +379,84 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateAudioVisualisation() {
+
+    const {playMode} = this.state;
+
+    if (this.audioContextSet) {
+
+      this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // Button Settings
+      let maxBars = 3; // for normal mode ( => becomes button to enter fullscreen )
+      let horizontalPadding = 0; // no padding in normal mode
+      let verticalDivision = 2; // makes bars align vetically centered
+      let barScale = 0.6;
+      let scaleStep = 0; // will avoid making a curve (since there's only three bars)
+      this.canvasCtx.fillStyle = `white`;
+
+      // Fullscreen Settings
+      if (playMode === `fullscreen`) {
+        maxBars = Math.round(this.canvas.width / BAR_WIDTH / 2); // fill the entire width of screen with bars
+        horizontalPadding = BAR_WIDTH / 2; // use some padding in fullscreen mode
+        verticalDivision = 1; // makes bars align to bottom
+        barScale = 1;
+        scaleStep = 0.7 / (maxBars / 2); // make slight curve towards middle of the screen
+        this.canvasCtx.fillStyle = `#3C3C3C`;
+      }
+
+      let frequencies = this.frequencyData.slice(0, maxBars); // only use as much frequency data as bars needed
+
+      for (let i = 0;i < maxBars;i ++) {
+
+        let index = i;
+        if (i < maxBars / 2) {
+          barScale -= scaleStep;
+        } else if (i >= maxBars / 2) {
+          barScale += scaleStep;
+          if (playMode === `fullscreen`) {
+            index = maxBars - i;
+          }
+        }
+
+        let minFrequency = Math.min.apply(Math, frequencies);
+        let maxFrequency = Math.max.apply(Math, frequencies);
+        if (minFrequency === 0) { minFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { minFrequency = 0; }
+        if (maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
+        if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); }
+        const frequencyScale = Math.round(frequencies[index] - minFrequency);
+
+        const barWidth = BAR_WIDTH;
+        const barHeight = Math.round(frequencyScale / maxFrequency * (barScale * this.canvas.height));
+        let xPos = horizontalPadding;if (i !== 0) { xPos = horizontalPadding + Math.round(BAR_WIDTH * (i * 2)); }
+        const yPos = Math.round(this.canvas.height - barHeight) / verticalDivision;
+
+        this.canvasCtx.fillRect(xPos, yPos, barWidth, barHeight);
+
+      }
+
+      if (playMode === `fullscreen`) {
+
+        const destCanvas = document.querySelector(`.audio-visualisation-top`);
+        const destCtx = destCanvas.getContext(`2d`);
+
+        destCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        destCtx.drawImage(this.canvas, 0, 0);
+
+      }
+
+    }
+
+  }
+
   renderPlayer() {
 
-    const {song, playing, pos/*, isSynched*/} = this.state;
+    const {song, playing, pos, playMode} = this.state;
 
-    const waveOptions = this.unSynchedWaveOptions;
-    /*if (isSynched) {
-      waveOptions = this.synchedWaveOptions;
-    }*/
+    let waveOptions = this.waveOptionsNormal;
+    if (playMode === `fullscreen`) {
+      waveOptions = this.waveOptionsFullscreen;
+    }
 
     if (song.general !== ``) {
 
@@ -354,9 +483,56 @@ export default class AudioPlayer extends Component {
 
   }
 
+  renderAudioVisualisation() {
+
+    const {playMode} = this.state;
+
+    if (playMode === `normal`) {
+
+      const canvasWidth = 20;
+      const canvasHeight = 20;
+
+      return (
+        <div className='visualisation' onClick={() => PlaylistActions.setPlayMode(`fullscreen`)}>
+          <canvas className='audio-visualisation' width={canvasWidth} height={canvasHeight}>&nbsp;</canvas>
+        </div>
+      );
+
+    } else {
+
+      const canvasWidth = window.innerWidth;
+      const canvasHeight = MAX_BAR_HEIGHT;
+
+      return (
+        <div className='visualisation'>
+          <canvas className='audio-visualisation' width={canvasWidth} height={canvasHeight}>&nbsp;</canvas>
+          <canvas className='audio-visualisation-top' width={canvasWidth} height={canvasHeight}>&nbsp;</canvas>
+        </div>
+      );
+
+    }
+
+  }
+
+  renderFullscreenButtons() {
+
+    const {playMode} = this.state;
+
+    if (playMode === `fullscreen`) {
+
+      return (
+        <div>
+          <div className='btn-exit-fullscreen' onClick={() => PlaylistActions.setPlayMode(`normal`)}><span>&nbsp;</span></div>
+        </div>
+      );
+
+    }
+
+  }
+
   render() {
 
-    const {song, playing, currentTimeString, isSynched} = this.state;
+    const {song, playing, currentTimeString, isSynched, playMode} = this.state;
 
     let toggleSynchClasses = `btn-toggle-synch unsynched`;
     if (isSynched) {
@@ -368,8 +544,13 @@ export default class AudioPlayer extends Component {
       togglePlayClasses = `btn-toggle-play pause`;
     }
 
+    let audioPlayerClasses = `audio-player-wrapper play-mode-normal`;
+    if (playMode === `fullscreen`) {
+      audioPlayerClasses = `audio-player-wrapper play-mode-fullscreen`;
+    }
+
     return (
-      <article className='audio-player-wrapper'>
+      <article className={audioPlayerClasses}>
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
         <div className={togglePlayClasses} onClick={() => this.togglePlay(true)}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
@@ -377,6 +558,8 @@ export default class AudioPlayer extends Component {
           {this.renderPlayer()}
         </div>
         <div className='total-duration'><span>{song.general.duration}</span></div>
+        {this.renderAudioVisualisation()}
+        {this.renderFullscreenButtons()}
       </article>
     );
 

@@ -5,6 +5,7 @@ var config = require(__base + "config");
 var _ = require("lodash");
 var CronJob = require('cron').CronJob;
 var path = require('path');
+var fs = require('fs');
 
 // Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
@@ -288,8 +289,6 @@ module.exports = function(timeZone) {
         if(songs){
 
           console.log('-?- [CRON:292] Songs to be checked for removal: ', songs.length,' -?-');
-
-
 
           _.forEach(songs, (song) => {
 

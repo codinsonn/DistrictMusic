@@ -15,7 +15,7 @@ class PlaylistStore extends EventEmitter {
     this.showSuggestionDetail = false;
 
     this.showYoutubeVideo = false;
-    this.videoLayoutMode = `side`;
+    this.playMode = `normal`;
 
     this.currentSuggestion = {};
     this.defaultSuggestion = {id: ``, title: ``};
@@ -310,6 +310,18 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  setPlayMode(playMode) {
+
+    if (playMode !== this.playMode) {
+
+      this.playMode = playMode;
+
+      setTimeout(() => this.emit(`PLAY_MODE_CHANGED`), 1);
+
+    }
+
+  }
+
   resetSearchbar() {
 
     this.currentSuggestion = this.defaultSuggestion;
@@ -380,9 +392,14 @@ class PlaylistStore extends EventEmitter {
       console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
       return this.queue[0];
     } else {
-      //console.log(`Returning default empty song`);
       return this.defaultSong;
     }
+
+  }
+
+  getPlayMode() {
+
+    return this.playMode;
 
   }
 
@@ -432,6 +449,10 @@ class PlaylistStore extends EventEmitter {
 
     case `START_NEXT_SONG_UNSYNCHED`:
       this.startNextSongUnsynched(action.data);
+      break;
+
+    case `SET_PLAY_MODE`:
+      this.setPlayMode(action.data);
       break;
 
     case `PAUSE_PLAY`:

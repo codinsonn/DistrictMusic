@@ -80,3 +80,10 @@ export function startNextSongUnsynched(songId) {
     data: songId
   });
 }
+
+export function setPlayMode(playMode) {
+  dispatcher.dispatch({
+    type: `SET_PLAY_MODE`,
+    data: playMode
+  });
+}

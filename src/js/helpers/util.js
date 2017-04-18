@@ -1,6 +1,7 @@
 //import Request from './../classes/Request';
 
 export const shuffleArray = array => {
+
   let currentIndex = array.length, temporaryValue, randomIndex;
 
   // While there remain elements to shuffle...
@@ -17,4 +18,5 @@ export const shuffleArray = array => {
   }
 
   return array;
+
 };
