@@ -90,17 +90,12 @@ export default class PlaylistQueue extends Component {
           song.uservote = {hasVoted: false};
         }
 
+        const fsPreview = false;
         const key = `${song.general.id}`;
 
-        return <SongSummary {...song} voteMode={voteMode} order={i} key={key} />;
+        return <SongSummary {...song} order={i} key={key} fsPreview={fsPreview} voteMode={voteMode} />;
 
       });
-
-    } else if (this.hasFetchedQueue) {
-
-      return (
-        <div className='no-songs-notif'>No songs currently in queue</div>
-      );
 
     }
 

@@ -38,18 +38,18 @@ class PlaylistStore extends EventEmitter {
 
   updateQueue() {
 
-    console.log(`[PlaylistStore] About to update queue...`);
+    //console.log(`[PlaylistStore] About to update queue...`);
 
     songs.getAllQueued()
       .then(res => {
 
-        console.log(`[PlaylistStore] Queue Response:`, res);
+        //console.log(`[PlaylistStore] Queue Response:`, res);
 
         this.handleQueueChange(res);
 
       }, failData => {
 
-        console.log(`-!- Update queue error -!- \n`, failData, `\n-!-`);
+        //console.log(`-!- Update queue error -!- \n`, failData, `\n-!-`);
 
         if (failData.errors && failData.errors.length > 0) {
           failData.errors.forEach(error => {
@@ -66,12 +66,12 @@ class PlaylistStore extends EventEmitter {
 
     if (UserStore.getLoggedIn() && currentQueue.length >= 1) {
 
-      console.log(`[PlaylistStore] SocketQueue filled, fetching uservotes`);
+      //console.log(`[PlaylistStore] SocketQueue filled, fetching uservotes`);
 
       let i = 0;
       _.forEach(currentQueue, socketQueueItem => {
 
-        console.log(`[PlaylistStore] Checking uservote for`, socketQueueItem.general.id);
+        //console.log(`[PlaylistStore] Checking uservote for`, socketQueueItem.general.id);
 
         _.forEach(this.queue, queItem => {
 
@@ -87,7 +87,7 @@ class PlaylistStore extends EventEmitter {
         i ++;
 
         if (i === currentQueue.length) {
-          console.log(`[PlaylistStore] About to handle queue change`);
+          //console.log(`[PlaylistStore] About to handle queue change`);
           this.handleQueueChange(currentQueue);
         }
 
@@ -95,14 +95,14 @@ class PlaylistStore extends EventEmitter {
 
     } else if (!UserStore.getLoggedIn() && currentQueue.length >= 1) {
 
-      console.log(`[PlaylistStore] SocketQueue filled, but no user logged in`);
+      //console.log(`[PlaylistStore] SocketQueue filled, but no user logged in`);
 
       this.handleQueueChange(currentQueue);
 
     } else {
 
-      console.log(`[PlaylistStore] SocketQueue:`, currentQueue);
-      console.log(`[PlaylistStore] SocketQueue Empty, updating by request`);
+      //console.log(`[PlaylistStore] SocketQueue:`, currentQueue);
+      //console.log(`[PlaylistStore] SocketQueue Empty, updating by request`);
 
       this.updateQueue();
 
@@ -114,7 +114,7 @@ class PlaylistStore extends EventEmitter {
 
     this.queue = currentQueue;
 
-    console.log(`[PlaylistStore] Queue Fetched! (`, UserStore.getIsSpeaker(), `)`, this.queue[0].general.title);
+    //console.log(`[PlaylistStore] Queue Fetched! (`, UserStore.getIsSpeaker(), `)`, this.queue[0].general.title);
 
     if (UserStore.getIsSpeaker() && this.queue[0].general.id !== `` && this.queue[0].general !== this.speakerSong.general) {
 
@@ -137,6 +137,24 @@ class PlaylistStore extends EventEmitter {
       this.updateSpeakerSong(this.queue[0]);
       this.updateUserChosenSong(this.queue[0]);
 
+    }
+
+    // Keep userchosen song up to date
+    if (!UserStore.getSynched()) {
+      _.forEach(currentQueue, queItem => {
+        if (queItem.general.id === this.userChosenSong.general.id) {
+          this.userChosenSong = queItem;
+        }
+      });
+    }
+
+    // Keep speakersong up to date
+    if (UserStore.getSynched()) {
+      _.forEach(currentQueue, queItem => {
+        if (queItem.general.id === this.speakerSong.general.id) {
+          this.speakerSong = queItem;
+        }
+      });
     }
 
     this.emit(`QUEUE_CHANGED`);
@@ -163,7 +181,9 @@ class PlaylistStore extends EventEmitter {
 
       }, failData => {
 
-        console.log(`[Speaker] Failed to end song and play next:`, failData);
+        if (failData) {
+          console.log(`[Speaker] Failed to end song and play next:`, failData);
+        }
 
       })
     ;
@@ -172,41 +192,49 @@ class PlaylistStore extends EventEmitter {
 
   startNextSongUnsynched(currentSongId) {
 
-    let i = 0;
-    let nextSongIndex = 0;
-    _.forEach(this.queue, queItem => {
+    if (!UserStore.getSynched()) {
 
-      if (queItem.general.id === currentSongId && i !== this.queue.length - 1) {
-        nextSongIndex = i + 1;
-      }
+      let i = 0;
+      let nextSongIndex = 0;
+      _.forEach(this.queue, queItem => {
 
-      i ++;
+        if (queItem.general.id === currentSongId && i !== this.queue.length - 1) {
+          nextSongIndex = i + 1;
+        }
 
-      if (i === this.queue.length) {
-        this.setUserChosenSong(this.queue[nextSongIndex]);
-      }
+        i ++;
 
-    });
+        if (i === this.queue.length) {
+          this.setUserChosenSong(this.queue[nextSongIndex]);
+        }
+
+      });
+
+    }
 
   }
 
   startPrevSongUnsynched(currentSongId) {
 
-    let i = 0;
-    let prevSongIndex = this.queue.length - 1;
-    _.forEach(this.queue, queItem => {
+    if (!UserStore.getSynched()) {
 
-      if (queItem.general.id === currentSongId && i !== 0) {
-        prevSongIndex = i - 1;
-      }
+      let i = 0;
+      let prevSongIndex = this.queue.length - 1;
+      _.forEach(this.queue, queItem => {
 
-      i ++;
+        if (queItem.general.id === currentSongId && i !== 0) {
+          prevSongIndex = i - 1;
+        }
 
-      if (i === this.queue.length) {
-        this.setUserChosenSong(this.queue[prevSongIndex]);
-      }
+        i ++;
 
-    });
+        if (i === this.queue.length) {
+          this.setUserChosenSong(this.queue[prevSongIndex]);
+        }
+
+      });
+
+    }
 
   }
 
@@ -217,10 +245,10 @@ class PlaylistStore extends EventEmitter {
       this.speakerConnected = speakerConnected;
 
       if (this.speakerConnected) {
-        console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
+        //console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
         setTimeout(() => this.emit(`SPEAKER_RESET`), 1);
       } else {
-        console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
+        //console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
         if (UserStore.getSynched()) {
           setTimeout(() => this.emit(`SPEAKER_DISCONNECTED`), 1);
         }
@@ -263,7 +291,7 @@ class PlaylistStore extends EventEmitter {
 
     const waitingToSynch = UserStore.getWaitingForPosChange();
     if (waitingToSynch) {
-      console.log(`[SYNCH] waiting to synch:`, waitingToSynch);
+      //console.log(`[SYNCH] waiting to synch:`, waitingToSynch);
       UserStore.confirmSynched();
     }
 
@@ -284,7 +312,7 @@ class PlaylistStore extends EventEmitter {
   setCurrentSuggestion(suggestion) {
 
     this.currentSuggestion = suggestion;
-    console.log(`Suggestion`, this.currentSuggestion);
+    //console.log(`Suggestion`, this.currentSuggestion);
     this.setShowSuggestionDetail(true);
 
   }
@@ -401,15 +429,15 @@ class PlaylistStore extends EventEmitter {
   getSong(synched) {
 
     if (synched && this.speakerSong.general !== ``) {
-      console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
+      //console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== ``) {
-      console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
+      //console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.userChosenSong;
     } else if (this.queue[0]) {
-      console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
+      //console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
       return this.queue[0];
     } else {
       return this.defaultSong;

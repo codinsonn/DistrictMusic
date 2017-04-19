@@ -152,7 +152,6 @@ body {
 }
 
 .btn-toggle-synch span,
-.play-mode-normal .audio-visualisation,
 .btn-exit-fullscreen span {
   top: calc(50% - 9px);
   left: calc(50% - 10px);
@@ -161,10 +160,11 @@ body {
 }
 
 .btn-toggle-play span,
+.play-mode-normal .audio-visualisation,
 .btn-play-next span,
 .btn-play-prev span {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   top: calc(50% - 7px);
   left: calc(50% - 7px);
 }
@@ -249,7 +249,7 @@ body {
   display: block;
   width: 160px;
   height: 160px;
-  top: calc(50vh - 150px);
+  top: calc(50vh - 190px);
   left: calc(50vw - 80px);
   background-image: url(/assets/img/districtMusicLogo.png);
   background-repeat: no-repeat;
@@ -261,7 +261,7 @@ body {
   position: fixed;
   width: 60vw;
   height: 80px;
-  top: calc(50vh + 25px);
+  top: calc(50vh - 15px);
   left: 20vw;
   z-index: 70;
 }
@@ -275,8 +275,13 @@ body {
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 110px);
+  top: calc(50vh + 70px);
   z-index: 80;
+}
+
+.is-speaker .btn-play-next span,
+.is-speaker .btn-play-prev span {
+  cursor: not-allowed;
 }
 
 .play-mode-fullscreen .btn-toggle-synch {
@@ -305,7 +310,7 @@ body {
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 45px);
+  top: calc(50vh + 5px);
   z-index: 80;
 }
 
@@ -385,6 +390,30 @@ body {
 .play-mode-fullscreen .audio-visualisation-top {
   top: 0;
   transform: scaleX(-1) scaleY(-1);
+}
+
+.current-song-wrapper {
+  position: fixed;
+  display: block;
+  top: calc(50vh + 115px);
+}
+
+@media (min-width: 751px) {
+
+  .current-song-wrapper {
+    width: 400px;
+    left: calc(50vw - 200px);
+  }
+
+}
+
+@media (max-width: 750px) {
+
+  .current-song-wrapper {
+    width: 96vw;
+    left: 2vw;
+  }
+
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */

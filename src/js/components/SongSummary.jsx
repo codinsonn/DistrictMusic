@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import _ from 'lodash';
 import moment from 'moment';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
@@ -32,9 +33,25 @@ export default class SongSummary extends Component {
       playing: false
     };
 
+    // -- Non State Vars ----
+    this.fsPreview = props.fsPreview;
+
     // -- Events ----
     this.evtCheckIndicatePlaying = () => this.checkIndicatePlaying();
+    this.evtUpdateSong = () => this.updateSong();
 
+  }
+
+  componentWillMount() {
+    PlaylistStore.on(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    UserStore.on(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
+  }
+
+  componentWillUnmount() {
+    PlaylistStore.removeListener(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    PlaylistStore.removeListener(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
+    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,18 +80,6 @@ export default class SongSummary extends Component {
 
     }
 
-  }
-
-  componentWillMount() {
-    PlaylistStore.on(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
-    PlaylistStore.on(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
-    UserStore.on(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
-  }
-
-  componentWillUnmount() {
-    PlaylistStore.removeListener(`SONG_CHANGED`, this.evtCheckIndicatePlaying);
-    PlaylistStore.removeListener(`SPEAKER_SONG_CHANGED`, this.evtCheckIndicatePlaying);
-    UserStore.removeListener(`SYNCHED_CHANGED`, this.evtCheckIndicatePlaying);
   }
 
   componentDidMount() {
@@ -132,6 +137,10 @@ export default class SongSummary extends Component {
 
   vote(e, type) {
 
+    if (PlaylistStore.getPlayMode() === `fullscreen` && !UserStore.getLoggedIn()) {
+      PlaylistActions.setPlayMode(`normal`);
+    }
+
     if (!UserStore.getIsSpeaker()) {
 
       const $target = e.currentTarget;
@@ -149,26 +158,16 @@ export default class SongSummary extends Component {
           songs.voteSong(id, title, voteType)
             .then(res => {
 
-              let {currentQueueScore} = this.state;
-              currentQueueScore = res.votes.currentQueueScore;
-
-              /*if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
-                const message = `${voteType} successfull!`;
-                NotifActions.addSuccess(message);
-              }*/
-
-              //console.log(`CURRENTQUEUSCORE:`, currentQueueScore);
-
-              PlaylistActions.updateQueue();
-
-              this.setState({currentQueueScore});
+              if (res) {
+                PlaylistActions.updateQueue();
+              }
 
             }, failData => {
 
               // failed to vote
               console.log(`FAILED:`, failData);
 
-              if (this.props.voteMode === `veto` || this.props.voteMode === `super`) {
+              if (failData && this.props.voteMode === `veto` || this.props.voteMode === `super`) {
                 const message = `${voteType} failed!`;
                 NotifActions.addError(message);
               }
@@ -204,9 +203,25 @@ export default class SongSummary extends Component {
 
   }
 
+  renderDuration(duration) {
+
+    if (!this.fsPreview) {
+      return <span className='song-duration'>{duration}</span>;
+    }
+
+  }
+
+  shouldComponentUpdate (prevProps, prevState) {
+    return !_.isEqual(this.state, prevState);
+  }
+
   render() {
 
     const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode, playing} = this.state;
+
+    if (this.fsPreview) {
+      console.log(`[SongSummary:250] Render...`, currentQueueScore, `|`, uservote.hasVoted, `|`, uservote.voteType);
+    }
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
@@ -256,6 +271,7 @@ export default class SongSummary extends Component {
     if (order < 3) {
       if (isPlaying) { tags = `${tags}[PLAYING] `;buttonsEnabled = `disabled`; }
       if (order === 2) tags = `${tags}[UP NEXT] `;
+      if (this.fsPreview) tags = ``;
     }
 
     if (UserStore.getIsSpeaker()) {
@@ -283,7 +299,7 @@ export default class SongSummary extends Component {
           <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `downvote`)}>&nbsp;</span>
         </section>
         <section className='song-thumb' style={thumbStyle}>
-          <span className='song-duration'>{duration}</span>
+          {this.renderDuration(duration)}
         </section>
         <section className='song-info' onClick={() => this.playSongHandler()}>
           <span className={titleClasses}>{tags}{title}</span>
@@ -302,5 +318,6 @@ SongSummary.propTypes = {
   queue: PropTypes.object,
   thumbs: PropTypes.object,
   uservote: PropTypes.object,
-  voteMode: PropTypes.string
+  voteMode: PropTypes.string,
+  fsPreview: PropTypes.bool
 };

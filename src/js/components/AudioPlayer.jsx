@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+import _ from 'lodash';
 import Wavesurfer from 'react-wavesurfer';
+import {SongSummary} from '../components';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import SocketStore from '../stores/SocketStore';
@@ -8,7 +10,6 @@ import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import {curveArrayAtRandom} from '../util/';
 
-const BAR_WIDTH = 4;
 const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
 
 export default class AudioPlayer extends Component {
@@ -54,9 +55,11 @@ export default class AudioPlayer extends Component {
     this.audioContextSet = false;
     this.frequencyBarsDrawn = false;
     this.frequencies = [];
+    this.skipFrames = 2;
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
+    this.evtUpdateUservote = () => this.updateUservote();
     this.evtCheckSongUpdate = () => this.checkSongUpdate();
     this.evtUpdateSpeaker = () => this.updateSpeaker();
     this.evtUpdateSynched = () => this.updateSynched();
@@ -79,6 +82,7 @@ export default class AudioPlayer extends Component {
     PlaylistStore.on(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.on(`PAUSE_PLAY`, this.evtPausePlay);
     PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
+    PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
   componentWillUnmount() {
@@ -92,6 +96,7 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPausePlay);
     PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
+    PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
   checkSongUpdate() {
@@ -108,12 +113,25 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateUservote() {
+
+    let {song} = this.state;
+    const currentSong = PlaylistStore.getSong(UserStore.getSynched());
+
+    if (
+      song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
+      song.uservote !== currentSong.uservote
+    ) {
+      song = currentSong;
+      this.setState({song});
+    }
+
+  }
+
   updateSong(asSynched = false) {
 
     const {isSynched} = this.state;
     let {song, pos, playing} = this.state;
-
-    //console.log(`[AudioPlayer] UPDATING SONG`);
 
     if (asSynched) {
       song = PlaylistStore.getSong(true);
@@ -136,8 +154,6 @@ export default class AudioPlayer extends Component {
 
   updateSpeaker() {
 
-    //console.log(`[updateSpeaker]`);
-
     let {isSpeaker} = this.state;
 
     isSpeaker = UserStore.getIsSpeaker();
@@ -151,8 +167,6 @@ export default class AudioPlayer extends Component {
     let {isSynched} = this.state;
 
     isSynched = UserStore.getSynched();
-
-    //console.log(`[updateSynched] synched:`, isSynched);
 
     if (isSynched) {
       this.synchPosToSpeakerAndPlay();
@@ -182,17 +196,12 @@ export default class AudioPlayer extends Component {
 
   synchPosToSpeakerAndPlay() {
 
-    //console.log(`[synchPosToSpeakerAndPlay]`);
-
     let {playing, pos} = this.state;
 
     const speakerPos = PlaylistStore.getSpeakerPos();
 
     playing = true;
     pos = speakerPos.speakerPos + 0.012 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
-    //pos = speakerPos.speakerPos;
-
-    console.log(`pos`, pos);
 
     this.setState({playing, pos});
 
@@ -200,11 +209,7 @@ export default class AudioPlayer extends Component {
 
   handleReadyToPlay() {
 
-    //console.log(`[handleReadyToPlay]`);
-
     const {playing, song} = this.state;
-
-    console.log(`[AudioPlayer:169] Setting up for audio visualisation...`);
 
     if (!this.audioCtx) {
       this.audioCtx = new AudioContext();
@@ -229,8 +234,6 @@ export default class AudioPlayer extends Component {
   }
 
   pausePlay() {
-
-    //console.log(`pausing play`);
 
     const {playing} = this.state;
 
@@ -265,9 +268,11 @@ export default class AudioPlayer extends Component {
     }
 
     // Update bar visualisations
-    if (this.audioContextSet) {
+    if (this.audioContextSet && this.skipFrames <= 0) {
       this.analyser.getByteFrequencyData(this.frequencyData);
       window.requestAnimationFrame(() => this.updateAudioVisualisation());
+    } else {
+      this.skipFrames--;
     }
 
     this.setState({pos, currentTimeString});
@@ -282,10 +287,10 @@ export default class AudioPlayer extends Component {
     if (isSynched) {
 
       if (!isSpeaker) {
-        console.log(`[unSynch] unsynching listener`);
+        //console.log(`[unSynch] unsynching listener`);
         this.toggleSynched();
       } else {
-        console.log(`[unSynch] removing speaker`);
+        //console.log(`[unSynch] removing speaker`);
         //UserActions.setSpeaker(false);
       }
 
@@ -308,7 +313,6 @@ export default class AudioPlayer extends Component {
         song.socketId = SocketStore.getSocketId();
         PlaylistActions.endSongAndPlayNext(song);
       } else if (!isSynched) {
-        //console.log(`PREVSONGID:`, this.prevSongId);
         setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
       }
 
@@ -325,8 +329,6 @@ export default class AudioPlayer extends Component {
   }
 
   toggleSynched() {
-
-    //console.log(`[toggleSynched]`);
 
     const {isSpeaker, isSynched} = this.state;
     let {song, pos} = this.state;
@@ -345,8 +347,6 @@ export default class AudioPlayer extends Component {
   }
 
   togglePlay(clickTriggered = false) {
-
-    //console.log(`[togglePlay]`);
 
     const {isSynched, isSpeaker} = this.state;
     let {playing} = this.state;
@@ -387,48 +387,51 @@ export default class AudioPlayer extends Component {
 
       this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-      // Button Settings
+      // - Button Settings -
+      let barWidth = 3; // use smaller bars for button mode
       let maxBars = 3; // for normal mode ( => becomes button to enter fullscreen )
       let horizontalPadding = 0; // no padding in normal mode
       let verticalDivision = 2; // makes bars align vetically centered
-      let barScale = 0.6;
+      let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
+      this.skipFrames = 3; // number of frames to skip in button mode
 
-      // Fullscreen Settings
+      // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
-        maxBars = Math.round(this.canvas.width / BAR_WIDTH / 2); // fill the entire width of screen with bars
-        horizontalPadding = BAR_WIDTH / 2; // use some padding in fullscreen mode
+        barWidth = 4; // use larger bars for fullscreen mode
+        maxBars = Math.round(this.canvas.width / barWidth / 2); // fill the entire width of screen with bars
+        horizontalPadding = barWidth / 2; // use some padding in fullscreen mode
         verticalDivision = 1; // makes bars align to bottom
-        barScale = 1;
+        barScale = 1; // start bar height at 100%
         scaleStep = 0.7 / (maxBars / 2); // make slight curve towards middle of the screen
-        this.canvasCtx.fillStyle = `#3C3C3C`;
+        this.canvasCtx.fillStyle = `#3C3C3C`; // dark grey
+        this.skipFrames = 0; // number of frames to skip in fullscreen mode
       }
 
       let frequencies = this.frequencyData.slice(0, maxBars); // only use as much frequency data as bars needed
 
-      for (let i = 0;i < maxBars;i ++) {
+      for (let i = 0;i < maxBars;i ++) { // loop over frequency data
 
         let index = i;
         if (i < maxBars / 2) {
-          barScale -= scaleStep;
+          barScale -= scaleStep; // downscale bars until reaching the center of the screen
         } else if (i >= maxBars / 2) {
-          barScale += scaleStep;
+          barScale += scaleStep; // upscale bars again past the center of the screen
           if (playMode === `fullscreen`) {
-            index = maxBars - i;
+            index = maxBars - i; // mirror the bars at the center of the screen
           }
         }
 
-        let minFrequency = Math.min.apply(Math, frequencies);
-        let maxFrequency = Math.max.apply(Math, frequencies);
+        let minFrequency = Math.min.apply(Math, frequencies); // used for bar scaling
+        let maxFrequency = Math.max.apply(Math, frequencies); // used for bar scaling
         if (minFrequency === 0) { minFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { minFrequency = 0; }
         if (maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
-        if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); }
-        const frequencyScale = Math.round(frequencies[index] - minFrequency);
+        if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); } // make sure the middle bar is always the highest in button mode
+        const frequencyScale = Math.round(frequencies[index] - minFrequency); // main influencer for bar height
 
-        const barWidth = BAR_WIDTH;
         const barHeight = Math.round(frequencyScale / maxFrequency * (barScale * this.canvas.height));
-        let xPos = horizontalPadding;if (i !== 0) { xPos = horizontalPadding + Math.round(BAR_WIDTH * (i * 2)); }
+        let xPos = horizontalPadding;if (i !== 0) { xPos = horizontalPadding + Math.round(barWidth * (i * 2)); }
         const yPos = Math.round(this.canvas.height - barHeight) / verticalDivision;
 
         this.canvasCtx.fillRect(xPos, yPos, barWidth, barHeight);
@@ -475,10 +478,6 @@ export default class AudioPlayer extends Component {
         />
       );
 
-    } else {
-
-      console.log(`[AudioPlayer] No render:`, song);
-
     }
 
   }
@@ -489,8 +488,8 @@ export default class AudioPlayer extends Component {
 
     if (playMode === `normal`) {
 
-      const canvasWidth = 20;
-      const canvasHeight = 20;
+      const canvasWidth = 15;
+      const canvasHeight = 15;
 
       return (
         <div className='visualisation' onClick={() => PlaylistActions.setPlayMode(`fullscreen`)}>
@@ -514,6 +513,35 @@ export default class AudioPlayer extends Component {
 
   }
 
+  renderCurrentSongIndicator() {
+
+    let {song} = this.state;
+
+    song = PlaylistStore.getSong(UserStore.getSynched());
+
+    if (song && song.general.id !== `` && song.queue && song.queue.votes && _.isNumber(song.queue.votes.currentQueueScore)) {
+
+      const isLoggedIn = UserStore.getLoggedIn();
+      const voteMode = UserStore.getVoteMode();
+
+      if (!isLoggedIn) {
+        song.uservote = {hasVoted: false};
+      }
+
+      const order = 1;
+      const key = `fsPreview`;
+      const fsPreview = true;
+
+      return (
+        <div className='current-song-wrapper'>
+          <SongSummary {...song} order={order} key={key} fsPreview={fsPreview} voteMode={voteMode} />
+        </div>
+      );
+
+    }
+
+  }
+
   renderFullscreenExtras() {
 
     const {playMode, song} = this.state;
@@ -528,6 +556,7 @@ export default class AudioPlayer extends Component {
           <div className='btn-play-prev' onClick={() => PlaylistActions.startPrevSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>
           <div className='btn-exit-fullscreen' onClick={() => PlaylistActions.setPlayMode(`normal`)}><span>&nbsp;</span></div>
           <div className='btn-play-next' onClick={() => PlaylistActions.startNextSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>
+          {this.renderCurrentSongIndicator()}
         </div>
       );
 

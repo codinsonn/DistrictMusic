@@ -255,7 +255,6 @@ body {
 }
 
 .btn-toggle-synch span,
-.play-mode-normal .audio-visualisation,
 .btn-exit-fullscreen span {
   top: calc(50% - 9px);
   left: calc(50% - 10px);
@@ -264,10 +263,11 @@ body {
 }
 
 .btn-toggle-play span,
+.play-mode-normal .audio-visualisation,
 .btn-play-next span,
 .btn-play-prev span {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   top: calc(50% - 7px);
   left: calc(50% - 7px);
 }
@@ -325,7 +325,7 @@ body {
 
 .play-mode-normal .visualisation {
   right: 5px;
-  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj48c3ZnIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyMiAyMiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEuNDE0MjE7Ij48Zz48cGF0aCBkPSJNNCwxNGwtMSwwbDAsNWw1LDBsMCwtMWwtNCwwbDAsLTRaIiBzdHlsZT0iZmlsbDojYjNiM2IzO2ZpbGwtcnVsZTpub256ZXJvOyIvPjxwYXRoIGQ9Ik00LDRsNCwwbDAsLTFsLTUsMGwwLDVsMSwwbDAsLTRaIiBzdHlsZT0iZmlsbDojYjNiM2IzO2ZpbGwtcnVsZTpub256ZXJvOyIvPjxwYXRoIGQ9Ik0xOCwxOGwtNCwwbDAsMWw1LDBsMCwtNWwtMSwwbDAsNFoiIHN0eWxlPSJmaWxsOiNiM2IzYjM7ZmlsbC1ydWxlOm5vbnplcm87Ii8+PHBhdGggZD0iTTE0LDNsMCwxbDQsMGwwLDRsMSwwbDAsLTVsLTUsMFoiIHN0eWxlPSJmaWxsOiNiM2IzYjM7ZmlsbC1ydWxlOm5vbnplcm87Ii8+PC9nPjwvc3ZnPg==);
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj48c3ZnIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyMiAyMiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEuNDE0MjE7Ij48Zz48cGF0aCBkPSJNNSwxM2wtMSwwbDAsNWw1LDBsMCwtMWwtNCwwbDAsLTRaIiBzdHlsZT0iZmlsbDojYjNiM2IzO2ZpbGwtcnVsZTpub256ZXJvOyIvPjxwYXRoIGQ9Ik01LDVsNCwwbDAsLTFsLTUsMGwwLDVsMSwwbDAsLTRaIiBzdHlsZT0iZmlsbDojYjNiM2IzO2ZpbGwtcnVsZTpub256ZXJvOyIvPjxwYXRoIGQ9Ik0xNywxN2wtNCwwbDAsMWw1LDBsMCwtNWwtMSwwbDAsNFoiIHN0eWxlPSJmaWxsOiNiM2IzYjM7ZmlsbC1ydWxlOm5vbnplcm87Ii8+PHBhdGggZD0iTTEzLDRsMCwxbDQsMGwwLDRsMSwwbDAsLTVsLTUsMFoiIHN0eWxlPSJmaWxsOiNiM2IzYjM7ZmlsbC1ydWxlOm5vbnplcm87Ii8+PC9nPjwvc3ZnPg==);
 }
 
 .play-mode-normal .visualisation:hover,
@@ -352,7 +352,7 @@ body {
   display: block;
   width: 160px;
   height: 160px;
-  top: calc(50vh - 150px);
+  top: calc(50vh - 190px);
   left: calc(50vw - 80px);
   background-image: url(/assets/img/districtMusicLogo.png);
   background-repeat: no-repeat;
@@ -364,7 +364,7 @@ body {
   position: fixed;
   width: 60vw;
   height: 80px;
-  top: calc(50vh + 25px);
+  top: calc(50vh - 15px);
   left: 20vw;
   z-index: 70;
 }
@@ -378,8 +378,13 @@ body {
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 110px);
+  top: calc(50vh + 70px);
   z-index: 80;
+}
+
+.is-speaker .btn-play-next span,
+.is-speaker .btn-play-prev span {
+  cursor: not-allowed;
 }
 
 .play-mode-fullscreen .btn-toggle-synch {
@@ -408,7 +413,7 @@ body {
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 45px);
+  top: calc(50vh + 5px);
   z-index: 80;
 }
 
@@ -489,6 +494,30 @@ body {
   top: 0;
   -webkit-transform: scaleX(-1) scaleY(-1);
           transform: scaleX(-1) scaleY(-1);
+}
+
+.current-song-wrapper {
+  position: fixed;
+  display: block;
+  top: calc(50vh + 115px);
+}
+
+@media (min-width: 751px) {
+
+  .current-song-wrapper {
+    width: 400px;
+    left: calc(50vw - 200px);
+  }
+
+}
+
+@media (max-width: 750px) {
+
+  .current-song-wrapper {
+    width: 96vw;
+    left: 2vw;
+  }
+
 }
 
 /* --- Playlist Queue -------------------------------------------------------------------- */
