@@ -114,6 +114,8 @@ body {
 .play-mode-normal .btn-toggle-play,
 .play-mode-normal .current-time,
 .play-mode-normal .total-duration,
+.play-mode-normal .btn-play-next,
+.play-mode-normal .btn-play-prev,
 .play-mode-normal .visualisation {
   position: absolute;
   display: block;
@@ -133,7 +135,9 @@ body {
 .btn-toggle-synch span,
 .btn-toggle-play span,
 .play-mode-normal .audio-visualisation,
-.btn-exit-fullscreen span {
+.btn-exit-fullscreen span,
+.btn-play-next span,
+.btn-play-prev span {
   position: absolute;
   display: block;
   background-repeat: no-repeat;
@@ -156,7 +160,9 @@ body {
   height: 20px;
 }
 
-.btn-toggle-play span {
+.btn-toggle-play span,
+.btn-play-next span,
+.btn-play-prev span {
   width: 14px;
   height: 14px;
   top: calc(50% - 7px);
@@ -215,15 +221,20 @@ body {
 }
 
 .play-mode-normal .visualisation {
-  right: 45px;
+  right: 5px;
+  background-image: url(../assets/svg/fullScreenIndicator.svg);
 }
 
-.play-mode-normal .visualisation:hover {
-  background-image: url(../assets/svg/fullScreen.svg);
+.play-mode-normal .visualisation:hover,
+.play-mode-normal .visualisation {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
   cursor: pointer;
+}
+
+.play-mode-normal .visualisation:hover {
+  background-image: url(../assets/svg/fullScreen.svg);
 }
 
 /* --- Audio Player : Fullscreen --------------------------------------------------------- */
@@ -233,28 +244,43 @@ body {
   background-color: white;
 }
 
+.play-mode-fullscreen .district-music-logo {
+  position: fixed;
+  display: block;
+  width: 160px;
+  height: 160px;
+  top: calc(50vh - 150px);
+  left: calc(50vw - 80px);
+  background-image: url(/assets/img/districtMusicLogo.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
 .play-mode-fullscreen .wave-pos-wrapper {
   position: fixed;
   width: 60vw;
   height: 80px;
-  top: calc(50vh + 80px);
+  top: calc(50vh + 25px);
   left: 20vw;
   z-index: 70;
 }
 
 .play-mode-fullscreen .btn-toggle-synch,
 .play-mode-fullscreen .btn-toggle-play,
-.play-mode-fullscreen .btn-exit-fullscreen {
+.play-mode-fullscreen .btn-exit-fullscreen,
+.play-mode-fullscreen .btn-play-next,
+.play-mode-fullscreen .btn-play-prev {
   position: fixed;
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 170px);
+  top: calc(50vh + 110px);
   z-index: 80;
 }
 
 .play-mode-fullscreen .btn-toggle-synch {
-  left: calc(50vw - 60px);
+  left: calc(50vw - 100px);
 }
 
 .play-mode-fullscreen .btn-toggle-play {
@@ -262,7 +288,15 @@ body {
 }
 
 .play-mode-fullscreen .btn-exit-fullscreen {
+  right: calc(50vw - 100px);
+}
+
+.play-mode-fullscreen .btn-play-next {
   right: calc(50vw - 60px);
+}
+
+.play-mode-fullscreen .btn-play-prev {
+  left: calc(50vw - 60px);
 }
 
 .play-mode-fullscreen .current-time,
@@ -271,7 +305,7 @@ body {
   display: block;
   width: 40px;
   height: 40px;
-  top: calc(50vh + 100px);
+  top: calc(50vh + 45px);
   z-index: 80;
 }
 
@@ -314,6 +348,14 @@ body {
 
 .play-mode-fullscreen .btn-exit-fullscreen span {
   background-image: url(../assets/svg/exitFullScreen.svg);
+}
+
+.play-mode-fullscreen .btn-play-next span {
+  background-image: url(../assets/svg/playNextButton.svg);
+}
+
+.play-mode-fullscreen .btn-play-prev span {
+  background-image: url(../assets/svg/playPrevButton.svg);
 }
 
 .play-mode-fullscreen .visualisation {
@@ -722,7 +764,7 @@ body {
   text-align: center;
   font-family: Roboto, sans-serif;
   font-size: 2em;
-  z-index: 70;
+  z-index: 50;
 }
 
 .search-query[disabled] {
@@ -742,7 +784,7 @@ body {
   background-color: var(--gainsboro);
   overflow: scroll;
   opacity: 0;
-  z-index: 60;
+  z-index: 51;
 }
 
 .suggestions-wrapper.show {

@@ -170,13 +170,13 @@ class PlaylistStore extends EventEmitter {
 
   }
 
-  startNextSongUnsynched(prevSongId) {
+  startNextSongUnsynched(currentSongId) {
 
     let i = 0;
     let nextSongIndex = 0;
     _.forEach(this.queue, queItem => {
 
-      if (queItem.general.id === prevSongId && i !== this.queue.length - 1) {
+      if (queItem.general.id === currentSongId && i !== this.queue.length - 1) {
         nextSongIndex = i + 1;
       }
 
@@ -184,6 +184,26 @@ class PlaylistStore extends EventEmitter {
 
       if (i === this.queue.length) {
         this.setUserChosenSong(this.queue[nextSongIndex]);
+      }
+
+    });
+
+  }
+
+  startPrevSongUnsynched(currentSongId) {
+
+    let i = 0;
+    let prevSongIndex = this.queue.length - 1;
+    _.forEach(this.queue, queItem => {
+
+      if (queItem.general.id === currentSongId && i !== 0) {
+        prevSongIndex = i - 1;
+      }
+
+      i ++;
+
+      if (i === this.queue.length) {
+        this.setUserChosenSong(this.queue[prevSongIndex]);
       }
 
     });
@@ -449,6 +469,10 @@ class PlaylistStore extends EventEmitter {
 
     case `START_NEXT_SONG_UNSYNCHED`:
       this.startNextSongUnsynched(action.data);
+      break;
+
+    case `START_PREV_SONG_UNSYNCHED`:
+      this.startPrevSongUnsynched(action.data);
       break;
 
     case `SET_PLAY_MODE`:

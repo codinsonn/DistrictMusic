@@ -514,15 +514,20 @@ export default class AudioPlayer extends Component {
 
   }
 
-  renderFullscreenButtons() {
+  renderFullscreenExtras() {
 
-    const {playMode} = this.state;
+    const {playMode, song} = this.state;
 
     if (playMode === `fullscreen`) {
 
+      this.prevSongId = song.general.id;
+
       return (
         <div>
+          <div className='district-music-logo'>&nbsp;</div>
+          <div className='btn-play-prev' onClick={() => PlaylistActions.startPrevSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>
           <div className='btn-exit-fullscreen' onClick={() => PlaylistActions.setPlayMode(`normal`)}><span>&nbsp;</span></div>
+          <div className='btn-play-next' onClick={() => PlaylistActions.startNextSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>
         </div>
       );
 
@@ -559,7 +564,7 @@ export default class AudioPlayer extends Component {
         </div>
         <div className='total-duration'><span>{song.general.duration}</span></div>
         {this.renderAudioVisualisation()}
-        {this.renderFullscreenButtons()}
+        {this.renderFullscreenExtras()}
       </article>
     );
 

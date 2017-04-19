@@ -81,6 +81,13 @@ export function startNextSongUnsynched(songId) {
   });
 }
 
+export function startPrevSongUnsynched(songId) {
+  dispatcher.dispatch({
+    type: `START_PREV_SONG_UNSYNCHED`,
+    data: songId
+  });
+}
+
 export function setPlayMode(playMode) {
   dispatcher.dispatch({
     type: `SET_PLAY_MODE`,
