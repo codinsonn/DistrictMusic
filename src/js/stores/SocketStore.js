@@ -45,7 +45,7 @@ class SocketStore extends EventEmitter {
 
   setSocketId(socketId) {
 
-    //console.log(`[SocketStore] Connected to socket:`, socketId);
+    console.log(`[SocketStore] Connected to socket:`, socketId);
 
     this.socketId = socketId;
 

@@ -240,15 +240,17 @@ class PlaylistStore extends EventEmitter {
 
   updateSpeakerConnected(speakerConnected) {
 
+    console.log(`[PlaylistStore:243] Speaker changed! connected:`, speakerConnected, `(updateSpeakerConnected)`);
+
     if (speakerConnected !== this.speakerConnected) {
 
       this.speakerConnected = speakerConnected;
 
       if (this.speakerConnected) {
-        //console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
+        console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
         setTimeout(() => this.emit(`SPEAKER_RESET`), 1);
       } else {
-        //console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
+        console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
         if (UserStore.getSynched()) {
           setTimeout(() => this.emit(`SPEAKER_DISCONNECTED`), 1);
         }
@@ -285,13 +287,16 @@ class PlaylistStore extends EventEmitter {
 
   synchPosToSpeaker(speakerPos) {
 
-    this.speakerConnected = true;
+    console.log(`[PlaylistStore:288] Speaker pos updated!`, speakerPos.speakerPos, `(synchPosToSpeaker)`);
+
+    //this.speakerConnected = true;
+    this.updateSpeakerConnected(true);
     this.lastSpeakerPosUpdate = speakerPos.posUpdatedDate;
     this.speakerPos = speakerPos.speakerPos;
 
     const waitingToSynch = UserStore.getWaitingForPosChange();
     if (waitingToSynch) {
-      //console.log(`[SYNCH] waiting to synch:`, waitingToSynch);
+      console.log(`[PlaylistStore:295] Waiting to synch...`, waitingToSynch, `(synchPosToSpeaker)`);
       UserStore.confirmSynched();
     }
 
@@ -330,6 +335,7 @@ class PlaylistStore extends EventEmitter {
     this.audioPos = audioPos;
 
     if (sendSocketEvent && UserStore.getIsSpeaker()) {
+      console.log(`[PlaylistStore] Sending Speaker Pos Update`);
       const posData = {speakerPos: this.audioPos, posUpdatedDate: posUpdatedDate};
       SocketStore.emitSpeakerPos(posData);
     }

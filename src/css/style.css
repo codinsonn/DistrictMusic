@@ -477,6 +477,18 @@ body {
   top: calc(50vh + 115px);
 }
 
+.play-mode-fullscreen .song-title {
+  top: 6px;
+  left: 6px;
+  font-size: 1.9em;
+}
+
+.play-mode-fullscreen .submitter-info {
+  bottom: 6px;
+  left: 6px;
+  font-size: 1.2em;
+}
+
 @media (min-width: 751px) {
 
   .current-song-wrapper {

@@ -1,7 +1,6 @@
 // Helpers
 var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 var EmitHelper = require(__base + "app/helpers/io/emitter");
-var Helpers = require("./helpers");
 
 module.exports = function(socket, event, data) {
 

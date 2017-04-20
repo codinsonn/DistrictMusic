@@ -70,6 +70,8 @@ class UserStore extends EventEmitter {
         this.isLoggedIn = true;
         this.userProfile = res;
 
+        console.log(`[UserStore:73] Got userSession! (setProfileSession)`);
+
         const socket = SocketStore.getSocket();
         socket.emit(`SET_SESSION_SOCKET_ID`);
 
@@ -86,6 +88,8 @@ class UserStore extends EventEmitter {
 
   setSynched(synched) {
 
+    console.log(`[UserStore:89] Attempting to synch... (setSynched)`);
+
     if (synched !== this.isSynched) {
 
       if (synched) {
@@ -96,13 +100,19 @@ class UserStore extends EventEmitter {
 
           this.confirmSynched();
 
-        } else if (!this.isSpeaker && speakerConnected && !this.waitingForPosChange) {
+        } else if (speakerConnected && !this.waitingForPosChange) {
 
           PlaylistStore.updateSpeakerSong(true);
+
+          console.log(`[UserStore:109] Speaker connected...?! (setSynched)`);
+          console.log(`[UserStore:110] Logs ( speakerConnected:`, speakerConnected, `| waitingForPosChange:`, this.waitingForPosChange, `)`);
 
           this.waitingForPosChange = true;
 
         } else {
+
+          console.log(`[UserStore:109] Speaker not connected...? (setSynched)`);
+          console.log(`[UserStore:110] Logs ( speakerConnected:`, speakerConnected, `| waitingForPosChange:`, this.waitingForPosChange, `)`);
 
           setTimeout(() => this.emit(`SPEAKER_NOT_CONNECTED`), 10);
 

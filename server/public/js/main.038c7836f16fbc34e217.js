@@ -5685,6 +5685,8 @@ var UserStore = function (_EventEmitter) {
       _this3.isLoggedIn = true;
       _this3.userProfile = res;
 
+      console.log('[UserStore:73] Got userSession! (setProfileSession)');
+
       var socket = __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].getSocket();
       socket.emit('SET_SESSION_SOCKET_ID');
 
@@ -5698,6 +5700,8 @@ var UserStore = function (_EventEmitter) {
   UserStore.prototype.setSynched = function setSynched(synched) {
     var _this4 = this;
 
+    console.log('[UserStore:89] Attempting to synch... (setSynched)');
+
     if (synched !== this.isSynched) {
 
       if (synched) {
@@ -5707,12 +5711,18 @@ var UserStore = function (_EventEmitter) {
         if (this.isSpeaker) {
 
           this.confirmSynched();
-        } else if (!this.isSpeaker && speakerConnected && !this.waitingForPosChange) {
+        } else if (speakerConnected && !this.waitingForPosChange) {
 
           __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateSpeakerSong(true);
 
+          console.log('[UserStore:109] Speaker connected...?! (setSynched)');
+          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
+
           this.waitingForPosChange = true;
         } else {
+
+          console.log('[UserStore:109] Speaker not connected...? (setSynched)');
+          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
 
           setTimeout(function () {
             return _this4.emit('SPEAKER_NOT_CONNECTED');
@@ -6800,17 +6810,19 @@ var PlaylistStore = function (_EventEmitter) {
   PlaylistStore.prototype.updateSpeakerConnected = function updateSpeakerConnected(speakerConnected) {
     var _this7 = this;
 
+    console.log('[PlaylistStore:243] Speaker changed! connected:', speakerConnected, '(updateSpeakerConnected)');
+
     if (speakerConnected !== this.speakerConnected) {
 
       this.speakerConnected = speakerConnected;
 
       if (this.speakerConnected) {
-        //console.log(`[SPEAKER] Updated connected speaker`, this.speakerConnected);
+        console.log('[SPEAKER] Updated connected speaker', this.speakerConnected);
         setTimeout(function () {
           return _this7.emit('SPEAKER_RESET');
         }, 1);
       } else {
-        //console.log(`[SPEAKER] Speaker disconnected`, this.speakerConnected);
+        console.log('[SPEAKER] Speaker disconnected', this.speakerConnected);
         if (__WEBPACK_IMPORTED_MODULE_4__stores_UserStore__["a" /* default */].getSynched()) {
           setTimeout(function () {
             return _this7.emit('SPEAKER_DISCONNECTED');
@@ -6855,13 +6867,16 @@ var PlaylistStore = function (_EventEmitter) {
 
   PlaylistStore.prototype.synchPosToSpeaker = function synchPosToSpeaker(speakerPos) {
 
-    this.speakerConnected = true;
+    console.log('[PlaylistStore:288] Speaker pos updated!', speakerPos.speakerPos, '(synchPosToSpeaker)');
+
+    //this.speakerConnected = true;
+    this.updateSpeakerConnected(true);
     this.lastSpeakerPosUpdate = speakerPos.posUpdatedDate;
     this.speakerPos = speakerPos.speakerPos;
 
     var waitingToSynch = __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__["a" /* default */].getWaitingForPosChange();
     if (waitingToSynch) {
-      //console.log(`[SYNCH] waiting to synch:`, waitingToSynch);
+      console.log('[PlaylistStore:295] Waiting to synch...', waitingToSynch, '(synchPosToSpeaker)');
       __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__["a" /* default */].confirmSynched();
     }
   };
@@ -6903,6 +6918,7 @@ var PlaylistStore = function (_EventEmitter) {
     this.audioPos = audioPos;
 
     if (sendSocketEvent && __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__["a" /* default */].getIsSpeaker()) {
+      console.log('[PlaylistStore] Sending Speaker Pos Update');
       var posData = { speakerPos: this.audioPos, posUpdatedDate: posUpdatedDate };
       __WEBPACK_IMPORTED_MODULE_5__stores_SocketStore__["a" /* default */].emitSpeakerPos(posData);
     }
@@ -8329,12 +8345,12 @@ module.exports = function(module) {
 /* harmony export (immutable) */ __webpack_exports__["f"] = updateQueue;
 /* harmony export (immutable) */ __webpack_exports__["k"] = pausePlay;
 /* harmony export (immutable) */ __webpack_exports__["g"] = setSong;
-/* harmony export (immutable) */ __webpack_exports__["a"] = setAudioPos;
+/* harmony export (immutable) */ __webpack_exports__["b"] = setAudioPos;
 /* unused harmony export setVideoPos */
-/* harmony export (immutable) */ __webpack_exports__["b"] = endSongAndPlayNext;
-/* harmony export (immutable) */ __webpack_exports__["c"] = startNextSongUnsynched;
+/* harmony export (immutable) */ __webpack_exports__["c"] = endSongAndPlayNext;
+/* harmony export (immutable) */ __webpack_exports__["d"] = startNextSongUnsynched;
 /* harmony export (immutable) */ __webpack_exports__["e"] = startPrevSongUnsynched;
-/* harmony export (immutable) */ __webpack_exports__["d"] = setPlayMode;
+/* harmony export (immutable) */ __webpack_exports__["a"] = setPlayMode;
 
 
 function showSearchModal() {
@@ -9970,8 +9986,9 @@ var SocketStore = function (_EventEmitter) {
     _this.socket.on('SPEAKER_UNSET', function () {
       return __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].updateSpeakerConnected(false);
     });
+    //this.socket.on(`SPEAKER_POS_UPDATED`, speakerPos => PlaylistStore.synchPosToSpeaker(speakerPos));
     _this.socket.on('SPEAKER_POS_UPDATED', function (speakerPos) {
-      return __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].synchPosToSpeaker(speakerPos);
+      console.log('RECEIVED');__WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].synchPosToSpeaker(speakerPos);
     });
 
     return _this;
@@ -9990,7 +10007,7 @@ var SocketStore = function (_EventEmitter) {
 
   SocketStore.prototype.setSocketId = function setSocketId(socketId) {
 
-    //console.log(`[SocketStore] Connected to socket:`, socketId);
+    console.log('[SocketStore] Connected to socket:', socketId);
 
     this.socketId = socketId;
   };
@@ -50383,6 +50400,7 @@ var AudioPlayer = function (_Component) {
     _this.frequencyBarsDrawn = false;
     _this.frequencies = [];
     _this.skipFrames = 2;
+    _this.changingPlayModes = false;
 
     // -- events ----
     _this.evtUpdateSong = function () {
@@ -50414,6 +50432,13 @@ var AudioPlayer = function (_Component) {
     };
     _this.evtUpdatePlayMode = function () {
       return _this.updatePlayMode();
+    };
+
+    window.onfocus = function () {
+      _this.isActive = true;
+    };
+    window.onblur = function () {
+      _this.isActive = false;
     };
 
     return _this;
@@ -50489,6 +50514,7 @@ var AudioPlayer = function (_Component) {
 
 
     if (asSynched) {
+      playing = true;
       song = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getSong(true);
     } else {
       song = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getSong(isSynched);
@@ -50497,6 +50523,8 @@ var AudioPlayer = function (_Component) {
     if (!isSynched) {
       playing = false;
       pos = 0;
+    } else {
+      playing = true;
     }
 
     this.songHasStarted = false;
@@ -50507,10 +50535,18 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updateSpeaker = function updateSpeaker() {
+    var _this3 = this;
+
     var isSpeaker = this.state.isSpeaker;
 
 
     isSpeaker = __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getIsSpeaker();
+
+    if (isSpeaker && this.audioContextSet) {
+      setTimeout(function () {
+        _this3.setPlayMode('fullscreen');
+      }, 10);
+    }
 
     this.setState({ isSpeaker: isSpeaker });
   };
@@ -50529,7 +50565,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updatePlayMode = function updatePlayMode() {
-    var _this3 = this;
+    var _this4 = this;
 
     var _state3 = this.state,
         song = _state3.song,
@@ -50541,10 +50577,10 @@ var AudioPlayer = function (_Component) {
 
     // To reset waveOptions
     setTimeout(function () {
-      var song = _this3.state.song;
+      var song = _this4.state.song;
 
       song = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getSong(__WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getSynched());
-      _this3.setState({ song: song });
+      _this4.setState({ song: song });
     }, 1);
 
     this.setState({ song: song, playMode: playMode });
@@ -50565,9 +50601,12 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handleReadyToPlay = function handleReadyToPlay() {
+    var _this5 = this;
+
     var _state5 = this.state,
         playing = _state5.playing,
-        song = _state5.song;
+        song = _state5.song,
+        isSpeaker = _state5.isSpeaker;
 
 
     if (this.audioContextSupported && !this.audioCtx) {
@@ -50577,8 +50616,14 @@ var AudioPlayer = function (_Component) {
       this.audioCtx = new AudioContext() || window.webkitAudioContext || false;
 
       if (!this.audioCtx) {
+
         this.audioContextSupported = false;
-        __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__["a" /* addError */]('Audio Context not supported by browser');
+        //NotifActions.addError(`Audio Context not supported by browser`);
+      } else if (isSpeaker) {
+
+        setTimeout(function () {
+          _this5.setPlayMode('fullscreen');
+        }, 10);
       }
     }
 
@@ -50594,10 +50639,20 @@ var AudioPlayer = function (_Component) {
       this.audioContextSet = true;
     }
 
+    // Start unsynching again
+    if (this.changingPlayModes) {
+      setTimeout(function () {
+        console.log('[AudioPlayer] Changed Play Mode');
+        _this5.changingPlayModes = false;
+      }, 100);
+    }
+
     if (playing) {
       // x2 to trigger waveform play
       this.togglePlay(false);
-      this.togglePlay(false);
+      setTimeout(function () {
+        _this5.togglePlay(false);
+      }, 1);
     } else if (song.general !== '') {
       this.togglePlay(false);
     }
@@ -50612,8 +50667,14 @@ var AudioPlayer = function (_Component) {
     }
   };
 
+  AudioPlayer.prototype.setPlayMode = function setPlayMode(playMode) {
+
+    this.changingPlayModes = true;
+    __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["a" /* setPlayMode */](playMode);
+  };
+
   AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
-    var _this4 = this;
+    var _this6 = this;
 
     var _state6 = this.state,
         playing = _state6.playing,
@@ -50640,25 +50701,33 @@ var AudioPlayer = function (_Component) {
 
     if (playing) {
       setTimeout(function () {
-        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["a" /* setAudioPos */](pos, sendSocketEvent, new Date().getTime());
-      }, 10);
+        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["b" /* setAudioPos */](pos, sendSocketEvent, new Date().getTime());
+      }, 1);
     }
 
-    // Update bar visualisations
-    if (this.audioContextSupported && this.audioContextSet && this.skipFrames <= 0) {
-      // Base audio visualisation on frequencies
-      this.analyser.getByteFrequencyData(this.frequencyData);
-      window.requestAnimationFrame(function () {
-        return _this4.updateAudioVisualisation();
-      });
-    } else if (!this.audioContextSupported && this.skipFrames <= 0) {
-      // Fake the audio frequencies for visual effect
-      window.requestAnimationFrame(function () {
-        return _this4.updateAudioVisualisation();
-      });
-    } else if (this.skipFrames > 0) {
-      // Skip this frame for now
-      this.skipFrames--;
+    var showAnimation = true;
+    if (isSpeaker && !this.active) {
+      showAnimation = false;
+    }
+
+    if (showAnimation) {
+      // Update bar visualisations
+
+      if (this.audioContextSupported && this.audioContextSet && this.skipFrames <= 0) {
+        // Base audio visualisation on frequencies
+        this.analyser.getByteFrequencyData(this.frequencyData);
+        window.requestAnimationFrame(function () {
+          return _this6.updateAudioVisualisation();
+        });
+      } else if (!this.audioContextSupported && this.skipFrames <= 0) {
+        // Fake the audio frequencies for visual effect
+        window.requestAnimationFrame(function () {
+          return _this6.updateAudioVisualisation();
+        });
+      } else if (this.skipFrames > 0) {
+        // Skip this frame for now
+        this.skipFrames--;
+      }
     }
 
     this.setState({ pos: pos, currentTimeString: currentTimeString });
@@ -50673,18 +50742,18 @@ var AudioPlayer = function (_Component) {
 
     if (isSynched) {
 
-      if (!isSpeaker) {
-        //console.log(`[unSynch] unsynching listener`);
+      if (!isSpeaker && !this.changingPlayModes) {
+        console.log('[unSynch] unsynching listener');
         this.toggleSynched();
-      } else {
-        //console.log(`[unSynch] removing speaker`);
+      } else if (!this.changingPlayModes) {
+        console.log('[unSynch] removing speaker');
         //UserActions.setSpeaker(false);
       }
     }
   };
 
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
-    var _this5 = this;
+    var _this7 = this;
 
     if (this.songHasStarted) {
       var _state9 = this.state,
@@ -50700,10 +50769,10 @@ var AudioPlayer = function (_Component) {
 
       if (isSpeaker) {
         song.socketId = __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__["a" /* default */].getSocketId();
-        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["b" /* endSongAndPlayNext */](song);
+        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["c" /* endSongAndPlayNext */](song);
       } else if (!isSynched) {
         setTimeout(function () {
-          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["c" /* startNextSongUnsynched */](_this5.prevSongId);
+          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* startNextSongUnsynched */](_this7.prevSongId);
         }, 100);
       }
 
@@ -50718,7 +50787,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this6 = this;
+    var _this8 = this;
 
     var _state11 = this.state,
         isSpeaker = _state11.isSpeaker,
@@ -50729,6 +50798,7 @@ var AudioPlayer = function (_Component) {
 
 
     if (!isSpeaker) {
+      console.log('[AudioPlayer:361] Attempting to synch... (toggleSynched)');
       __WEBPACK_IMPORTED_MODULE_8__actions_UserActions__["c" /* setSynched */](!isSynched);
     }
 
@@ -50736,7 +50806,7 @@ var AudioPlayer = function (_Component) {
       song = { general: '' };
       pos = 0;
       setTimeout(function () {
-        return _this6.updateSong(true);
+        return _this8.updateSong(true);
       }, 10);
       this.setState({ song: song, pos: pos });
     }
@@ -50744,6 +50814,10 @@ var AudioPlayer = function (_Component) {
 
   AudioPlayer.prototype.togglePlay = function togglePlay() {
     var clickTriggered = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+
+    console.log('[TOGGLEPLAY]', !playing);
+
     var _state13 = this.state,
         isSynched = _state13.isSynched,
         isSpeaker = _state13.isSpeaker;
@@ -50768,82 +50842,47 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.showNowPlaying = function showNowPlaying() {
-    var song = this.state.song;
+    var _state14 = this.state,
+        song = _state14.song,
+        playMode = _state14.playMode;
 
 
-    if (document.querySelector('.notification').className.indexOf('hide') > -1) {
+    if (playMode === 'normal' && document.querySelector('.notification').className.indexOf('hide') > -1) {
       __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__["c" /* addNotification */]('Now playing: ' + song.general.title);
     }
   };
 
   AudioPlayer.prototype.updateLogoAudioVisualisation = function updateLogoAudioVisualisation(frequencies, minFrequency, maxFrequency) {
 
-    var sortedFrequencies = frequencies.slice();
+    var sortedFrequencies = frequencies.slice(); // copy array
     sortedFrequencies.sort();
     var medFrequency = sortedFrequencies[frequencies.length / 2];
 
-    var largeCircleScale = maxFrequency / 220;if (largeCircleScale >= 1) {
-      largeCircleScale = 1;
+    var maxFrequencyScale = maxFrequency / 225;
+    var medFrequencyScale = medFrequency / 140;if (medFrequencyScale > 1.6) {
+      medFrequencyScale = 1.3;
     }
-    var mediumCircleScale = medFrequency / 120;if (mediumCircleScale >= 1) {
-      mediumCircleScale = 1;
-    }
-    var smallCircleScale = minFrequency / 5;if (smallCircleScale >= 1) {
-      smallCircleScale = 1;
+    var minFrequencyScale = minFrequency / 8;if (minFrequencyScale > 1.5) {
+      minFrequencyScale = 1.3;
     }
 
-    /*const largeCircleRadius = Math.round(largeCircleScale * 12) + 23;
-    const mediumCircleRadius = Math.round(mediumCircleScale * 8) + 10;
-    const smallCircleRadius = Math.round(smallCircleScale * 8) + 10;
-     const largeCircleHorPos = 80 - Math.round((largeCircleRadius - 30) / 2 + 70);
-    const mediumCircleHorPos = 80 - Math.round((mediumCircleRadius - 14) / 2 + 62);
-    const smallCircleHorPos = 80 - Math.round((smallCircleRadius - 14) / 2 + 65);
-     const largeCircleTopPos = 80 + Math.round((largeCircleRadius - 30) / 2 + 26);
-    const mediumCircleTopPos = 80 + Math.round((mediumCircleRadius - 14) / 2 + 34);
-    const smallCircleTopPos = 80 + Math.round((smallCircleRadius - 14) / 2 + 8);
-     /*const largeCircleOffsetHor = Math.round(largeCircleScale * 6) + 67;
-    const mediumCircleOffsetHor = Math.round(mediumCircleScale * 4) + 58;
-    const smallCircleOffsetHor = Math.round(smallCircleScale * 4) + 61;
-     const largeCircleHorPos = 80 - largeCircleOffsetHor;
-    const mediumCircleHorPos = 80 - mediumCircleOffsetHor;
-    const smallCircleHorPos = 80 - smallCircleOffsetHor;
-     const largeCircleTopPos = 80 + (Math.round(largeCircleScale * 6) + 23);
-    const mediumCircleTopPos = 80 + (Math.round(mediumCircleScale * 4) + 32);
-    const smallCircleTopPos = 80 + (Math.round(smallCircleScale * 4) + 6);*/
+    if (maxFrequency > 250) {
+      maxFrequencyScale = medFrequency / 140;
+    }
+    if (maxFrequencyScale < 0.4) {
+      maxFrequencyScale = 1;
+    }
 
-    //console.log(`freqRad (`, largeCircleRadius, `|`, mediumCircleRadius, `|`, smallCircleRadius, `)`);
+    var largeCircleScale = 0.65 + 0.35 * maxFrequencyScale;
+    var mediumCircleScale = 0.85 + 0.15 * minFrequencyScale;
+    var smallCircleScale = 0.9 + 0.1 * medFrequencyScale;
 
-    document.querySelector('.audiodisc-large-left').style.width = largeCircleRadius + 'px';
-    document.querySelector('.audiodisc-large-right').style.width = largeCircleRadius + 'px';
-    document.querySelector('.audiodisc-medium-left').style.width = mediumCircleRadius + 'px';
-    document.querySelector('.audiodisc-medium-right').style.width = mediumCircleRadius + 'px';
-    document.querySelector('.audiodisc-small-left').style.width = smallCircleRadius + 'px';
-    document.querySelector('.audiodisc-small-right').style.width = smallCircleRadius + 'px';
-
-    /*document.querySelector(`.audiodisc-large-left`).style.width = `${largeCircleRadius}px`;
-    document.querySelector(`.audiodisc-large-left`).style.height = `${largeCircleRadius}px`;
-    document.querySelector(`.audiodisc-large-left`).style.top = `${largeCircleTopPos}px`;
-    document.querySelector(`.audiodisc-large-left`).style.left = `${largeCircleHorPos}px`;
-     document.querySelector(`.audiodisc-large-right`).style.width = `${largeCircleRadius}px`;
-    document.querySelector(`.audiodisc-large-right`).style.height = `${largeCircleRadius}px`;
-    document.querySelector(`.audiodisc-large-right`).style.top = `${largeCircleTopPos}px`;
-    document.querySelector(`.audiodisc-large-right`).style.right = `${largeCircleHorPos}px`;
-     document.querySelector(`.audiodisc-medium-left`).style.width = `${mediumCircleRadius}px`;
-    document.querySelector(`.audiodisc-medium-left`).style.height = `${mediumCircleRadius}px`;
-    document.querySelector(`.audiodisc-medium-left`).style.top = `${mediumCircleTopPos}px`;
-    document.querySelector(`.audiodisc-medium-left`).style.left = `${mediumCircleHorPos}px`;
-     document.querySelector(`.audiodisc-medium-right`).style.width = `${mediumCircleRadius}px`;
-    document.querySelector(`.audiodisc-medium-right`).style.height = `${mediumCircleRadius}px`;
-    document.querySelector(`.audiodisc-medium-right`).style.top = `${mediumCircleTopPos}px`;
-    document.querySelector(`.audiodisc-medium-right`).style.right = `${mediumCircleHorPos}px`;
-     document.querySelector(`.audiodisc-small-left`).style.width = `${smallCircleRadius}px`;
-    document.querySelector(`.audiodisc-small-left`).style.height = `${smallCircleRadius}px`;
-    document.querySelector(`.audiodisc-small-left`).style.top = `${smallCircleTopPos}px`;
-    document.querySelector(`.audiodisc-small-left`).style.left = `${smallCircleHorPos}px`;
-     document.querySelector(`.audiodisc-small-right`).style.width = `${smallCircleRadius}px`;
-    document.querySelector(`.audiodisc-small-right`).style.height = `${smallCircleRadius}px`;
-    document.querySelector(`.audiodisc-small-right`).style.top = `${smallCircleTopPos}px`;
-    document.querySelector(`.audiodisc-small-right`).style.right = `${smallCircleHorPos}px`;*/
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-large-left'), { scale: [largeCircleScale, largeCircleScale] });
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-large-right'), { scale: [largeCircleScale, largeCircleScale] });
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-medium-left'), { scale: [mediumCircleScale, mediumCircleScale] });
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-medium-right'), { scale: [mediumCircleScale, mediumCircleScale] });
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-small-left'), { scale: [smallCircleScale, smallCircleScale] });
+    __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default()(document.querySelector('.audiodisc-small-right'), { scale: [smallCircleScale, smallCircleScale] });
   };
 
   AudioPlayer.prototype.updateAudioVisualisation = function updateAudioVisualisation() {
@@ -50862,7 +50901,7 @@ var AudioPlayer = function (_Component) {
       var barScale = 1; // start bar height at 60%
       var scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = 'white';
-      this.skipFrames = 3; // number of frames to skip in button mode
+      this.skipFrames = 6; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === 'fullscreen') {
@@ -50933,13 +50972,13 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this7 = this;
+    var _this9 = this;
 
-    var _state14 = this.state,
-        song = _state14.song,
-        playing = _state14.playing,
-        pos = _state14.pos,
-        playMode = _state14.playMode;
+    var _state15 = this.state,
+        song = _state15.song,
+        playing = _state15.playing,
+        pos = _state15.pos,
+        playMode = _state15.playMode;
 
 
     var waveOptions = this.waveOptionsNormal;
@@ -50955,28 +50994,30 @@ var AudioPlayer = function (_Component) {
         audioFile: audioFile,
         pos: pos,
         onReady: function onReady() {
-          return _this7.handleReadyToPlay();
+          return _this9.handleReadyToPlay();
         },
         onPosChange: function onPosChange(e) {
-          return _this7.handlePosChange(e);
+          return _this9.handlePosChange(e);
         },
         onSeek: function onSeek() {
-          return _this7.unSynch();
+          return _this9.unSynch();
         },
         onFinish: function onFinish() {
-          return _this7.handleSongEnd();
+          return _this9.handleSongEnd();
         },
         playing: playing,
         options: waveOptions,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 564
+          lineNumber: 558
         }
       });
     }
   };
 
   AudioPlayer.prototype.renderAudioVisualisation = function renderAudioVisualisation() {
+    var _this10 = this;
+
     var playMode = this.state.playMode;
 
 
@@ -50988,17 +51029,17 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'visualisation', onClick: function onClick() {
-            return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* setPlayMode */]('fullscreen');
+            return _this10.setPlayMode('fullscreen');
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 590
+            lineNumber: 584
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: canvasWidth, height: canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 591
+              lineNumber: 585
             }
           },
           '\xA0'
@@ -51013,14 +51054,14 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'visualisation', __source: {
             fileName: _jsxFileName,
-            lineNumber: 601
+            lineNumber: 595
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 602
+              lineNumber: 596
             }
           },
           '\xA0'
@@ -51029,7 +51070,7 @@ var AudioPlayer = function (_Component) {
           'canvas',
           { className: 'audio-visualisation-top', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 603
+              lineNumber: 597
             }
           },
           '\xA0'
@@ -51061,12 +51102,12 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-song-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 631
+            lineNumber: 625
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components__["i" /* SongSummary */], _extends({}, song, { order: order, key: key, fsPreview: fsPreview, voteMode: voteMode, __source: {
             fileName: _jsxFileName,
-            lineNumber: 632
+            lineNumber: 626
           }
         }))
       );
@@ -51074,11 +51115,11 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderFullscreenExtras = function renderFullscreenExtras() {
-    var _this8 = this;
+    var _this11 = this;
 
-    var _state15 = this.state,
-        playMode = _state15.playMode,
-        song = _state15.song;
+    var _state16 = this.state,
+        playMode = _state16.playMode,
+        song = _state16.song;
 
 
     if (playMode === 'fullscreen') {
@@ -51090,21 +51131,21 @@ var AudioPlayer = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 649
+            lineNumber: 643
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'district-music-logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 650
+              lineNumber: 644
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'audiodisc-large-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 651
+                lineNumber: 645
               }
             },
             '\xA0'
@@ -51113,7 +51154,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-large-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 652
+                lineNumber: 646
               }
             },
             '\xA0'
@@ -51122,7 +51163,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 653
+                lineNumber: 647
               }
             },
             '\xA0'
@@ -51131,7 +51172,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 654
+                lineNumber: 648
               }
             },
             '\xA0'
@@ -51140,7 +51181,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 655
+                lineNumber: 649
               }
             },
             '\xA0'
@@ -51149,7 +51190,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 656
+                lineNumber: 650
               }
             },
             '\xA0'
@@ -51158,10 +51199,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-prev', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startPrevSongUnsynched */](_this8.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startPrevSongUnsynched */](_this11.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 658
+              lineNumber: 652
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51169,7 +51210,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 658
+                lineNumber: 652
               }
             },
             '\xA0'
@@ -51178,10 +51219,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* setPlayMode */]('normal');
+              return _this11.setPlayMode('normal');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 659
+              lineNumber: 653
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51189,7 +51230,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 659
+                lineNumber: 653
               }
             },
             '\xA0'
@@ -51198,10 +51239,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["c" /* startNextSongUnsynched */](_this8.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* startNextSongUnsynched */](_this11.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 660
+              lineNumber: 654
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51209,7 +51250,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 660
+                lineNumber: 654
               }
             },
             '\xA0'
@@ -51221,14 +51262,14 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.render = function render() {
-    var _this9 = this;
+    var _this12 = this;
 
-    var _state16 = this.state,
-        song = _state16.song,
-        playing = _state16.playing,
-        currentTimeString = _state16.currentTimeString,
-        isSynched = _state16.isSynched,
-        playMode = _state16.playMode;
+    var _state17 = this.state,
+        song = _state17.song,
+        playing = _state17.playing,
+        currentTimeString = _state17.currentTimeString,
+        isSynched = _state17.isSynched,
+        playMode = _state17.playMode;
 
 
     var toggleSynchClasses = 'btn-toggle-synch unsynched';
@@ -51250,14 +51291,79 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: audioPlayerClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 689
+          lineNumber: 683
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
-            return _this9.toggleSynched();
+            return _this12.toggleSynched();
           }, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 684
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 684
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this12.togglePlay(true);
+          }, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 685
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 685
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 686
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 686
+            }
+          },
+          currentTimeString
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'wave-pos-wrapper', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 687
+          }
+        },
+        this.renderPlayer()
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'total-duration', __source: {
             fileName: _jsxFileName,
             lineNumber: 690
           }
@@ -51268,71 +51374,6 @@ var AudioPlayer = function (_Component) {
             __source: {
               fileName: _jsxFileName,
               lineNumber: 690
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this9.togglePlay(true);
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 691
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 691
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'current-time', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 692
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 692
-            }
-          },
-          currentTimeString
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'wave-pos-wrapper', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 693
-          }
-        },
-        this.renderPlayer()
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'total-duration', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 696
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 696
             }
           },
           song.general.duration
@@ -52968,7 +53009,7 @@ var SongSummary = function (_Component) {
     var _this3 = this;
 
     if (__WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].getPlayMode() === 'fullscreen' && !__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getLoggedIn()) {
-      __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["d" /* setPlayMode */]('normal');
+      __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["a" /* setPlayMode */]('normal');
     }
 
     if (!__WEBPACK_IMPORTED_MODULE_3__stores_UserStore__["a" /* default */].getIsSpeaker()) {
@@ -80557,4 +80598,4 @@ module.exports = __webpack_require__(301);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.ed5c04de054742f7b440.js.map
+//# sourceMappingURL=main.038c7836f16fbc34e217.js.map
