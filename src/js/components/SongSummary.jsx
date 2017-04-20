@@ -219,10 +219,6 @@ export default class SongSummary extends Component {
 
     const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode, playing} = this.state;
 
-    if (this.fsPreview) {
-      console.log(`[SongSummary:250] Render...`, currentQueueScore, `|`, uservote.hasVoted, `|`, uservote.voteType);
-    }
-
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
 
@@ -282,7 +278,7 @@ export default class SongSummary extends Component {
     const downvoteButtonClasses = `btn-downvote ${downvotedClass}${buttonsEnabled}`;
 
     let playlistItemClasses = `song-summary`;
-    if (playing) {
+    if (playing && !this.fsPreview) {
       playlistItemClasses = `song-summary playing`;
     }
 

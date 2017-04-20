@@ -251,10 +251,69 @@ body {
   height: 160px;
   top: calc(50vh - 190px);
   left: calc(50vw - 80px);
-  background-image: url(/assets/img/districtMusicLogo.png);
+  background-image: url(/assets/img/districtMusicLogoFS.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+}
+
+.audiodisc-large-left,
+.audiodisc-large-right,
+.audiodisc-medium-left,
+.audiodisc-medium-right,
+.audiodisc-small-left,
+.audiodisc-small-right {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.audiodisc-large-left,
+.audiodisc-large-right {
+  width: 30px;
+  height: 30px;
+  top: calc(50% + 26px);
+  background-color: white;
+}
+
+.audiodisc-large-left {
+  left: calc(50% - 70px);
+}
+
+.audiodisc-large-right {
+  right: calc(50% - 70px);
+}
+
+.audiodisc-medium-left,
+.audiodisc-medium-right {
+  width: 14px;
+  height: 14px;
+  top: calc(50% + 34px);
+  background-color: var(--dark);
+}
+
+.audiodisc-medium-left {
+  left: calc(50% - 62px);
+}
+
+.audiodisc-medium-right {
+  right: calc(50% - 62px);
+}
+
+.audiodisc-small-left,
+.audiodisc-small-right {
+  width: 14px;
+  height: 14px;
+  top: calc(50% + 8px);
+  background-color: white;
+}
+
+.audiodisc-small-left {
+  left: calc(50% - 65px);
+}
+
+.audiodisc-small-right {
+  right: calc(50% - 65px);
 }
 
 .play-mode-fullscreen .wave-pos-wrapper {
@@ -347,20 +406,40 @@ body {
   background-image: url(../assets/svg/playButtonFS.svg);
 }
 
+.play-mode-fullscreen .btn-toggle-play.play:hover span {
+  background-image: url(../assets/svg/playButtonHoverFS.svg);
+}
+
 .play-mode-fullscreen .btn-toggle-play.pause span {
   background-image: url(../assets/svg/pauseButtonFS.svg);
+}
+
+.play-mode-fullscreen .btn-toggle-play.pause:hover span {
+  background-image: url(../assets/svg/pauseButtonHoverFS.svg);
 }
 
 .play-mode-fullscreen .btn-exit-fullscreen span {
   background-image: url(../assets/svg/exitFullScreen.svg);
 }
 
+.play-mode-fullscreen .btn-exit-fullscreen:hover span {
+  background-image: url(../assets/svg/exitFullScreenHover.svg);
+}
+
 .play-mode-fullscreen .btn-play-next span {
   background-image: url(../assets/svg/playNextButton.svg);
 }
 
+.play-mode-fullscreen .btn-play-next:hover span {
+  background-image: url(../assets/svg/playNextButtonHover.svg);
+}
+
 .play-mode-fullscreen .btn-play-prev span {
   background-image: url(../assets/svg/playPrevButton.svg);
+}
+
+.play-mode-fullscreen .btn-play-prev:hover span {
+  background-image: url(../assets/svg/playPrevButtonHover.svg);
 }
 
 .play-mode-fullscreen .visualisation {

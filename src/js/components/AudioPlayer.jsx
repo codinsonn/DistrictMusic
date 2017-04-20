@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
+import transform from 'dom-css-transform';
 import Wavesurfer from 'react-wavesurfer';
 import {SongSummary} from '../components';
 import UserStore from '../stores/UserStore';
@@ -53,6 +54,7 @@ export default class AudioPlayer extends Component {
     this.songHasStarted = false;
     this.prevTimeString = `00:00`;
     this.audioContextSet = false;
+    this.audioContextSupported = true;
     this.frequencyBarsDrawn = false;
     this.frequencies = [];
     this.skipFrames = 2;
@@ -118,12 +120,14 @@ export default class AudioPlayer extends Component {
     let {song} = this.state;
     const currentSong = PlaylistStore.getSong(UserStore.getSynched());
 
-    if (
-      song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
-      song.uservote !== currentSong.uservote
-    ) {
-      song = currentSong;
-      this.setState({song});
+    if (song && song.queue) {
+      if (
+        song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
+        song.uservote !== currentSong.uservote
+      ) {
+        song = currentSong;
+        this.setState({song});
+      }
     }
 
   }
@@ -209,20 +213,38 @@ export default class AudioPlayer extends Component {
 
   handleReadyToPlay() {
 
-    const {playing, song} = this.state;
+    const {playing, song, isSpeaker} = this.state;
 
-    if (!this.audioCtx) {
-      this.audioCtx = new AudioContext();
+    if (this.audioContextSupported && !this.audioCtx) {
+
+      //this.audioCtx = new AudioContext();
+      //this.audioCtx = window.AudioContext || window.webkitAudioContext || false;
+      this.audioCtx = new AudioContext() || window.webkitAudioContext || false;
+
+      if (!this.audioCtx) {
+
+        this.audioContextSupported = false;
+        //NotifActions.addError(`Audio Context not supported by browser`);
+
+      } else if (isSpeaker) {
+
+        setTimeout(() => { PlaylistActions.setPlayMode(`fullscreen`); }, 1);
+
+      }
+
     }
-    this.audio = document.querySelector(`audio`); // might not exist on constructor
-    this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
-    this.analyser = this.audioCtx.createAnalyser();
-    this.audioSrc.connect(this.analyser);
-    this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
-    this.audioSrc.connect(this.audioCtx.destination);
-    this.canvas = document.querySelector(`.audio-visualisation`);
-    this.canvasCtx = this.canvas.getContext(`2d`);
-    this.audioContextSet = true;
+
+    if (this.audioContextSupported && this.audioCtx) {
+      this.audio = document.querySelector(`audio`); // might not exist on constructor
+      this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
+      this.analyser = this.audioCtx.createAnalyser();
+      this.audioSrc.connect(this.analyser);
+      this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+      this.audioSrc.connect(this.audioCtx.destination);
+      this.canvas = document.querySelector(`.audio-visualisation`);
+      this.canvasCtx = this.canvas.getContext(`2d`);
+      this.audioContextSet = true;
+    }
 
     if (playing) { // x2 to trigger waveform play
       this.togglePlay(false);
@@ -268,10 +290,12 @@ export default class AudioPlayer extends Component {
     }
 
     // Update bar visualisations
-    if (this.audioContextSet && this.skipFrames <= 0) {
+    if (this.audioContextSupported && this.audioContextSet && this.skipFrames <= 0) { // Base audio visualisation on frequencies
       this.analyser.getByteFrequencyData(this.frequencyData);
       window.requestAnimationFrame(() => this.updateAudioVisualisation());
-    } else {
+    } else if (!this.audioContextSupported && this.skipFrames <= 0) { // Fake the audio frequencies for visual effect
+      window.requestAnimationFrame(() => this.updateAudioVisualisation());
+    } else if (this.skipFrames > 0) { // Skip this frame for now
       this.skipFrames--;
     }
 
@@ -379,6 +403,29 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateLogoAudioVisualisation(frequencies, minFrequency, maxFrequency) {
+
+    const sortedFrequencies = frequencies.slice(); // copy array
+    sortedFrequencies.sort();
+    const medFrequency = sortedFrequencies[frequencies.length / 2];
+
+    let maxFrequencyScale = maxFrequency / 220;if (maxFrequencyScale > 1) { maxFrequencyScale = 1; }
+    let medFrequencyScale = medFrequency / 120;if (medFrequencyScale > 1) { medFrequencyScale = 1; }
+    let minFrequencyScale = minFrequency / 5;if (minFrequencyScale > 1) { minFrequencyScale = 1; }
+
+    const largeCircleScale = 0.6 + (0.4 * maxFrequencyScale);
+    const mediumCircleScale = 0.85 + (0.15 * minFrequencyScale);
+    const smallCircleScale = 0.9 + (0.1 * medFrequencyScale);
+
+    transform(document.querySelector(`.audiodisc-large-left`), {scale: [largeCircleScale, largeCircleScale]});
+    transform(document.querySelector(`.audiodisc-large-right`), {scale: [largeCircleScale, largeCircleScale]});
+    transform(document.querySelector(`.audiodisc-medium-left`), {scale: [mediumCircleScale, mediumCircleScale]});
+    transform(document.querySelector(`.audiodisc-medium-right`), {scale: [mediumCircleScale, mediumCircleScale]});
+    transform(document.querySelector(`.audiodisc-small-left`), {scale: [smallCircleScale, smallCircleScale]});
+    transform(document.querySelector(`.audiodisc-small-right`), {scale: [smallCircleScale, smallCircleScale]});
+
+  }
+
   updateAudioVisualisation() {
 
     const {playMode} = this.state;
@@ -395,7 +442,7 @@ export default class AudioPlayer extends Component {
       let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
-      this.skipFrames = 3; // number of frames to skip in button mode
+      this.skipFrames = 6; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
@@ -429,6 +476,8 @@ export default class AudioPlayer extends Component {
         if (maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
         if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); } // make sure the middle bar is always the highest in button mode
         const frequencyScale = Math.round(frequencies[index] - minFrequency); // main influencer for bar height
+
+        if (playMode === `fullscreen`) { this.updateLogoAudioVisualisation(frequencies, minFrequency, maxFrequency); }
 
         const barHeight = Math.round(frequencyScale / maxFrequency * (barScale * this.canvas.height));
         let xPos = horizontalPadding;if (i !== 0) { xPos = horizontalPadding + Math.round(barWidth * (i * 2)); }
@@ -524,7 +573,7 @@ export default class AudioPlayer extends Component {
       const isLoggedIn = UserStore.getLoggedIn();
       const voteMode = UserStore.getVoteMode();
 
-      if (!isLoggedIn) {
+      if (!isLoggedIn || song.uservote === undefined) {
         song.uservote = {hasVoted: false};
       }
 
@@ -552,7 +601,14 @@ export default class AudioPlayer extends Component {
 
       return (
         <div>
-          <div className='district-music-logo'>&nbsp;</div>
+          <div className='district-music-logo'>
+            <div className='audiodisc-large-left'>&nbsp;</div>
+            <div className='audiodisc-large-right'>&nbsp;</div>
+            <div className='audiodisc-medium-left'>&nbsp;</div>
+            <div className='audiodisc-medium-right'>&nbsp;</div>
+            <div className='audiodisc-small-left'>&nbsp;</div>
+            <div className='audiodisc-small-right'>&nbsp;</div>
+          </div>
           <div className='btn-play-prev' onClick={() => PlaylistActions.startPrevSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>
           <div className='btn-exit-fullscreen' onClick={() => PlaylistActions.setPlayMode(`normal`)}><span>&nbsp;</span></div>
           <div className='btn-play-next' onClick={() => PlaylistActions.startNextSongUnsynched(this.prevSongId)}><span>&nbsp;</span></div>

@@ -139,6 +139,10 @@ ammo@2.x.x:
     boom "4.x.x"
     hoek "4.x.x"
 
+an-array@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/an-array/-/an-array-1.0.0.tgz#c125a5bb8257778e35f4b4f6aa9c7d0fa9e42665"
+
 ansi-align@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-1.1.0.tgz#2f0c1658829739add5ebb15e6b0c6e3423f016ba"
@@ -2098,6 +2102,12 @@ css-loader@^0.26.2:
     postcss-modules-values "^1.1.0"
     source-list-map "^0.1.7"
 
+css-mat4@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/css-mat4/-/css-mat4-1.0.0.tgz#91290bb4e759ca07008adca1bfeab85b8f5e5774"
+  dependencies:
+    gl-mat4 "^1.0.2"
+
 css-rule-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/css-rule-stream/-/css-rule-stream-1.1.0.tgz#3786e7198983d965a26e31957e09078cbb7705a2"
@@ -2459,6 +2469,23 @@ dom-converter@~0.1:
   resolved "https://registry.yarnpkg.com/dom-converter/-/dom-converter-0.1.4.tgz#a45ef5727b890c9bffe6d7c876e7b19cb0e17f3b"
   dependencies:
     utila "~0.3"
+
+dom-css-transform@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dom-css-transform/-/dom-css-transform-2.0.2.tgz#a57d65b2bad326a30c4db39e0e2ede0563a29e37"
+  dependencies:
+    an-array "^1.0.0"
+    css-mat4 "^1.0.0"
+    dom-css "^1.0.6"
+    gl-mat4 "^1.0.2"
+    mat4-css-stringify "^1.0.1"
+
+dom-css@^1.0.6:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/dom-css/-/dom-css-1.1.2.tgz#22b8bd77ce709e4c20ba58ee0a2c3df27fe64ba9"
+  dependencies:
+    prefix-style "^1.0.0"
+    to-camel-case "^0.2.1"
 
 dom-serializer@0, dom-serializer@~0.1.0:
   version "0.1.0"
@@ -3677,6 +3704,10 @@ gifsicle@^3.0.0:
     bin-build "^2.0.0"
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
+
+gl-mat4@^1.0.2:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/gl-mat4/-/gl-mat4-1.1.4.tgz#1e895b55892e56a896867abd837d38f37a178086"
 
 glob-base@^0.3.0:
   version "0.3.0"
@@ -5225,6 +5256,10 @@ map-obj@^1.0.0, map-obj@^1.0.1:
 map-stream@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.1.0.tgz#e56aa94c4c8055a16404a0674b78f215f7c8e194"
+
+mat4-css-stringify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mat4-css-stringify/-/mat4-css-stringify-1.0.1.tgz#6ed88eae16b10597e29267ad51f39be3a6f1190f"
 
 math-expression-evaluator@^1.2.14:
   version "1.2.15"
@@ -6854,6 +6889,10 @@ postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.
     js-base64 "^2.1.9"
     source-map "^0.5.6"
     supports-color "^3.2.3"
+
+prefix-style@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/prefix-style/-/prefix-style-1.0.0.tgz#6a50ade50ae4b7288eddf07f71b9802cc7af22e2"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -8494,6 +8533,12 @@ to-arraybuffer@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz#7d229b1fcc637e466ca081180836a7aabff83f43"
 
+to-camel-case@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/to-camel-case/-/to-camel-case-0.2.1.tgz#200799152cfa5e752b7aad0dfe8b7af105cafaa2"
+  dependencies:
+    to-space-case "0.1.2"
+
 to-camel-case@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/to-camel-case/-/to-camel-case-1.0.0.tgz#1a56054b2f9d696298ce66a60897322b6f423e46"
@@ -8504,9 +8549,19 @@ to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
 
+to-no-case@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/to-no-case/-/to-no-case-0.1.1.tgz#cf33c70e0f28168d95e4159abf150e8c542ef9fe"
+
 to-no-case@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-no-case/-/to-no-case-1.0.2.tgz#c722907164ef6b178132c8e69930212d1b4aa16a"
+
+to-space-case@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/to-space-case/-/to-space-case-0.1.2.tgz#9a66be3ebe53f2779f687f0262effd1fc5b6d15e"
+  dependencies:
+    to-no-case "0.1.1"
 
 to-space-case@^1.0.0:
   version "1.0.0"
