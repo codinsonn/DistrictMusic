@@ -297,7 +297,7 @@ class PlaylistStore extends EventEmitter {
 
   synchPosToSpeaker(speakerPos) {
 
-    console.log(`[PlaylistStore:288] Speaker pos updated!`, speakerPos.speakerPos, `(synchPosToSpeaker)`);
+    //console.log(`[PlaylistStore:288] Speaker pos updated!`, speakerPos.speakerPos, `(synchPosToSpeaker)`);
 
     //this.speakerConnected = true;
     this.updateSpeakerConnected(true);
@@ -445,15 +445,15 @@ class PlaylistStore extends EventEmitter {
   getSong(synched) {
 
     if (synched && this.speakerSong.general !== ``) {
-      console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
+      //console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== ``) {
-      console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
+      //console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.userChosenSong;
     } else if (this.queue[0]) {
-      console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
+      //console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
       return this.queue[0];
     } else {
       return this.defaultSong;

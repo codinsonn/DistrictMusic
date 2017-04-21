@@ -12,7 +12,7 @@ module.exports = function(socket, event, data) {
       break;
 
     case "UPDATE_SPEAKER_POS":
-      console.log('[SPEAKER] Recieved: Updating speaker pos!', data);
+      //console.log('[SPEAKER] Recieved: Updating speaker pos!', data);
       EmitHelper.broadcast('SPEAKER_POS_UPDATED', data);
       break;
 

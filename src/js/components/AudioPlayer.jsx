@@ -55,7 +55,6 @@ export default class AudioPlayer extends Component {
     this.prevTimeString = `00:00`;
     this.audioContextSet = false;
     this.audioContextSupported = true;
-    this.frequencyBarsDrawn = false;
     this.frequencies = [];
     this.skipFrames = 2;
     this.changingPlayModes = false;
@@ -158,8 +157,7 @@ export default class AudioPlayer extends Component {
     }
 
     this.songHasStarted = false;
-    this.audioContextSet = false;
-    this.frequencyBarsDrawn = false;
+    //this.audioContextSet = false;
 
     this.setState({song, pos, playing});
 
@@ -214,15 +212,14 @@ export default class AudioPlayer extends Component {
 
   synchPosToSpeakerAndPlay() {
 
-    let {/*playing, */pos} = this.state;
+    let {pos} = this.state;
 
     const speakerPos = PlaylistStore.getSpeakerPos();
 
-    //playing = true;
     this.togglePlay(false, true); // force play
     pos = speakerPos.speakerPos + 0.012 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
 
-    this.setState({/*playing, */pos});
+    this.setState({pos});
 
   }
 
@@ -237,14 +234,10 @@ export default class AudioPlayer extends Component {
       this.audioCtx = new AudioContext() || window.webkitAudioContext || false;
 
       if (!this.audioCtx) {
-
         this.audioContextSupported = false;
         //NotifActions.addError(`Audio Context not supported by browser`);
-
       } else if (isSpeaker) {
-
         setTimeout(() => { this.setPlayMode(`fullscreen`); }, 10);
-
       }
 
     }
@@ -326,25 +319,28 @@ export default class AudioPlayer extends Component {
     }
 
     if (playing) {
-      if (sendSocketEvent) console.log(`-active?-`, this.isActive, `-sendEvent?-`, sendSocketEvent);
+      //if (sendSocketEvent) console.log(`-active?-`, this.isActive, `-sendEvent?-`, sendSocketEvent);
       //setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 1);
       window.requestAnimationFrame(() => PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()));
     }
 
     let showAnimation = true;
-    if (!this.isActive) {
+    if (this.isSpeaker && !this.isActive) {
       showAnimation = false;
+    }
+
+    if (this.skipFrames > 0) {
+      showAnimation = false;
+      this.skipFrames--;
     }
 
     if (showAnimation) { // Update bar visualisations
 
-      if (this.audioContextSupported && this.audioContextSet && this.skipFrames <= 0) { // Base audio visualisation on frequencies
+      if (this.audioContextSupported && this.audioContextSet) { // Base audio visualisation on frequencies
         this.analyser.getByteFrequencyData(this.frequencyData);
         window.requestAnimationFrame(() => this.updateAudioVisualisation());
-      } else if (!this.audioContextSupported && this.skipFrames <= 0) { // Fake the audio frequencies for visual effect
+      } else if (!this.audioContextSupported) { // Fake the audio frequencies for visual effect
         window.requestAnimationFrame(() => this.updateAudioVisualisation());
-      } else if (this.skipFrames > 0) { // Skip this frame for now
-        this.skipFrames--;
       }
 
     }
@@ -369,6 +365,8 @@ export default class AudioPlayer extends Component {
       }
 
     }
+
+    this.skipFrames = 6;
 
   }
 
@@ -436,7 +434,7 @@ export default class AudioPlayer extends Component {
       playing = true;
     }
 
-    console.log(`[TOGGLEPLAY]`, playing);
+    this.skipFrames = 6;
 
     if (!isSpeaker) {
       this.setState({playing});
@@ -475,14 +473,14 @@ export default class AudioPlayer extends Component {
 
     const largeCircleScale = 0.65 + (0.35 * maxFrequencyScale);
     const mediumCircleScale = 0.85 + (0.15 * minFrequencyScale);
-    const smallCircleScale = 0.9 + (0.1 * medFrequencyScale);
+    //const smallCircleScale = 0.9 + (0.1 * medFrequencyScale);
 
     transform(document.querySelector(`.audiodisc-large-left`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-large-right`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-medium-left`), {scale: [mediumCircleScale, mediumCircleScale]});
     transform(document.querySelector(`.audiodisc-medium-right`), {scale: [mediumCircleScale, mediumCircleScale]});
-    transform(document.querySelector(`.audiodisc-small-left`), {scale: [smallCircleScale, smallCircleScale]});
-    transform(document.querySelector(`.audiodisc-small-right`), {scale: [smallCircleScale, smallCircleScale]});
+    //transform(document.querySelector(`.audiodisc-small-left`), {scale: [smallCircleScale, smallCircleScale]});
+    //transform(document.querySelector(`.audiodisc-small-right`), {scale: [smallCircleScale, smallCircleScale]});
 
   }
 
@@ -506,9 +504,9 @@ export default class AudioPlayer extends Component {
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
-        barWidth = 4; // use larger bars for fullscreen mode
+        barWidth = 5; // use larger bars for fullscreen mode
         maxBars = Math.round(this.canvas.width / barWidth / 2); // fill the entire width of screen with bars
-        horizontalPadding = barWidth / 2; // use some padding in fullscreen mode
+        horizontalPadding = Math.round(barWidth / 2); // use some padding in fullscreen mode
         verticalDivision = 1; // makes bars align to bottom
         barScale = 1; // start bar height at 100%
         scaleStep = 0.7 / (maxBars / 2); // make slight curve towards middle of the screen

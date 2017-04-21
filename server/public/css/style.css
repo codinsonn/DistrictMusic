@@ -581,6 +581,14 @@ body {
   top: calc(50vh + 115px);
 }
 
+.play-mode-fullscreen .song-thumb:hover {
+  cursor: default;
+}
+
+.play-mode-fullscreen .song-info:hover {
+  cursor: default;
+}
+
 .play-mode-fullscreen .song-title {
   top: 6px;
   left: 6px;
