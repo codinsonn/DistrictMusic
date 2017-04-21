@@ -60,6 +60,7 @@ export default class AudioPlayer extends Component {
     this.skipFrames = 2;
     this.changingPlayModes = false;
     this.isActive = true;
+    this.playOnSongReady = false;
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
@@ -171,6 +172,7 @@ export default class AudioPlayer extends Component {
     isSpeaker = UserStore.getIsSpeaker();
 
     if (isSpeaker && this.audioContextSet) {
+      this.playOnSongReady = true;
       setTimeout(() => { this.setPlayMode(`fullscreen`); }, 10);
     }
 
@@ -212,14 +214,15 @@ export default class AudioPlayer extends Component {
 
   synchPosToSpeakerAndPlay() {
 
-    let {playing, pos} = this.state;
+    let {/*playing, */pos} = this.state;
 
     const speakerPos = PlaylistStore.getSpeakerPos();
 
-    playing = true;
+    //playing = true;
+    this.togglePlay(false, true); // force play
     pos = speakerPos.speakerPos + 0.012 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
 
-    this.setState({playing, pos});
+    this.setState({/*playing, */pos});
 
   }
 
@@ -247,6 +250,7 @@ export default class AudioPlayer extends Component {
     }
 
     if (this.audioContextSupported && this.audioCtx) {
+
       this.audio = document.querySelector(`audio`); // might not exist on constructor
       this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
       this.analyser = this.audioCtx.createAnalyser();
@@ -256,6 +260,7 @@ export default class AudioPlayer extends Component {
       this.canvas = document.querySelector(`.audio-visualisation`);
       this.canvasCtx = this.canvas.getContext(`2d`);
       this.audioContextSet = true;
+
     }
 
     // Start unsynching again
@@ -266,11 +271,19 @@ export default class AudioPlayer extends Component {
       }, 100);
     }
 
-    if (playing) { // x2 to trigger waveform play
-      this.togglePlay(false);
-      setTimeout(() => { this.togglePlay(false); }, 1);
-    } else if (song.general !== ``) {
-      this.togglePlay(false);
+    if (this.playOnSongReady) {
+      let {playing} = this.state;
+      playing = true;
+      this.setState({playing});
+    } else {
+
+      if (playing) { // x2 to trigger waveform play
+        this.togglePlay(false);
+        this.togglePlay(false, true);
+      } else if (song.general !== ``) {
+        this.togglePlay(false);
+      }
+
     }
 
   }
@@ -313,11 +326,13 @@ export default class AudioPlayer extends Component {
     }
 
     if (playing) {
-      setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 1);
+      if (sendSocketEvent) console.log(`-active?-`, this.isActive, `-sendEvent?-`, sendSocketEvent);
+      //setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 1);
+      window.requestAnimationFrame(() => PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()));
     }
 
     let showAnimation = true;
-    if (isSpeaker && !this.isActive) {
+    if (!this.isActive) {
       showAnimation = false;
     }
 
@@ -350,7 +365,7 @@ export default class AudioPlayer extends Component {
         this.toggleSynched();
       } else if (!this.changingPlayModes) {
         console.log(`[unSynch] removing speaker`);
-        //UserActions.setSpeaker(false);
+        UserActions.setSpeaker(false);
       }
 
     }
@@ -364,7 +379,7 @@ export default class AudioPlayer extends Component {
       const {isSynched, isSpeaker} = this.state;
       let {song, pos} = this.state;
 
-      //console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
+      console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
 
       this.prevSongId = song.general.id;
 
@@ -406,9 +421,7 @@ export default class AudioPlayer extends Component {
 
   }
 
-  togglePlay(clickTriggered = false) {
-
-    console.log(`[TOGGLEPLAY]`, !playing);
+  togglePlay(clickTriggered = false, forcePlay = false) {
 
     const {isSynched, isSpeaker} = this.state;
     let {playing} = this.state;
@@ -418,6 +431,12 @@ export default class AudioPlayer extends Component {
     if (clickTriggered && isSynched && !playing) {
       this.toggleSynched();
     }
+
+    if (forcePlay) {
+      playing = true;
+    }
+
+    console.log(`[TOGGLEPLAY]`, playing);
 
     if (!isSpeaker) {
       this.setState({playing});

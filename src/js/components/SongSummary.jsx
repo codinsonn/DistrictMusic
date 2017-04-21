@@ -189,7 +189,7 @@ export default class SongSummary extends Component {
 
   playSongHandler() {
 
-    if (!UserStore.getIsSpeaker()) {
+    if (!UserStore.getIsSpeaker() && !this.fsPreview) {
 
       const {song} = this.state;
 

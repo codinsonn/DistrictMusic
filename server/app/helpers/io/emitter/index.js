@@ -76,7 +76,7 @@ module.exports.emit = (type, tokens, data={}) => {
 
 module.exports.broadcast = (type, data={}) => {
 
-  //console.log('[EmitHelper]', type);
+  console.log('[EmitHelper]', type);
   this.io.sockets.emit(set(type), data);
 
 }

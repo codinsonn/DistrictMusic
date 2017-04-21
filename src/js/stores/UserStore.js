@@ -120,9 +120,12 @@ class UserStore extends EventEmitter {
 
       } else {
 
+        PlaylistStore.updateUserChosenSong(PlaylistStore.getSong(true));
+
         this.isSynched = false;
         this.waitingForPosChange = false;
         this.emit(`SYNCHED_CHANGED`);
+
       }
 
     }

@@ -119,6 +119,7 @@ class PlaylistStore extends EventEmitter {
     if (UserStore.getIsSpeaker() && this.queue[0].general.id !== `` && this.queue[0].general !== this.speakerSong.general) {
 
       this.updateSpeakerSong();
+      this.userChosenSong = this.speakerSong;
 
     } else if (this.speakerSong.general !== `` && this.queue[0].general.id !== this.speakerSong.general.id) {
 
@@ -192,7 +193,11 @@ class PlaylistStore extends EventEmitter {
 
   startNextSongUnsynched(currentSongId) {
 
-    if (!UserStore.getSynched()) {
+    if (!UserStore.getIsSpeaker()) {
+
+      if (UserStore.getSynched()) {
+        UserStore.setSynched(false);
+      }
 
       let i = 0;
       let nextSongIndex = 0;
@@ -216,7 +221,11 @@ class PlaylistStore extends EventEmitter {
 
   startPrevSongUnsynched(currentSongId) {
 
-    if (!UserStore.getSynched()) {
+    if (!UserStore.getIsSpeaker()) {
+
+      if (UserStore.getSynched()) {
+        UserStore.setSynched(false);
+      }
 
       let i = 0;
       let prevSongIndex = this.queue.length - 1;
@@ -276,6 +285,7 @@ class PlaylistStore extends EventEmitter {
       //console.log(`[PlaylistStore] Updating speakersong`);
 
       this.speakerSong = this.queue[0];
+      this.userChosenSong = this.queue[0];
 
       if (this.speakerSong.general === `` || asSynched || UserStore.getSynched() || UserStore.getIsSpeaker()) {
         setTimeout(() => this.emit(`SPEAKER_SONG_CHANGED`), 1);
@@ -435,15 +445,15 @@ class PlaylistStore extends EventEmitter {
   getSong(synched) {
 
     if (synched && this.speakerSong.general !== ``) {
-      //console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
+      console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== ``) {
-      //console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
+      console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
       setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
       return this.userChosenSong;
     } else if (this.queue[0]) {
-      //console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
+      console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
       return this.queue[0];
     } else {
       return this.defaultSong;
