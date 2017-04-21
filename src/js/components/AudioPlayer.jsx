@@ -9,7 +9,7 @@ import SocketStore from '../stores/SocketStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
-import {curveArrayAtRandom} from '../util/';
+import {randomArray, curveArrayAtRandom} from '../util/';
 
 const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
 
@@ -150,16 +150,16 @@ export default class AudioPlayer extends Component {
     }
 
     if (!isSynched) {
-      playing = false;
+      this.prevTimeString = `00:00`;
       pos = 0;
-    } else {
-      playing = true;
     }
 
     this.songHasStarted = false;
     //this.audioContextSet = false;
 
-    this.setState({song, pos, playing});
+    this.setPlaying(playing);
+
+    this.setState({song, pos});
 
   }
 
@@ -216,7 +216,7 @@ export default class AudioPlayer extends Component {
 
     const speakerPos = PlaylistStore.getSpeakerPos();
 
-    this.togglePlay(false, true); // force play
+    this.setPlaying(true); // force play
     pos = speakerPos.speakerPos + 0.012 + (((new Date()).getTime() - speakerPos.lastSpeakerPosUpdate) / 1000);
 
     this.setState({pos});
@@ -265,16 +265,13 @@ export default class AudioPlayer extends Component {
     }
 
     if (this.playOnSongReady) {
-      let {playing} = this.state;
-      playing = true;
-      this.setState({playing});
+      this.setPlaying(true);
     } else {
 
       if (playing) { // x2 to trigger waveform play
-        this.togglePlay(false);
-        this.togglePlay(false, true);
+        this.setPlaying(true);
       } else if (song.general !== ``) {
-        this.togglePlay(false);
+        this.setPlaying(playing);
       }
 
     }
@@ -286,7 +283,7 @@ export default class AudioPlayer extends Component {
     const {playing} = this.state;
 
     if (playing) {
-      this.togglePlay(true);
+      this.setPlaying(false);
     }
 
   }
@@ -350,6 +347,16 @@ export default class AudioPlayer extends Component {
 
   }
 
+  handleSeek() {
+
+    const {playing} = this.state;
+
+    this.skipFrames = 6;
+    this.setPlaying(playing);
+    this.unSynch();
+
+  }
+
   unSynch() {
 
     const {isSynched, isSpeaker} = this.state;
@@ -365,8 +372,6 @@ export default class AudioPlayer extends Component {
       }
 
     }
-
-    this.skipFrames = 6;
 
   }
 
@@ -419,31 +424,32 @@ export default class AudioPlayer extends Component {
 
   }
 
-  togglePlay(clickTriggered = false, forcePlay = false) {
+  setPlaying(playOrNot) {
 
-    const {isSynched, isSpeaker} = this.state;
     let {playing} = this.state;
 
-    playing = !playing;
+    playing = playOrNot;
 
-    if (clickTriggered && isSynched && !playing) {
-      this.toggleSynched();
+    if (playing) {
+      this.songHasStarted = true;
     }
 
-    if (forcePlay) {
-      playing = true;
-    }
+    this.setState({playing});
 
-    this.skipFrames = 6;
+  }
+
+  togglePlay() {
+
+    const {playing, isSynched, isSpeaker} = this.state;
 
     if (!isSpeaker) {
-      this.setState({playing});
-      this.songHasStarted = true;
-    } else if (isSpeaker && !playing && !this.songHasStarted) {
-      this.setState({playing});
-    } else if (isSpeaker && playing && !this.songHasStarted) {
-      this.setState({playing});
-      this.songHasStarted = true;
+
+      if (isSynched) {
+        this.toggleSynched();
+      }
+
+      this.setPlaying(!playing);
+
     }
 
   }
@@ -500,7 +506,7 @@ export default class AudioPlayer extends Component {
       let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
-      this.skipFrames = 6; // number of frames to skip in button mode
+      this.skipFrames = 8; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
@@ -514,7 +520,14 @@ export default class AudioPlayer extends Component {
         this.skipFrames = 0; // number of frames to skip in fullscreen mode
       }
 
-      let frequencies = this.frequencyData.slice(0, maxBars); // only use as much frequency data as bars needed
+      let frequencies = []; // fake frequency data for non supported browsers
+      if (this.audioContextSupported && this.audioContextSet) {
+        frequencies = this.frequencyData.slice(0, maxBars); // only use as much frequency data as bars needed
+        if (playMode === `normal` && Math.max.apply(Math, frequencies) < 10) { frequencies = [80, 170, 90]; } // use standard values for button
+      } else {
+        console.log(`USING RAND ARRAY`);
+        frequencies = randomArray(maxBars, 0, 255);
+      }
 
       for (let i = 0;i < maxBars;i ++) { // loop over frequency data
 
@@ -578,7 +591,7 @@ export default class AudioPlayer extends Component {
           pos={pos}
           onReady={() => this.handleReadyToPlay()}
           onPosChange={e => this.handlePosChange(e)}
-          onSeek={() => this.unSynch()}
+          onSeek={() => this.handleSeek()}
           onFinish={() => this.handleSongEnd()}
           playing={playing}
           options={waveOptions}
@@ -591,12 +604,16 @@ export default class AudioPlayer extends Component {
 
   renderAudioVisualisation() {
 
-    const {playMode} = this.state;
+    const {playMode, playing} = this.state;
 
     if (playMode === `normal`) {
 
       const canvasWidth = 15;
       const canvasHeight = 15;
+
+      if (!playing) {
+        setTimeout(() => { this.updateAudioVisualisation(); }, 10);
+      }
 
       return (
         <div className='visualisation' onClick={() => this.setPlayMode(`fullscreen`)}>
@@ -700,7 +717,7 @@ export default class AudioPlayer extends Component {
     return (
       <article className={audioPlayerClasses}>
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
-        <div className={togglePlayClasses} onClick={() => this.togglePlay(true)}><span>&nbsp;</span></div>
+        <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
         <div className='wave-pos-wrapper'>
           {this.renderPlayer()}
