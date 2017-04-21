@@ -231,9 +231,12 @@ export default class AudioPlayer extends Component {
 
       //this.audioCtx = new AudioContext();
       //this.audioCtx = window.AudioContext || window.webkitAudioContext || false;
-      this.audioCtx = new AudioContext() || window.webkitAudioContext || false;
+      const constructor = window.AudioContext || window.webkitAudioContext || AudioContext() || false;
+      if (constructor) {
+        this.audioCtx = new constructor();
+      }
 
-      if (!this.audioCtx) {
+      if (!constructor) {
         this.audioContextSupported = false;
         //NotifActions.addError(`Audio Context not supported by browser`);
       } else if (isSpeaker) {
