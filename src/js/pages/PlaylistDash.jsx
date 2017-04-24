@@ -42,7 +42,7 @@ export default class PlaylistDash extends Component {
 
     if (this.props.status && this.props.status === `isSpeaker`) {
 
-      this.checkSocketAndSpeaker();
+      SocketStore.on(`SET_SOCKET_ID`, () => this.checkSocketAndSpeaker());
 
     } else if (this.props.status && this.props.status === `loginFailed`) {
       NotifActions.addError(`Not a District01 Google+ account`);
@@ -89,10 +89,11 @@ export default class PlaylistDash extends Component {
   checkSocketAndSpeaker() {
 
     const socketId = SocketStore.getSocketId();
+    console.log(`--- [PlaylistDash] Socket Id:`, socketId, `---`);
 
-    if (socketId !== ``) {
+    //if (socketId !== ``) {
 
-      users.setSpeaker(true, socketId)
+    users.setSpeaker(true, socketId)
         .then(res => {
 
           // Success!
@@ -111,9 +112,9 @@ export default class PlaylistDash extends Component {
         })
       ;
 
-    } else {
+    /*} else {
       setTimeout(() => this.checkSocketAndSpeaker(), 100);
-    }
+    }*/
 
   }
 

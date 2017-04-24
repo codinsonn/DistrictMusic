@@ -1,4 +1,6 @@
 import io from 'socket.io-client';
+//import wio from 'socketio-shared-webworker/socket.io-worker';
+//import wio from 'socketio-shared-webworker';
 import {EventEmitter} from 'events';
 import dispatcher from '../dispatcher';
 import UserStore from './UserStore';
@@ -11,6 +13,10 @@ class SocketStore extends EventEmitter {
     super();
 
     this.socket = io();
+    //this.socketWorker = new SharedWorker(`assets/workers/socketWorker.js`, `DistrictMusicWorker`);
+    //this.socketWorker = wio(`http://localhost:3020/`);
+    //this.socketWorker.setWorker(`node_modules/socketio-shared-webworker/shared-worker.js`);
+    //this.socketWorker.setWorker(`assets/workers/shared-worker.js`);
     this.socketId = ``;
 
     // -- Vars ---------
@@ -28,6 +34,23 @@ class SocketStore extends EventEmitter {
     this.socket.on(`SPEAKER_RESET`, () => PlaylistStore.updateSpeakerConnected(true));
     this.socket.on(`SPEAKER_UNSET`, () => PlaylistStore.updateSpeakerConnected(false));
     this.socket.on(`SPEAKER_POS_UPDATED`, speakerPos => PlaylistStore.synchPosToSpeaker(speakerPos));
+
+    /*this.socketWorker.on(`connect`, () => {
+      this.socketWorker.on(`CONNECTED`, socketId => this.setSocketId(socketId));
+      this.socketWorker.on(`UPDATED_SOCKET_ID`, socketId => UserStore.updateSessionSocketId(socketId));
+      this.socketWorker.on(`DOWNLOAD_PROGRESS`, data => this.updateDownloadProgress(data));
+      this.socketWorker.on(`DOWNLOAD_DONE`, data => this.updateDownloadProgress(data));
+      this.socketWorker.on(`QUEUE_UPDATED`, currentQueue => PlaylistStore.handleSocketQueueUpdate(currentQueue));
+      this.socketWorker.on(`CHECK_SPEAKER_QUEUE`, currentQueue => PlaylistStore.checkSpeakerQueue(currentQueue));
+      this.socketWorker.on(`PROFILE_UPDATED`, user => UserStore.updateUserProfile(user));
+      this.socketWorker.on(`SPEAKER_RESET`, () => PlaylistStore.updateSpeakerConnected(true));
+      this.socketWorker.on(`SPEAKER_UNSET`, () => PlaylistStore.updateSpeakerConnected(false));
+      this.socketWorker.on(`SPEAKER_POS_UPDATED`, speakerPos => PlaylistStore.synchPosToSpeaker(speakerPos));
+      this.socketWorker.on(`message`, data => { console.log(`[SocketStore] WORKER EVT:`, data); });
+    });
+
+    this.socketWorker.on(`disconnect`, () => { console.log(`[SocketStore] USER DISCONNECTED`); });
+    this.socketWorker.on(`error`, data => { console.log(`[SocketStore] -!- ERROR:`, data, `-!-`); });*/
 
   }
 
@@ -49,6 +72,8 @@ class SocketStore extends EventEmitter {
 
     this.socketId = socketId;
 
+    this.emit(`SET_SOCKET_ID`);
+
   }
 
   setAppearBusy(busy) {
@@ -63,18 +88,13 @@ class SocketStore extends EventEmitter {
   emitSpeakerPos(speakerPos) {
 
     this.socket.emit(`UPDATE_SPEAKER_POS`, speakerPos);
+    //this.socketWorker.emit(`UPDATE_SPEAKER_POS`, speakerPos);
 
   }
 
   getDownloadProgress() {
 
     return this.downloadProgress;
-
-  }
-
-  getSocket() {
-
-    return this.socket;
 
   }
 

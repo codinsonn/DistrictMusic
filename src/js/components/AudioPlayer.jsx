@@ -10,6 +10,7 @@ import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import {randomArray, curveArrayAtRandom} from '../util/';
+//import updateSpeakerPosWebworker from '../util/updateSpeakerPosWebworker';
 
 const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
 
@@ -75,6 +76,15 @@ export default class AudioPlayer extends Component {
 
     window.onfocus = () => { this.isActive = true; };
     window.onblur = () => { this.isActive = false; };
+
+    // -- workers --
+    //this.speakerPosWorker = new Worker(`../util/updateSpeakerPosWebworker.js`);
+    this.speakerPosWorker = new Worker(`assets/workers/updateSpeakerPosWebworker.js`);
+    this.speakerPosWorker.onmessage = e => {
+      if (e.data.sendSocketEvent) console.log(e.data.pos, e.data.sendSocketEvent);
+      PlaylistActions.setAudioPos(e.data.pos, e.data.sendSocketEvent, (new Date()).getTime());
+    };
+    //console.log(`worker:`, this.speakerPosWorker);/**/
 
   }
 
@@ -321,7 +331,10 @@ export default class AudioPlayer extends Component {
     if (playing) {
       //if (sendSocketEvent) console.log(`-active?-`, this.isActive, `-sendEvent?-`, sendSocketEvent);
       //setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 1);
-      window.requestAnimationFrame(() => PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()));
+      //window.requestAnimationFrame(() => PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()));
+      //PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime());
+      //speakerPosWorker.updateSpeakerPos(PlaylistActions, pos, sendSocketEvent);
+      this.speakerPosWorker.postMessage({pos: pos, sendSocketEvent: sendSocketEvent});
     }
 
     let showAnimation = true;

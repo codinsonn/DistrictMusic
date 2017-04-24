@@ -3087,7 +3087,7 @@ eventemitter2@0.4.14, eventemitter2@~0.4.14:
   version "0.4.14"
   resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-0.4.14.tgz#8f61b75cde012b2e9eb284d4545583b5643b61ab"
 
-eventemitter3@1.x.x:
+eventemitter3@1.x.x, eventemitter3@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
 
@@ -7925,7 +7925,7 @@ socket.io@1.6.0:
     socket.io-client "1.6.0"
     socket.io-parser "2.3.1"
 
-socket.io@^1.5.0:
+socket.io@^1.5.0, socket.io@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-1.7.2.tgz#83bbbdf2e79263b378900da403e7843e05dc3b71"
   dependencies:
@@ -7936,6 +7936,13 @@ socket.io@^1.5.0:
     socket.io-adapter "0.5.0"
     socket.io-client "1.7.2"
     socket.io-parser "2.3.1"
+
+socketio-shared-webworker@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/socketio-shared-webworker/-/socketio-shared-webworker-1.0.2.tgz#01dd42553b623e207457d28fe78f0c19cf652bfd"
+  dependencies:
+    eventemitter3 "^1.2.0"
+    socket.io "^1.7.2"
 
 socketio-wildcard@^0.3.0:
   version "0.3.0"
