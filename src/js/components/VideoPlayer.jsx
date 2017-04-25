@@ -5,6 +5,7 @@ import YouTube from 'react-youtube';
 import UserStore from '../stores/UserStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as PlaylistActions from '../actions/PlaylistActions';
+import {getBaseURL} from '../util/';
 
 export default class YoutubeVideo extends Component {
 
@@ -19,14 +20,23 @@ export default class YoutubeVideo extends Component {
       player: null
     };
 
+    window.YTConfig = {
+      host: `https://www.youtube.com`
+    };
+
     // -- Loop ------
     this.request = null; // will become requestAnimationFrame
     this.prevSongId = ``;
+    this.currentTimeString = `00:00`;
+    this.skipFrames = 0;
 
     // -- Events ----
     this.evtUpdateVisible = () => this.updateVisible();
     this.evtUpdateSong = () => this.updateSong();
     this.evtUpdateUservote = () => this.updateUservote();
+    this.evtSeekVideoTo = () => this.seekVideoTo();
+    this.evtPlayVideo = () => this.playVideo();
+    this.evtPauseVideo = () => this.pauseVideo();
 
   }
 
@@ -34,12 +44,18 @@ export default class YoutubeVideo extends Component {
     PlaylistStore.on(`VIDEO_MODE_CHANGED`, this.evtUpdateVisible);
     PlaylistStore.on(`SONG_CHANGED`, this.evtUpdateSong);
     PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateUservote);
+    PlaylistStore.on(`SEEK_VIDEO_TO`, this.evtSeekVideoTo);
+    PlaylistStore.on(`START_PLAY`, this.evtPlayVideo);
+    PlaylistStore.on(`PAUSE_PLAY`, this.evtPauseVideo);
   }
 
   componentWillUnmount() {
     PlaylistStore.removeListener(`VIDEO_MODE_CHANGED`, this.evtUpdateVisible);
     PlaylistStore.removeListener(`SONG_CHANGED`, this.evtUpdateSong);
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
+    PlaylistStore.removeListener(`SEEK_VIDEO_TO`, this.evtSeekVideoTo);
+    PlaylistStore.removeListener(`START_PLAY`, this.evtPlayVideo);
+    PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPauseVideo);
   }
 
   componentDidMount() {
@@ -105,7 +121,61 @@ export default class YoutubeVideo extends Component {
 
       $progressBar.style.width = `${barWidth}px`;
 
+      if (this.skipFrames <= 0) {
+
+        const currentMinutes = Math.floor(currentTime / 60);
+        const currentSeconds = Math.round(currentTime % 60);
+
+        let currentTimeString = `0${currentMinutes}:${currentSeconds}`;
+        if (currentSeconds < 10) { currentTimeString = `0${currentMinutes}:0${currentSeconds}`; }
+
+        if (currentTimeString !== this.currentTimeString) {
+          console.log(`[VideoPlayer] Updating current time str:`, currentTimeString);
+          this.currentTimeString = currentTimeString;
+          PlaylistActions.setCurrentTimeString(currentTimeString);
+        }
+
+        this.skipFrames = 10;
+
+      } else { this.skipFrames--; }/**/
+
       this.request = requestAnimationFrame(() => this.updateProgress());
+
+    }
+
+  }
+
+  playVideo() {
+
+    const {player, playing} = this.state;
+
+    if (player && !playing) {
+      player.playVideo();
+    }
+
+  }
+
+  pauseVideo() {
+
+    const {player, playing} = this.state;
+
+    if (player && playing) {
+      player.pauseVideo();
+    }
+
+  }
+
+  seekVideoTo() {
+
+    console.log(`[VideoPlayer] Seeking Video To`);
+
+    const {player} = this.state;
+
+    if (player) {
+
+      const seekToTime = player.getDuration() * PlaylistStore.getSeekPercentage();
+
+      player.seekTo(seekToTime, true);
 
     }
 
@@ -113,7 +183,9 @@ export default class YoutubeVideo extends Component {
 
   exitVideoMode() {
 
-    PlaylistActions.setVideoMode(false);
+    PlaylistActions.pausePlay();
+    setTimeout(() => { PlaylistActions.setVideoMode(false); }, 1);
+    setTimeout(() => { PlaylistActions.setCurrentTimeString(`00:00`); }, 10);
 
   }
 
@@ -126,6 +198,8 @@ export default class YoutubeVideo extends Component {
     this.request = requestAnimationFrame(() => this.updateProgress());
     this.setState({playing});
 
+    PlaylistActions.startPlay();
+
   }
 
   handleOnPauseVideo() {
@@ -135,6 +209,8 @@ export default class YoutubeVideo extends Component {
     let {playing} = this.state;
     playing = false;
     this.setState({playing});
+
+    PlaylistActions.pausePlay();
 
   }
 
@@ -148,6 +224,11 @@ export default class YoutubeVideo extends Component {
     playing = false;
     player = null;
     id = ``;
+
+    PlaylistActions.pausePlay();
+
+    document.querySelector(`.video-pos-progress`).style.width = `0px`;
+    PlaylistActions.setCurrentTimeString(`00:00`);
 
     this.setState({playing, player, id});
     setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
@@ -187,9 +268,7 @@ export default class YoutubeVideo extends Component {
     const {id, visible} = this.state;
 
     let vidWidth = Math.round(window.innerHeight / 2 * 1.64);
-    if (window.innerWidth <= 750) {
-      vidWidth = Math.round(window.innerWidth * .9) - 20;
-    }
+    if (window.innerWidth <= 750) { vidWidth = Math.round(window.innerWidth * .9) - 20; }
     const vidHeight = Math.round(vidWidth * .6);
 
     const opts = {
@@ -198,7 +277,9 @@ export default class YoutubeVideo extends Component {
       playerVars: { // https://developers.google.com/youtube/player_parameters
         autoplay: 0,
         loop: 1,
-        playlist: id
+        playlist: id,
+        origin: getBaseURL(),
+        enablejsapi: `1`
       }
     };
 
@@ -258,6 +339,8 @@ export default class YoutubeVideo extends Component {
   }
 
   handleOnVideoReady(event) {
+
+    console.log(`[VideoPlayer] Saved player to state`);
 
     let {player} = this.state;
 

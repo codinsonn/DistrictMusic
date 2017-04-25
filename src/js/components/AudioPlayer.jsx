@@ -71,8 +71,10 @@ export default class AudioPlayer extends Component {
     this.evtUpdateSynched = () => this.updateSynched();
     this.evtSpeakerNotConnected = () => NotifActions.addError(`Speaker not connected`);
     this.evtSpeakerDisconnected = () => NotifActions.addError(`Speaker disconnected`);
+    this.evtUpdateCurrentTimeString = () => this.updateCurrentTimeString();
     this.evtShowNowPlaying = () => this.showNowPlaying();
     this.evtPausePlay = () => this.pausePlay();
+    this.evtStartPlay = () => this.setPlaying(true);
     this.evtUpdatePlayMode = () => this.updatePlayMode();
     this.evtUpdateVideoMode = () => this.updateVideoMode();
 
@@ -98,6 +100,8 @@ export default class AudioPlayer extends Component {
     PlaylistStore.on(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
     PlaylistStore.on(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.on(`PAUSE_PLAY`, this.evtPausePlay);
+    PlaylistStore.on(`START_PLAY`, this.evtStartPlay);
+    PlaylistStore.on(`CURRENT_TIMESTRING_CHANGED`, this.evtUpdateCurrentTimeString);
     PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
     PlaylistStore.on(`VIDEO_MODE_CHANGED`, this.evtUpdateVideoMode);
     PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateUservote);
@@ -113,6 +117,8 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`SPEAKER_DISCONNECTED`, this.evtSpeakerDisconnected);
     PlaylistStore.removeListener(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPausePlay);
+    PlaylistStore.removeListener(`START_PLAY`, this.evtStartPlay);
+    PlaylistStore.on(`CURRENT_TIMESTRING_CHANGED`, this.evtUpdateCurrentTimeString);
     PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
     PlaylistStore.removeListener(`VIDEO_MODE_CHANGED`, this.evtUpdateVideoMode);
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
@@ -232,6 +238,16 @@ export default class AudioPlayer extends Component {
     if (videoMode) this.setState({currentTimeString: `00:00`});
 
     this.setState({videoMode});
+
+  }
+
+  updateCurrentTimeString() {
+
+    let {currentTimeString} = this.state;
+
+    currentTimeString = PlaylistStore.getCurrentTimeString();
+
+    this.setState({currentTimeString});
 
   }
 
@@ -373,7 +389,7 @@ export default class AudioPlayer extends Component {
         this.analyser.getByteFrequencyData(this.frequencyData);
         window.requestAnimationFrame(() => this.updateAudioVisualisation());
       } else if (!this.audioContextSupported) { // Fake the audio frequencies for visual effect
-        window.requestAnimationFrame(() => this.updateAudioVisualisation());
+        window.requestAnimationFrame(() => this.updateAudioVisualisation(true));
       }
 
     }
@@ -442,6 +458,17 @@ export default class AudioPlayer extends Component {
 
   }
 
+  handleVideoSeek(evt) {
+
+    this.setPlaying(false);
+
+    const barPosClicked = evt.clientX - 130;
+    const seekPercentage = barPosClicked / (window.innerWidth - 260);
+
+    PlaylistActions.seekVideoTo(seekPercentage);
+
+  }
+
   toggleSynched() {
 
     const {isSpeaker, isSynched, videoMode} = this.state;
@@ -486,7 +513,7 @@ export default class AudioPlayer extends Component {
 
   togglePlay() {
 
-    const {playing, isSynched, isSpeaker} = this.state;
+    const {playing, isSynched, isSpeaker, videoMode} = this.state;
 
     if (!isSpeaker) {
 
@@ -494,7 +521,12 @@ export default class AudioPlayer extends Component {
         this.toggleSynched();
       }
 
-      this.setPlaying(!playing);
+      const aboutToPlay = !playing;
+
+      if (videoMode && aboutToPlay) { PlaylistActions.startPlay(); }
+      if (videoMode && !aboutToPlay) { PlaylistActions.pausePlay(); }
+
+      this.setPlaying(aboutToPlay);
 
     }
 
@@ -556,11 +588,11 @@ export default class AudioPlayer extends Component {
 
   }
 
-  updateAudioVisualisation() {
+  updateAudioVisualisation(fakeFrequencies = false) {
 
     const {playMode} = this.state;
 
-    if (this.audioContextSet) {
+    if (this.audioContextSet || fakeFrequencies) {
 
       this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -667,7 +699,7 @@ export default class AudioPlayer extends Component {
     } else if (videoMode) { // render normal progress bar
 
       return (
-        <div className='video-pos-wrapper'>
+        <div className='video-pos-wrapper' onClick={evt => this.handleVideoSeek(evt)}>
           <div className='video-pos-progress'>&nbsp;</div>
         </div>
       );

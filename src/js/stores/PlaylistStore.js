@@ -28,6 +28,9 @@ class PlaylistStore extends EventEmitter {
 
     this.notifShowingFor = ``;
 
+    this.seekPercentage = 0;
+    this.currentTimeString = `00:00`;
+
     this.audioPos = 0;
     this.videoPos = 0;
 
@@ -421,6 +424,24 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  setCurrentTimeString(currentTimeString) {
+
+    if (currentTimeString !== this.currentTimeString) {
+      this.currentTimeString = currentTimeString;
+      this.emit(`CURRENT_TIMESTRING_CHANGED`);
+    }
+
+  }
+
+  seekVideoTo(seekPercentage) {
+
+    if (seekPercentage > 0 && seekPercentage <= 1) {
+      this.seekPercentage = seekPercentage;
+      setTimeout(() => this.emit(`SEEK_VIDEO_TO`), 1);
+    }
+
+  }
+
   getCurrentSuggestion() {
 
     return this.currentSuggestion;
@@ -500,6 +521,18 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  getCurrentTimeString() {
+
+    return this.currentTimeString;
+
+  }
+
+  getSeekPercentage() {
+
+    return this.seekPercentage;
+
+  }
+
   handleActions(action) {
 
     switch (action.type) {
@@ -560,8 +593,20 @@ class PlaylistStore extends EventEmitter {
       this.setVideoMode(action.data);
       break;
 
+    case `SET_CURRENT_TIMESTRING`:
+      this.setCurrentTimeString(action.data);
+      break;
+
+    case `SEEK_VIDEO_TO`:
+      this.seekVideoTo(action.data);
+      break;
+
     case `PAUSE_PLAY`:
       setTimeout(() => this.emit(`PAUSE_PLAY`), 1);
+      break;
+
+    case `START_PLAY`:
+      setTimeout(() => this.emit(`START_PLAY`), 1);
       break;
 
     }

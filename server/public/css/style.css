@@ -196,8 +196,8 @@ body {
   height: 100%;
   top: 0;
   left: 0;
-  /*background-color: #fecb58;*/
-  background-color: #fb624a;
+  background-color: #fecb58;
+  /*background-color: var(--red);*/
 }
 
 .video-modal {

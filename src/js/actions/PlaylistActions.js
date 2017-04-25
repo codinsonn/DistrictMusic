@@ -38,9 +38,28 @@ export function updateQueue() {
 }
 
 export function pausePlay() {
-  console.log(`About to pause play`);
   dispatcher.dispatch({
     type: `PAUSE_PLAY`
+  });
+}
+
+export function startPlay() {
+  dispatcher.dispatch({
+    type: `START_PLAY`
+  });
+}
+
+export function seekVideoTo(seekPercentage) {
+  dispatcher.dispatch({
+    type: `SEEK_VIDEO_TO`,
+    data: seekPercentage
+  });
+}
+
+export function setCurrentTimeString(currentTimeString) {
+  dispatcher.dispatch({
+    type: `SET_CURRENT_TIMESTRING`,
+    data: currentTimeString
   });
 }
 
