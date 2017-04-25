@@ -10,7 +10,6 @@ import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
 import {randomArray, curveArrayAtRandom} from '../util/';
-//import updateSpeakerPosWebworker from '../util/updateSpeakerPosWebworker';
 
 const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
 
@@ -27,7 +26,8 @@ export default class AudioPlayer extends Component {
       currentTimeString: `00:00`,
       isSpeaker: UserStore.getIsSpeaker(),
       isSynched: UserStore.getSynched(),
-      playMode: PlaylistStore.getPlayMode()
+      playMode: PlaylistStore.getPlayMode(),
+      videoMode: PlaylistStore.getVideoMode()
     };
 
     this.waveOptionsNormal = {
@@ -59,6 +59,7 @@ export default class AudioPlayer extends Component {
     this.frequencies = [];
     this.skipFrames = 2;
     this.changingPlayModes = false;
+    this.preChangedPlayModePos = 0;
     this.isActive = true;
     this.playOnSongReady = false;
 
@@ -73,18 +74,17 @@ export default class AudioPlayer extends Component {
     this.evtShowNowPlaying = () => this.showNowPlaying();
     this.evtPausePlay = () => this.pausePlay();
     this.evtUpdatePlayMode = () => this.updatePlayMode();
+    this.evtUpdateVideoMode = () => this.updateVideoMode();
 
     window.onfocus = () => { this.isActive = true; };
     window.onblur = () => { this.isActive = false; };
 
     // -- workers --
-    //this.speakerPosWorker = new Worker(`../util/updateSpeakerPosWebworker.js`);
     this.speakerPosWorker = new Worker(`assets/workers/updateSpeakerPosWebworker.js`);
     this.speakerPosWorker.onmessage = e => {
       if (e.data.sendSocketEvent) console.log(e.data.pos, e.data.sendSocketEvent);
       PlaylistActions.setAudioPos(e.data.pos, e.data.sendSocketEvent, (new Date()).getTime());
     };
-    //console.log(`worker:`, this.speakerPosWorker);/**/
 
   }
 
@@ -99,6 +99,7 @@ export default class AudioPlayer extends Component {
     PlaylistStore.on(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.on(`PAUSE_PLAY`, this.evtPausePlay);
     PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
+    PlaylistStore.on(`VIDEO_MODE_CHANGED`, this.evtUpdateVideoMode);
     PlaylistStore.on(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
@@ -113,19 +114,21 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`SHOW_SONG_UPDATE`, this.evtShowNowPlaying);
     PlaylistStore.removeListener(`PAUSE_PLAY`, this.evtPausePlay);
     PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
+    PlaylistStore.removeListener(`VIDEO_MODE_CHANGED`, this.evtUpdateVideoMode);
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
   checkSongUpdate() {
 
     const {isSynched} = this.state;
-    let {song, pos} = this.state;
+    let {song, pos, currentTimeString} = this.state;
 
     if (isSynched) {
       song = {general: ``};
       pos = 0;
+      currentTimeString = `00:00`;
       setTimeout(() => this.updateSong(true), 10);
-      this.setState({song, pos});
+      this.setState({song, pos, currentTimeString});
     }
 
   }
@@ -220,6 +223,18 @@ export default class AudioPlayer extends Component {
 
   }
 
+  updateVideoMode() {
+
+    let {videoMode} = this.state;
+
+    videoMode = PlaylistStore.getVideoMode();
+
+    if (videoMode) this.setState({currentTimeString: `00:00`});
+
+    this.setState({videoMode});
+
+  }
+
   synchPosToSpeakerAndPlay() {
 
     let {pos} = this.state;
@@ -239,8 +254,6 @@ export default class AudioPlayer extends Component {
 
     if (this.audioContextSupported && !this.audioCtx) {
 
-      //this.audioCtx = new AudioContext();
-      //this.audioCtx = window.AudioContext || window.webkitAudioContext || false;
       const constructor = window.AudioContext || window.webkitAudioContext || AudioContext() || false;
       if (constructor) {
         this.audioCtx = new constructor();
@@ -273,6 +286,7 @@ export default class AudioPlayer extends Component {
     if (this.changingPlayModes) {
       setTimeout(() => {
         console.log(`[AudioPlayer] Changed Play Mode`);
+        this.setState({pos: this.preChangedPlayModePos});
         this.changingPlayModes = false;
       }, 100);
     }
@@ -297,13 +311,24 @@ export default class AudioPlayer extends Component {
 
     if (playing) {
       this.setPlaying(false);
+      UserActions.setSynched(false);
     }
 
   }
 
   setPlayMode(playMode) {
 
+    const {pos, videoMode} = this.state;
+
     this.changingPlayModes = true;
+    this.preChangedPlayModePos = pos;
+
+    if (videoMode) {
+      this.setPlaying(false);
+      this.setState({currentTimeString: `00:00`});
+      PlaylistActions.setVideoMode(false);
+    }
+
     PlaylistActions.setPlayMode(playMode);
 
   }
@@ -329,11 +354,6 @@ export default class AudioPlayer extends Component {
     }
 
     if (playing) {
-      //if (sendSocketEvent) console.log(`-active?-`, this.isActive, `-sendEvent?-`, sendSocketEvent);
-      //setTimeout(() => { PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()); }, 1);
-      //window.requestAnimationFrame(() => PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime()));
-      //PlaylistActions.setAudioPos(pos, sendSocketEvent, (new Date()).getTime());
-      //speakerPosWorker.updateSpeakerPos(PlaylistActions, pos, sendSocketEvent);
       this.speakerPosWorker.postMessage({pos: pos, sendSocketEvent: sendSocketEvent});
     }
 
@@ -396,7 +416,7 @@ export default class AudioPlayer extends Component {
     if (this.songHasStarted) {
 
       const {isSynched, isSpeaker} = this.state;
-      let {song, pos} = this.state;
+      let {song, pos, currentTimeString} = this.state;
 
       console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
 
@@ -410,12 +430,13 @@ export default class AudioPlayer extends Component {
       }
 
       this.prevTimeString = `00:00`;
+      currentTimeString = `00:00`;
       song = {general: ``};
       pos = 0;
       this.songHasStarted = false;
       this.audioContextSet = false;
 
-      this.setState({song, pos});
+      this.setState({song, pos, currentTimeString});
 
     }
 
@@ -423,19 +444,28 @@ export default class AudioPlayer extends Component {
 
   toggleSynched() {
 
-    const {isSpeaker, isSynched} = this.state;
-    let {song, pos} = this.state;
+    const {isSpeaker, isSynched, videoMode} = this.state;
+    let {song, pos, currentTimeString} = this.state;
 
     if (!isSpeaker) {
+
       console.log(`[AudioPlayer:361] Attempting to synch... (toggleSynched)`);
       UserActions.setSynched(!isSynched);
+
+      if (videoMode) {
+        this.setPlaying(false);
+        this.setState({currentTimeString: `00:00`});
+        PlaylistActions.setVideoMode(false);
+      }
+
     }
 
     if (!isSynched && song.general.id !== PlaylistStore.getSong(true).general.id) {
       song = {general: ``};
       pos = 0;
+      currentTimeString = `00:00`;
       setTimeout(() => this.updateSong(true), 10);
-      this.setState({song, pos});
+      this.setState({song, pos, currentTimeString});
     }
 
   }
@@ -470,11 +500,31 @@ export default class AudioPlayer extends Component {
 
   }
 
+  toggleVideoMode() {
+
+    const {videoMode, isSynched, isSpeaker} = this.state;
+
+    if (!isSpeaker) {
+
+      if (isSynched) {
+        this.toggleSynched();
+      }
+
+      this.setPlaying(false);
+      PlaylistActions.setVideoMode(!videoMode);
+
+    }
+
+  }
+
   showNowPlaying() {
 
-    const {song, playMode} = this.state;
+    const {song, playMode, videoMode} = this.state;
 
-    if (playMode === `normal` && document.querySelector(`.notification`).className.indexOf(`hide`) > - 1) {
+    const notifAlreadyShowing = document.querySelector(`.notification`).className.indexOf(`show`) > - 1;
+    console.log(`[AudioPlayer] Notif showing?`, notifAlreadyShowing);
+
+    if (playMode === `normal` && !notifAlreadyShowing && !videoMode) {
       NotifActions.addNotification(`Now playing: ${song.general.title}`);
     }
 
@@ -495,14 +545,11 @@ export default class AudioPlayer extends Component {
 
     const largeCircleScale = 0.65 + (0.35 * maxFrequencyScale);
     const mediumCircleScale = 0.85 + (0.15 * minFrequencyScale);
-    //const smallCircleScale = 0.9 + (0.1 * medFrequencyScale);
 
     transform(document.querySelector(`.audiodisc-large-left`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-large-right`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-medium-left`), {scale: [mediumCircleScale, mediumCircleScale]});
     transform(document.querySelector(`.audiodisc-medium-right`), {scale: [mediumCircleScale, mediumCircleScale]});
-    //transform(document.querySelector(`.audiodisc-small-left`), {scale: [smallCircleScale, smallCircleScale]});
-    //transform(document.querySelector(`.audiodisc-small-right`), {scale: [smallCircleScale, smallCircleScale]});
 
   }
 
@@ -590,14 +637,14 @@ export default class AudioPlayer extends Component {
 
   renderPlayer() {
 
-    const {song, playing, pos, playMode} = this.state;
+    const {song, playing, pos, playMode, videoMode} = this.state;
 
     let waveOptions = this.waveOptionsNormal;
     if (playMode === `fullscreen`) {
       waveOptions = this.waveOptionsFullscreen;
     }
 
-    if (song.general !== ``) {
+    if (song.general !== `` && !videoMode) { // render waveform progress bar
 
       const audioFile = `assets/audio/${song.general.filename}`;
 
@@ -614,13 +661,40 @@ export default class AudioPlayer extends Component {
         />
       );
 
+    } else if (videoMode) { // render normal progress bar
+
+      return (
+        <div className='video-pos-wrapper'>
+          <div className='video-pos-progress'>&nbsp;</div>
+        </div>
+      );
+
+    }
+
+  }
+
+  renderVideoModeButton() {
+
+    const {playMode, videoMode} = this.state;
+
+    if (playMode === `normal`) {
+
+      let toggleVideoClasses = `btn-video-mode off`;
+      if (videoMode) {
+        toggleVideoClasses = `btn-video-mode on`;
+      }
+
+      return (
+        <div className={toggleVideoClasses} onClick={() => this.toggleVideoMode()}><span>&nbsp;</span></div>
+      );
+
     }
 
   }
 
   renderAudioVisualisation() {
 
-    const {playMode, playing} = this.state;
+    const {playMode, playing, videoMode} = this.state;
 
     if (playMode === `normal`) {
 
@@ -637,7 +711,7 @@ export default class AudioPlayer extends Component {
         </div>
       );
 
-    } else {
+    } else if (playMode === `fullscreen` && !videoMode) {
 
       const canvasWidth = window.innerWidth;
       const canvasHeight = MAX_BAR_HEIGHT;
@@ -684,9 +758,9 @@ export default class AudioPlayer extends Component {
 
   renderFullscreenExtras() {
 
-    const {playMode, song} = this.state;
+    const {playMode, song, videoMode} = this.state;
 
-    if (playMode === `fullscreen`) {
+    if (playMode === `fullscreen` && !videoMode) {
 
       this.prevSongId = song.general.id;
 
@@ -735,10 +809,11 @@ export default class AudioPlayer extends Component {
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
         <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
-        <div className='wave-pos-wrapper'>
+        <div className='pos-wrapper'>
           {this.renderPlayer()}
         </div>
         <div className='total-duration'><span>{song.general.duration}</span></div>
+        {this.renderVideoModeButton()}
         {this.renderAudioVisualisation()}
         {this.renderFullscreenExtras()}
       </article>

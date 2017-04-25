@@ -8,4 +8,4 @@ export DownloadProgress from './DownloadProgress';
 export PlaylistQueue from './PlaylistQueue.jsx';
 export SongSummary from './SongSummary';
 export AudioPlayer from './AudioPlayer';
-export YoutubeVideo from './YoutubeVideo';
+export VideoPlayer from './VideoPlayer';

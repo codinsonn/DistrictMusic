@@ -14,8 +14,8 @@ class PlaylistStore extends EventEmitter {
     this.showSearchModal = false;
     this.showSuggestionDetail = false;
 
-    this.showYoutubeVideo = false;
     this.playMode = `normal`;
+    this.videoMode = false;
 
     this.currentSuggestion = {};
     this.defaultSuggestion = {id: ``, title: ``};
@@ -25,6 +25,8 @@ class PlaylistStore extends EventEmitter {
     this.speakerSong = this.defaultSong;
     this.userChosenSong = this.defaultSong;
     this.hasFetchedQueue = false;
+
+    this.notifShowingFor = ``;
 
     this.audioPos = 0;
     this.videoPos = 0;
@@ -249,7 +251,7 @@ class PlaylistStore extends EventEmitter {
 
   updateSpeakerConnected(speakerConnected) {
 
-    console.log(`[PlaylistStore:243] Speaker changed! connected:`, speakerConnected, `(updateSpeakerConnected)`);
+    //console.log(`[PlaylistStore:243] Speaker changed! connected:`, speakerConnected, `(updateSpeakerConnected)`);
 
     if (speakerConnected !== this.speakerConnected) {
 
@@ -386,11 +388,36 @@ class PlaylistStore extends EventEmitter {
 
   }
 
+  setVideoMode(videoMode) {
+
+    if (videoMode !== this.videoMode) {
+
+      this.videoMode = videoMode;
+
+      setTimeout(() => this.emit(`VIDEO_MODE_CHANGED`), 1);
+
+    }
+
+  }
+
   resetSearchbar() {
 
     this.currentSuggestion = this.defaultSuggestion;
 
     setTimeout(() => this.emit(`RESET_SEARCH_BAR`), 1);
+
+  }
+
+  showSongUpdate(song) {
+
+    if (song.general.id !== `` && song.general.id !== this.notifShowingFor) {
+
+      console.log(`[PlaylistStore] Showing song update...`);
+
+      this.notifShowingFor = song.general.id;
+      setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
+
+    }
 
   }
 
@@ -446,11 +473,11 @@ class PlaylistStore extends EventEmitter {
 
     if (synched && this.speakerSong.general !== ``) {
       //console.log(`[PlaylistStore] Returning speaker song:`, this.speakerSong.general.title);
-      setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
+      this.showSongUpdate(this.speakerSong);
       return this.speakerSong;
     } else if (!synched && this.userChosenSong.general !== ``) {
       //console.log(`[PlaylistStore] Returning user chosen song:`, this.userChosenSong.general.title);
-      setTimeout(() => this.emit(`SHOW_SONG_UPDATE`), 1000);
+      this.showSongUpdate(this.userChosenSong);
       return this.userChosenSong;
     } else if (this.queue[0]) {
       //console.log(`[PlaylistStore] Returning first in queue:`, this.queue[0].general.title);
@@ -464,6 +491,12 @@ class PlaylistStore extends EventEmitter {
   getPlayMode() {
 
     return this.playMode;
+
+  }
+
+  getVideoMode() {
+
+    return this.videoMode;
 
   }
 
@@ -521,6 +554,10 @@ class PlaylistStore extends EventEmitter {
 
     case `SET_PLAY_MODE`:
       this.setPlayMode(action.data);
+      break;
+
+    case `SET_VIDEO_MODE`:
+      this.setVideoMode(action.data);
       break;
 
     case `PAUSE_PLAY`:

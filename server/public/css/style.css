@@ -142,7 +142,7 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: rgba(33, 33, 33, .7);
+  background-color: rgba(25, 25, 25, .8);
   z-index: 50;
 }
 
@@ -153,7 +153,7 @@ body {
   height: 3px;
   top: 0;
   left: 0;
-  z-index: 70;
+  z-index: 120;
   opacity: 0;
   -webkit-transition: width 2s ease-in-out 0s, background .5s ease-in-out 0s;
   transition: width 2s ease-in-out 0s, background .5s ease-in-out 0s;
@@ -179,6 +179,83 @@ body {
   background-color: #60ac7b;
 }
 
+/* --- Video Player ------------------------------------------------------------------------ */
+
+.video-pos-wrapper {
+  position: absolute;
+  width: calc(100vw - 260px);
+  height: calc(100% - 15px);
+  top: 7px;
+  left: 5px;
+  background-color: #c6c6c6;
+}
+
+.video-pos-progress {
+  position: absolute;
+  width: 0%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #fecb58;
+}
+
+.video-modal {
+  position: fixed;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+
+.video-modal .lightbox {
+  z-index: 100;
+}
+
+.video-wrapper {
+  position: absolute;
+  display: block;
+  background-color: white;
+  overflow: hidden;
+  z-index: 110;
+}
+
+.player-wrapper {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+}
+
+.video-modal .current-song-wrapper {
+  position: absolute;
+  display: block;
+  width: calc(100% - 20px);
+  top: calc(50vh + 10px);
+  left: 10px;
+}
+
+@media (min-width: 751px) {
+
+  .video-wrapper {
+    width: calc(50vh * 1.64 + 18px);
+    height: calc(50vh + 90px);
+    left: calc(50vw - 82vh / 2 - 10px);
+    top: calc(50vh - (50vh + 100px) / 2 - 10px);
+  }
+
+}
+
+@media (max-width: 750px) {
+
+  .video-wrapper {
+    width: 90vw;
+    height: calc(90vw * .6 + 100px);
+    left: 5vw;
+    top: calc(50vh - (90vw * .6 + 100px) / 2);
+  }
+
+}
+
 /* --- Audio Player: Normal ---------------------------------------------------------------- */
 
 .audio-player-wrapper {
@@ -188,7 +265,7 @@ body {
   bottom: 0;
   left: 0;
   overflow: hidden;
-  z-index: 60;
+  z-index: 110;
 }
 
 .audio-player-wrapper.play-mode-normal {
@@ -196,12 +273,12 @@ body {
   background-color: #272822;
 }
 
-.wave-pos-wrapper {
+.pos-wrapper {
   display: block;
   cursor: ew-resize;
 }
 
-.play-mode-normal .wave-pos-wrapper {
+.play-mode-normal .pos-wrapper {
   position: absolute;
   width: calc(100vw - 250px);
   height: 32px;
@@ -209,7 +286,7 @@ body {
   left: 125px;
 }
 
-.is-speaker .wave-pos-wrapper {
+.is-speaker .pos-wrapper {
   cursor: not-allowed;
 }
 
@@ -219,7 +296,8 @@ body {
 .play-mode-normal .total-duration,
 .play-mode-normal .btn-play-next,
 .play-mode-normal .btn-play-prev,
-.play-mode-normal .visualisation {
+.play-mode-normal .visualisation,
+.play-mode-normal .btn-video-mode {
   position: absolute;
   display: block;
   width: 40px;
@@ -240,7 +318,8 @@ body {
 .play-mode-normal .audio-visualisation,
 .btn-exit-fullscreen span,
 .btn-play-next span,
-.btn-play-prev span {
+.btn-play-prev span,
+.btn-video-mode span {
   position: absolute;
   display: block;
   background-repeat: no-repeat;
@@ -255,7 +334,8 @@ body {
 }
 
 .btn-toggle-synch span,
-.btn-exit-fullscreen span {
+.btn-exit-fullscreen span,
+.btn-video-mode span {
   top: calc(50% - 9px);
   left: calc(50% - 10px);
   width: 20px;
@@ -296,6 +376,22 @@ body {
   background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj48c3ZnIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMjUgMTI1IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHN0eWxlPSJmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6MS40MTQyMTsiPjxnPjxwYXRoIGQ9Ik0xMTYuMzUsMTI0LjVjMy4zLDAgNiwtMi42OTkgNiwtNmwwLC0xMTIuNWMwLC0zLjMgLTIuNywtNiAtNiwtNmwtMzYsMGMtMy4zLDAgLTYsMi43IC02LDZsMCwxMTIuNWMwLDMuMzAxIDIuNyw2IDYsNmwzNiwwWiIgc3R5bGU9ImZpbGw6I2ZmZjtmaWxsLXJ1bGU6bm9uemVybzsiLz48cGF0aCBkPSJNNDQuMTUsMTI0LjVjMy4zLDAgNiwtMi42OTkgNiwtNmwwLC0xMTIuNWMwLC0zLjMgLTIuNywtNiAtNiwtNmwtMzYsMGMtMy4zLDAgLTYsMi43IC02LDZsMCwxMTIuNWMwLDMuMzAxIDIuNyw2IDYsNmwzNiwwWiIgc3R5bGU9ImZpbGw6I2ZmZjtmaWxsLXJ1bGU6bm9uemVybzsiLz48L2c+PC9zdmc+);
 }
 
+.play-mode-normal .btn-video-mode.on span {
+  background-image: url(/assets/svg/btnVideoModeOn.svg);
+}
+
+.play-mode-normal .btn-video-mode.on:hover span {
+  background-image: url(/assets/svg/btnVideoModeOff.svg);
+}
+
+.play-mode-normal .btn-video-mode.off span {
+  background-image: url(/assets/svg/btnVideoModeOff.svg);
+}
+
+.play-mode-normal .btn-video-mode.off:hover span {
+  background-image: url(/assets/svg/btnVideoModeOn.svg);
+}
+
 .current-time span,
 .total-duration span {
   position: absolute;
@@ -321,6 +417,10 @@ body {
 
 .play-mode-normal .total-duration {
   right: 85px;
+}
+
+.play-mode-normal .btn-video-mode {
+  right: 45px;
 }
 
 .play-mode-normal .visualisation {
@@ -419,13 +519,13 @@ body {
   right: calc(50% - 65px);
 }
 
-.play-mode-fullscreen .wave-pos-wrapper {
+.play-mode-fullscreen .pos-wrapper {
   position: fixed;
   width: 60vw;
   height: 80px;
   top: calc(50vh - 15px);
   left: 20vw;
-  z-index: 70;
+  z-index: 100;
 }
 
 .play-mode-fullscreen .btn-toggle-synch,
@@ -438,7 +538,7 @@ body {
   width: 40px;
   height: 40px;
   top: calc(50vh + 70px);
-  z-index: 80;
+  z-index: 110;
 }
 
 .is-speaker .btn-play-next span,
@@ -473,7 +573,7 @@ body {
   width: 40px;
   height: 40px;
   top: calc(50vh + 5px);
-  z-index: 80;
+  z-index: 110;
 }
 
 .play-mode-fullscreen .current-time {
@@ -575,26 +675,30 @@ body {
           transform: scaleX(-1) scaleY(-1);
 }
 
-.current-song-wrapper {
+.play-mode-fullscreen .current-song-wrapper {
   position: fixed;
   display: block;
   top: calc(50vh + 115px);
 }
 
+.video-modal .song-thumb:hover,
 .play-mode-fullscreen .song-thumb:hover {
   cursor: default;
 }
 
+.video-modal .song-info:hover,
 .play-mode-fullscreen .song-info:hover {
   cursor: default;
 }
 
+.video-modal .song-title,
 .play-mode-fullscreen .song-title {
   top: 6px;
   left: 6px;
   font-size: 1.9em;
 }
 
+.video-modal .submitter-info,
 .play-mode-fullscreen .submitter-info {
   bottom: 6px;
   left: 6px;
@@ -1163,9 +1267,16 @@ body {
   width: 100vw;
   height: 42px;
   left: 0;
-  bottom: 50px;
   overflow: hidden;
-  z-index: 55;
+  z-index: 120;
+}
+
+.notifications.normal {
+  bottom: 50px;
+}
+
+.notifications.fullscreen {
+  bottom: 0;
 }
 
 .notification {

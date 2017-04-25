@@ -72,8 +72,7 @@ class UserStore extends EventEmitter {
 
         console.log(`[UserStore:73] Got userSession! (setProfileSession)`);
 
-        const socket = SocketStore.getSocket();
-        socket.emit(`SET_SESSION_SOCKET_ID`);
+        SocketStore.emit(`SET_SESSION_SOCKET_ID`);
 
         this.emit(`USER_PROFILE_CHANGED`);
 

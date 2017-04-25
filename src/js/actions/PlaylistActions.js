@@ -94,3 +94,10 @@ export function setPlayMode(playMode) {
     data: playMode
   });
 }
+
+export function setVideoMode(videoMode) {
+  dispatcher.dispatch({
+    type: `SET_VIDEO_MODE`,
+    data: videoMode
+  });
+}

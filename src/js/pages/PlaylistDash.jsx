@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail, DownloadProgress, PlaylistQueue, AudioPlayer} from '../components';
+import {Notification, Profile, LoginModal, SearchModal, SuggestionDetail, DownloadProgress, PlaylistQueue, AudioPlayer, VideoPlayer} from '../components';
 import UserStore from '../stores/UserStore';
 import SocketStore from '../stores/SocketStore';
 import * as UserActions from '../actions/UserActions';
@@ -19,10 +19,14 @@ export default class PlaylistDash extends Component {
       userProfile: UserStore.getProfile()
     };
 
+    // -- Non State Vars ---
+    this.waitingForSocketConnect = false;
+
     // -- Events ----
     this.evtUpdateUserProfile = () => this.updateUserProfile();
     this.evtSetAsSpeaker = () => this.setSpeaker(true);
     this.evtUnsetAsSpeaker = () => this.setSpeaker(false);
+    this.evtCheckSocketAndSpeaker = () => this.checkSocketAndSpeaker();
 
   }
 
@@ -30,19 +34,23 @@ export default class PlaylistDash extends Component {
     UserStore.on(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
     UserStore.on(`SET_AS_SPEAKER`, this.evtSetAsSpeaker);
     UserStore.on(`UNSET_AS_SPEAKER`, this.evtUnsetAsSpeaker);
+    //SocketStore.on(`SOCKET_ID_CHANGED`, this.evtCheckSocketAndSpeaker);
   }
 
   componentWillUnmount() {
     UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtUpdateUserProfile);
     UserStore.removeListener(`SET_AS_SPEAKER`, this.evtSetAsSpeaker);
     UserStore.removeListener(`UNSET_AS_SPEAKER`, this.evtUnsetAsSpeaker);
+    //SocketStore.removeListener(`SOCKET_ID_CHANGED`, this.evtCheckSocketAndSpeaker);
   }
 
   componentDidMount() {
 
     if (this.props.status && this.props.status === `isSpeaker`) {
 
-      SocketStore.on(`SET_SOCKET_ID`, () => this.checkSocketAndSpeaker());
+      console.log(`[PlaylistDash] Waiting for socket connect...`);
+      //this.waitingForSocketConnect = true;
+      this.checkSocketAndSpeaker();
 
     } else if (this.props.status && this.props.status === `loginFailed`) {
       NotifActions.addError(`Not a District01 Google+ account`);
@@ -89,11 +97,13 @@ export default class PlaylistDash extends Component {
   checkSocketAndSpeaker() {
 
     const socketId = SocketStore.getSocketId();
-    console.log(`--- [PlaylistDash] Socket Id:`, socketId, `---`);
 
-    //if (socketId !== ``) {
+    if (socketId !== ``) {
 
-    users.setSpeaker(true, socketId)
+      const socketId = SocketStore.getSocketId();
+      console.log(`--- [PlaylistDash] Socket Id:`, socketId, `---`);
+
+      users.setSpeaker(true, socketId)
         .then(res => {
 
           // Success!
@@ -112,9 +122,11 @@ export default class PlaylistDash extends Component {
         })
       ;
 
-    /*} else {
+    } else {
+
       setTimeout(() => this.checkSocketAndSpeaker(), 100);
-    }*/
+
+    }
 
   }
 
@@ -138,6 +150,7 @@ export default class PlaylistDash extends Component {
         <PlaylistQueue />
         <Notification />
         <AudioPlayer />
+        <VideoPlayer />
       </div>
     );
 

@@ -203,6 +203,21 @@ export default class SongSummary extends Component {
 
   }
 
+  playVideoHandler() {
+
+    if (!UserStore.getIsSpeaker() && !this.fsPreview) {
+
+      const {song} = this.state;
+
+      UserActions.setSynched(false);
+
+      setTimeout(() => PlaylistActions.setVideoMode(true), 1);
+      setTimeout(() => PlaylistActions.setSong(song), 10);
+
+    }
+
+  }
+
   renderDuration(duration) {
 
     if (!this.fsPreview) {
@@ -294,7 +309,7 @@ export default class SongSummary extends Component {
           <span className={scoreClasses}>{currentQueueScore}</span>
           <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `downvote`)}>&nbsp;</span>
         </section>
-        <section className='song-thumb' style={thumbStyle}>
+        <section className='song-thumb' style={thumbStyle} onClick={() => this.playVideoHandler()}>
           {this.renderDuration(duration)}
         </section>
         <section className='song-info' onClick={() => this.playSongHandler()}>

@@ -30,19 +30,23 @@ export default class SearchModal extends Component {
     this.evtUpdateLoggedIn = () => this.updateLoggedIn();
     this.evtResetSearchBar = () => this.resetSearchbar();
     this.evtSetVisible = () => this.setVisible();
-
+    this.evtSetEnabled = () => this.setEnabled(true);
   }
 
   componentWillMount() {
     UserStore.on(`USER_PROFILE_CHANGED`, this.evtUpdateLoggedIn);
     PlaylistStore.on(`RESET_SEARCH_BAR`, this.evtResetSearchBar);
     PlaylistStore.on(`SHOW_SEARCH_MODAL_CHANGED`, this.evtSetVisible);
+    PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtSetEnabled);
+    PlaylistStore.on(`VIDEO_MODE_CHANGED`, this.evtSetEnabled);
   }
 
   componentWillUnmount() {
     UserStore.removeListener(`USER_PROFILE_CHANGED`, this.evtUpdateLoggedIn);
     PlaylistStore.removeListener(`RESET_SEARCH_BAR`, this.evtResetSearchBar);
     PlaylistStore.removeListener(`SHOW_SEARCH_MODAL_CHANGED`, this.evtSetVisible);
+    PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtSetEnabled);
+    PlaylistStore.removeListener(`VIDEO_MODE_CHANGED`, this.evtSetEnabled);
   }
 
   componentDidMount() {
@@ -56,6 +60,24 @@ export default class SearchModal extends Component {
     visible = PlaylistStore.getShowSearchModal();
 
     this.setState({visible});
+
+  }
+
+  setEnabled() {
+
+    let {searchEnabled} = this.state;
+    const {isLoggedIn} = this.state;
+    const $searchInput = document.querySelector(`.search-query`);
+
+    if (isLoggedIn && PlaylistStore.getPlayMode() === `normal` && PlaylistStore.getVideoMode() === false) {
+      searchEnabled = true;
+      $searchInput.disabled = false;
+    } else {
+      searchEnabled = false;
+      $searchInput.disabled = true;
+    }
+
+    this.setState({searchEnabled});
 
   }
 

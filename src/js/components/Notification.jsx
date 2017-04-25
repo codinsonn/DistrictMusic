@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import NotificationsStore from '../stores/NotificationsStore';
-import * as NotifActions from '../actions/NotifActions';
+import PlaylistStore from '../stores/PlaylistStore';
 
 export default class Notification extends Component {
 
@@ -9,110 +9,129 @@ export default class Notification extends Component {
     super(props, context);
 
     this.state = {
-      type: ``,
-      message: ``
+      currentNotifType: ``,
+      currentNotifMessage: ``,
+      playMode: `normal`,
+      notifications: []
     };
 
-    // -- Non state vars ----
-    this.hidden = true;
-    this.cancelTimeout = false;
-
     // -- Events ----
-    this.evtUpdateNotification = () => this.updateNotification();
-    this.evtHideNotification = () => this.hideNotification();
+    this.evtAddNotification = () => this.addNotification();
+    this.evtHideNotifications = () => this.hideNotifications();
+    this.evtUpdatePlayMode = () => this.updatePlayMode();
 
   }
 
   componentWillMount() {
-    NotificationsStore.on(`NOTIFICATIONS_CHANGED`, this.evtUpdateNotification);
-    NotificationsStore.on(`HIDE_NOTIFICATION`, this.evtHideNotification);
+    NotificationsStore.on(`NOTIFICATIONS_CHANGED`, this.evtAddNotification);
+    NotificationsStore.on(`HIDE_NOTIFICATION`, this.evtHideNotifications);
+    PlaylistStore.on(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
   }
 
   componentWillUnmount() {
-    NotificationsStore.removeListener(`NOTIFICATIONS_CHANGED`, this.evtUpdateNotification);
-    NotificationsStore.removeListener(`HIDE_NOTIFICATION`, this.evtHideNotification);
+    NotificationsStore.removeListener(`NOTIFICATIONS_CHANGED`, this.evtAddNotification);
+    NotificationsStore.removeListener(`HIDE_NOTIFICATION`, this.evtHideNotifications);
+    PlaylistStore.removeListener(`PLAY_MODE_CHANGED`, this.evtUpdatePlayMode);
   }
 
-  componentDidMount() {
+  addNotification() {
 
-  }
-
-  updateNotification() {
-
-    let {type, message} = this.state;
+    const {currentNotifType, currentNotifMessage, notifications} = this.state;
 
     const notif = NotificationsStore.getNext();
-    type = notif.type;
-    message = notif.message;
+    if (notifications.length === 0) {
+      setTimeout(() => { this.setNext(); }, 1);
+    }
+    notifications.push(notif);
 
-    this.setState({type, message});
+    this.setState({currentNotifType, currentNotifMessage, notifications});
+
+  }
+
+  updatePlayMode() {
+
+    let {playMode} = this.state;
+
+    playMode = PlaylistStore.getPlayMode();
+
+    this.setState({playMode});
+
+  }
+
+  setNext() {
+
+    let {currentNotifType, currentNotifMessage} = this.state;
+    const {notifications} = this.state;
+
+    if (notifications.length > 0) {
+      currentNotifType = notifications[0].type;
+      currentNotifMessage = notifications[0].message;
+      setTimeout(() => this.showNotification(), 600);
+      setTimeout(() => this.hideNotification(), 5400);
+      setTimeout(() => this.deleteNotifAndPlayNext(), 6000);
+    } else {
+      currentNotifType = ``;
+      currentNotifMessage = ``;
+    }
+
+    this.setState({currentNotifType, currentNotifMessage});
 
   }
 
   showNotification() {
 
-    const $this = document.querySelector(`.notification`);
-
-    if (this.hidden && !this.cancelTimeout) {
-
-      const {type} = this.state;
-      const notificationClasses = `notification ${type} show`;
-
-      $this.className = notificationClasses;
-
-      this.hidden = false;
-
-    }
-
-    if (this.cancelTimeout) {
-      this.cancelTimeout = false;
-    }
+    const {currentNotifType} = this.state;
+    document.querySelector(`.notification`).className = `notification ${currentNotifType} show`;
 
   }
 
-  hideNotification() {
+  hideNotification(triggerDelete = false) {
 
-    const $this = document.querySelector(`.notification`);
+    const {currentNotifType} = this.state;
+    document.querySelector(`.notification`).className = `notification ${currentNotifType} hide`;
+    if (triggerDelete) { setTimeout(() => this.deleteNotifAndPlayNext(), 600); }
 
-    if (!this.hidden) {
+  }
 
-      const {type} = this.state;
-      const notificationClasses = `notification ${type} hide`;
+  deleteNotifAndPlayNext() {
 
-      $this.className = notificationClasses;
+    let {notifications} = this.state;
+    notifications = notifications.slice(1, notifications.length);
+    this.setState({notifications});
+    this.setNext();
 
-      setTimeout(() => NotifActions.removeNotification(), 600);
+  }
 
-      this.hidden = true;
+  hideNotifications() {
 
-    }
+    this.hideNotification();
+    setTimeout(() => this.deleteNotifications(), 600);
+
+  }
+
+  deleteNotifications() {
+
+    let {currentNotifType, currentNotifMessage, notifications} = this.state;
+
+    notifications = [];
+    currentNotifType = ``;
+    currentNotifMessage = ``;
+
+    this.setState({currentNotifType, currentNotifMessage, notifications});
 
   }
 
   render() {
 
-    const {type, message} = this.state;
-    const notificationClasses = `notification ${type} hide`;
-
-    if (type !== `` && message !== ``) {
-
-      const $notif = document.querySelector(`.notification`);
-
-      if ($notif.className.indexOf(`show`) > - 1) {
-        this.cancelTimeout = true;
-      } else {
-        setTimeout(() => this.showNotification(), 600);
-      }
-
-      setTimeout(() => this.hideNotification(), 6000);
-
-    }
+    const {currentNotifType, currentNotifMessage, playMode} = this.state;
+    const notificationClasses = `notification ${currentNotifType} hide`;
+    const notificationsClasses = `notifications ${playMode}`;
 
     return (
-      <article className='notifications'>
-        <section className={notificationClasses} onClick={() => this.hideNotification()}>
-          <span className='icon' onClick={() => this.hideNotification()}>&nbsp;</span>
-          <span className='notifText'>{message}</span>
+      <article className={notificationsClasses}>
+        <section className={notificationClasses} onClick={() => this.hideNotification(true)}>
+          <span className='icon' onClick={() => this.hideNotification(true)}>&nbsp;</span>
+          <span className='notifText'>{currentNotifMessage}</span>
         </section>
       </article>
     );
