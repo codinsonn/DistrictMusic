@@ -31,6 +31,7 @@ export default class SearchModal extends Component {
     this.evtResetSearchBar = () => this.resetSearchbar();
     this.evtSetVisible = () => this.setVisible();
     this.evtSetEnabled = () => this.setEnabled(true);
+
   }
 
   componentWillMount() {

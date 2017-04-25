@@ -121,7 +121,7 @@ class PlaylistStore extends EventEmitter {
     if (UserStore.getIsSpeaker() && this.queue[0].general.id !== `` && this.queue[0].general !== this.speakerSong.general) {
 
       this.updateSpeakerSong();
-      this.userChosenSong = this.speakerSong;
+      if (UserStore.getSynched()) this.userChosenSong = this.speakerSong;
 
     } else if (this.speakerSong.general !== `` && this.queue[0].general.id !== this.speakerSong.general.id) {
 

@@ -211,23 +211,28 @@ export default class SongSummary extends Component {
 
       UserActions.setSynched(false);
 
-      setTimeout(() => PlaylistActions.setVideoMode(true), 1);
-      setTimeout(() => PlaylistActions.setSong(song), 10);
+      setTimeout(() => PlaylistActions.setSong(song), 1);
+      setTimeout(() => PlaylistActions.setVideoMode(true), 10);
 
-    }
-
-  }
-
-  renderDuration(duration) {
-
-    if (!this.fsPreview) {
-      return <span className='song-duration'>{duration}</span>;
     }
 
   }
 
   shouldComponentUpdate (prevProps, prevState) {
     return !_.isEqual(this.state, prevState);
+  }
+
+  renderThumbExtras(duration) {
+
+    if (!this.fsPreview) {
+      return (
+        <div>
+          <div className='play-video-button'>&nbsp;</div>
+          <span className='song-duration'>{duration}</span>
+        </div>
+      );
+    }
+
   }
 
   render() {
@@ -310,7 +315,7 @@ export default class SongSummary extends Component {
           <span className={downvoteButtonClasses} data-enabled={buttonsEnabled} onClick={e => this.vote(e, `downvote`)}>&nbsp;</span>
         </section>
         <section className='song-thumb' style={thumbStyle} onClick={() => this.playVideoHandler()}>
-          {this.renderDuration(duration)}
+          {this.renderThumbExtras(duration)}
         </section>
         <section className='song-info' onClick={() => this.playSongHandler()}>
           <span className={titleClasses}>{tags}{title}</span>

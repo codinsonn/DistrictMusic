@@ -502,7 +502,7 @@ export default class AudioPlayer extends Component {
 
   toggleVideoMode() {
 
-    const {videoMode, isSynched, isSpeaker} = this.state;
+    const {videoMode, isSynched, isSpeaker, song} = this.state;
 
     if (!isSpeaker) {
 
@@ -511,7 +511,10 @@ export default class AudioPlayer extends Component {
       }
 
       this.setPlaying(false);
-      PlaylistActions.setVideoMode(!videoMode);
+
+      //PlaylistActions.setVideoMode(!videoMode);
+      if (!videoMode) { setTimeout(() => PlaylistActions.setSong(song), 1); }
+      setTimeout(() => PlaylistActions.setVideoMode(!videoMode), 10);
 
     }
 
@@ -569,7 +572,7 @@ export default class AudioPlayer extends Component {
       let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
-      this.skipFrames = 8; // number of frames to skip in button mode
+      this.skipFrames = 10; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
