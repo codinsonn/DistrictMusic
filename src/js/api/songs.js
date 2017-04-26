@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import {checkStatus} from '../util/';
 import {api} from '../helpers/globals.js';
 
-//const base = `http://localhost:3020`;
 console.log(`[API:Songs] using:`, api);
 const base = api;
 

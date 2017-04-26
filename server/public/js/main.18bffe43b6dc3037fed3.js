@@ -28255,7 +28255,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-//const base = `http://localhost:3020`;
 console.log('[API:Songs] using:', __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */]);
 var base = __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */];
 
@@ -54918,7 +54917,6 @@ var App = function (_Component) {
 
 var host = function () {
 
-  //if (location.hostname === `localhost` || location.hostname === `127.0.0.1`) {
   if (location.hostname.indexOf('localhost') > -1 || location.hostname.indexOf('127.0.0.1') > -1) {
     console.log('[globals] location hostname:', location.hostname);
     return 'http://localhost:3020';
@@ -81590,4 +81588,4 @@ module.exports = __webpack_require__(301);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.2cbe92b151879cc2766e.js.map
+//# sourceMappingURL=main.18bffe43b6dc3037fed3.js.map
