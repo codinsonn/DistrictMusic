@@ -16,8 +16,11 @@ module.exports = function(socket, event, data) {
       EmitHelper.broadcast('SPEAKER_POS_UPDATED', data);
       break;
 
+    case "SOCKET_ID_CHANGED":
+      break;
+
     default:
-      console.log("Socket type not defined."); // eslint-disable-line no-console
+      console.log("Socket type not defined:", event); // eslint-disable-line no-console
 
   }
 

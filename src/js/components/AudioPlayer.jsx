@@ -600,7 +600,7 @@ export default class AudioPlayer extends Component {
     if (maxFrequencyScale < 0.4) { maxFrequencyScale = 1; }
 
     const largeCircleScale = 0.65 + (0.35 * maxFrequencyScale);
-    const mediumCircleScale = 0.85 + (0.15 * minFrequencyScale);
+    const mediumCircleScale = 0.9 + (0.1 * minFrequencyScale);
 
     transform(document.querySelector(`.audiodisc-large-left`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-large-right`), {scale: [largeCircleScale, largeCircleScale]});

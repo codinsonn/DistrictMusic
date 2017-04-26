@@ -1,6 +1,6 @@
 require("rootpath")();
 var config = require(__base + "config");
-var authConfig = require(__base + "config/auth");
+//var authConfig = require(__base + "config/auth");
 var passport = require("passport");
 var UsersController = require(__base + "app/controllers/users/v1");
 //var UserHelper = require(__base + "app/controllers/users/v1/helpers");
@@ -19,9 +19,9 @@ module.exports = (app) => {
   });
 
   passport.use(new GoogleStrategy({
-    clientID: authConfig.googleAuth.clientID,
-    clientSecret: authConfig.googleAuth.clientSecret,
-    callbackURL: authConfig.googleAuth.callbackURL,
+    clientID: config.googleAuth.clientID,
+    clientSecret: config.googleAuth.clientSecret,
+    callbackURL: config.googleAuth.callbackURL,
     passReqToCallback: true
   }, (req, token, refreshToken, profile, done) => PassportHelper.auth(req, token, refreshToken, profile, done)));/**/
 

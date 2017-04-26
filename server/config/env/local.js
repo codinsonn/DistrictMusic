@@ -21,6 +21,12 @@ module.exports = {
     session: {
       domain: ""
     },
+    'googleAuth' : {
+      'clientID': "988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com",
+      'clientSecret': "6RoBvh-aw5nUE4iOnNDHB2TE",
+      'callbackURL': 'http://localhost:3020/auth/google/callback',
+      'apiKey': 'AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU'
+    },
     auto: {
       resetVetos: 2, // amount of 'vetos left' to reset to every week
       resetSuperVotes: 5, // amount of 'super votes left' to reset to every week

@@ -1,7 +1,9 @@
 import fetch from 'isomorphic-fetch';
 import {checkStatus/*, buildBody*/} from '../util/';
+import {api} from '../helpers/globals.js';
 
-const base = `http://localhost:3020`;
+console.log(`[API:Users] using:`, api);
+const base = api;
 
 const getOptions = {
   method: `get`,
