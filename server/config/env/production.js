@@ -5,8 +5,8 @@ module.exports = {
     logs: false,
     server: {
       port: 3020,
-      domain: "http://districtmusic.herokuapp.com/",
-      frontend: "http://districtmusic.herokuapp.com/",
+      domain: "https://districtmusic.herokuapp.com/",
+      frontend: "https://districtmusic.herokuapp.com/",
       frontendPath: "public/"
     },
     mongo: {
