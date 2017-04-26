@@ -1,7 +1,4 @@
 var session = require("express-session");
-/*var mongoStore = require("connect-mongo")({
-    session: session
-});*/
 var config = require(__base + "config");
 
 // Set express session settings

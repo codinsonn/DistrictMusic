@@ -15,7 +15,14 @@ module.exports = {
       db: 'districtmusic'
     },
     session: {
-      domain: "districtmusic"
+      name: "D01Music",
+      secret: "d1str1ctO1Mus1c1sGr3@t",
+      domain: "districtmusic.herokuapp.com",
+      //domain: "",
+      collections: "sessions",
+      resave: true,
+      saveUninitialized: true,
+      cookieExpiration: 604800000 // 1000 * 60 * 60 * 24 * 7
     },
     'googleAuth' : {
       'clientID': "988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com",
