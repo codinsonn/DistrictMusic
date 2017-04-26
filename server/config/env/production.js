@@ -1,5 +1,4 @@
 require("rootpath")();
-var platforms = require("./platforms");
 
 module.exports = {
     production: true,
