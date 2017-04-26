@@ -1,4 +1,2 @@
 node_modules/
 src/assets/img/exports/
-server/uploads/*
-server/public/assets/audio/*
