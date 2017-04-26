@@ -94,7 +94,15 @@ body {
   top: 0;
   left: 0;
   background-color: #fecb58;
-  /*background-color: var(--red);*/
+}
+
+.video-pos-scrubber {
+  position: absolute;
+  width: 2px;
+  height: 140%;
+  top: -20%;
+  left: 0;
+  background-color: white;
 }
 
 .video-modal {
@@ -132,13 +140,70 @@ body {
   left: 10px;
 }
 
+.btn-play-prev-video,
+.btn-play-next-video {
+  position: fixed;
+  display: block;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.btn-play-prev-video span,
+.btn-play-next-video span {
+  position: absolute;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transition: background .4s;
+}
+
+.btn-play-prev-video span {
+  background-image: url(../assets/svg/btnPlayPrevVideo.svg);
+}
+
+.btn-play-next-video span {
+  background-image: url(../assets/svg/btnPlayNextVideo.svg);
+}
+
+.btn-play-prev-video:hover span {
+  background-image: url(../assets/svg/btnPlayPrevVideoHover.svg);
+}
+
+.btn-play-next-video:hover span {
+  background-image: url(../assets/svg/btnPlayNextVideoHover.svg);
+}
+
 @media (min-width: 751px) {
 
   .video-wrapper {
-    width: calc(50vh * 1.64 + 18px);
+    width: calc(50vh * 1.65 + 18px);
     height: calc(50vh + 80px);
     left: calc(50vw - calc(50vh * 1.64) / 2 - 10px);
     top: calc(50vh - calc(50vh + 100px) / 2 - 10px);
+  }
+
+  .btn-play-prev-video,
+  .btn-play-next-video {
+    width: 40px;
+    height: 60px;
+    top: calc(50vh - 50px);
+  }
+
+  .btn-play-prev-video {
+    left: calc(50vw - calc(50vh * 1.64) / 2 - 80px);
+  }
+
+  .btn-play-next-video {
+    right: calc(50vw - calc(50vh * 1.64) / 2 - 80px);
+  }
+
+  .btn-play-prev-video span,
+  .btn-play-next-video span {
+    width: 40px;
+    height: 40px;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
   }
 
 }
@@ -150,6 +215,29 @@ body {
     height: calc(90vw * .6 + 80px);
     left: 5vw;
     top: calc(50vh - calc(90vw * .6 + 100px) / 2);
+  }
+
+  .btn-play-prev-video,
+  .btn-play-next-video {
+    width: 24px;
+    height: 24px;
+    top: calc(50vh + calc(90vw * .6 + 100px) / 2);
+  }
+
+  .btn-play-prev-video {
+    left: calc(50vw - 70px);
+  }
+
+  .btn-play-next-video {
+    right: calc(50vw - 70px);
+  }
+
+  .btn-play-prev-video span,
+  .btn-play-next-video span {
+    width: 24px;
+    height: 24px;
+    top: 0;
+    left: 0;
   }
 
 }

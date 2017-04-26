@@ -30,7 +30,8 @@ export default class SongSummary extends Component {
       song: props,
       uservote: props.uservote,
       voteMode: props.voteMode,
-      playing: false
+      playing: false,
+      disableButtons: props.disableButtons
     };
 
     // -- Non State Vars ----
@@ -58,7 +59,7 @@ export default class SongSummary extends Component {
 
     if (this.props !== nextProps) {
 
-      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode} = this.state;
+      let {order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode, disableButtons} = this.state;
 
       order = nextProps.order;
       id = nextProps.general.id;
@@ -75,8 +76,9 @@ export default class SongSummary extends Component {
       song = nextProps;
       uservote = nextProps.uservote;
       voteMode = nextProps.voteMode;
+      disableButtons = nextProps.disableButtons;
 
-      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode});
+      this.setState({order, id, title, duration, filename, currentQueueScore, legacyScore, isPlaying, isVetoed, thumbs, lastAddedBy, originallyAddedBy, song, uservote, voteMode, disableButtons});
 
     }
 
@@ -237,7 +239,7 @@ export default class SongSummary extends Component {
 
   render() {
 
-    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode, playing} = this.state;
+    const {order, title, duration, currentQueueScore, thumbs, lastAddedBy, isPlaying, isVetoed, uservote, voteMode, playing, disableButtons} = this.state;
 
     const thumbStyle = {backgroundImage: `url(${thumbs.default.url})`};
     const fromNow = moment(lastAddedBy.added).fromNow();
@@ -290,7 +292,7 @@ export default class SongSummary extends Component {
       if (this.fsPreview) tags = ``;
     }
 
-    if (UserStore.getIsSpeaker()) {
+    if (disableButtons || UserStore.getIsSpeaker()) {
       buttonsEnabled = `disabled`;
     }
 
@@ -335,5 +337,6 @@ SongSummary.propTypes = {
   thumbs: PropTypes.object,
   uservote: PropTypes.object,
   voteMode: PropTypes.string,
-  fsPreview: PropTypes.bool
+  fsPreview: PropTypes.bool,
+  disableButtons: PropTypes.bool
 };

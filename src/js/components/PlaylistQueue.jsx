@@ -91,9 +91,10 @@ export default class PlaylistQueue extends Component {
         }
 
         const fsPreview = false;
+        const disableButtons = false;
         const key = `${song.general.id}`;
 
-        return <SongSummary {...song} order={i} key={key} fsPreview={fsPreview} voteMode={voteMode} />;
+        return <SongSummary {...song} order={i} key={key} fsPreview={fsPreview} voteMode={voteMode} disableButtons={disableButtons} />;
 
       });
 

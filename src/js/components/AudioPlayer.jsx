@@ -62,6 +62,7 @@ export default class AudioPlayer extends Component {
     this.preChangedPlayModePos = 0;
     this.isActive = true;
     this.playOnSongReady = false;
+    this.mouseDown = false;
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
@@ -80,6 +81,7 @@ export default class AudioPlayer extends Component {
 
     window.onfocus = () => { this.isActive = true; };
     window.onblur = () => { this.isActive = false; };
+    window.onmouseup = () => { this.mouseDown = false; };
 
     // -- workers --
     this.speakerPosWorker = new Worker(`assets/workers/updateSpeakerPosWebworker.js`);
@@ -401,11 +403,15 @@ export default class AudioPlayer extends Component {
 
   handleSeek() {
 
-    const {playing} = this.state;
+    if (!this.mouseDown) {
 
-    this.skipFrames = 6;
-    this.setPlaying(playing);
-    this.unSynch();
+      const {playing} = this.state;
+
+      this.skipFrames = 6;
+      this.setPlaying(playing);
+      this.unSynch();
+
+    }
 
   }
 
@@ -458,14 +464,25 @@ export default class AudioPlayer extends Component {
 
   }
 
-  handleVideoSeek(evt) {
-
-    this.setPlaying(false);
+  handleVideoSeek(evt, updateVideoPos = true) {
 
     const barPosClicked = evt.clientX - 130;
     const seekPercentage = barPosClicked / (window.innerWidth - 260);
 
-    PlaylistActions.seekVideoTo(seekPercentage);
+    document.querySelector(`.video-pos-progress`).style.width = `${barPosClicked}px`;
+    document.querySelector(`.video-pos-scrubber`).style.left = `${barPosClicked}px`;
+
+    if (updateVideoPos) {
+      //this.setPlaying(false);
+      PlaylistActions.seekVideoTo(seekPercentage);
+      this.mouseDown = false;
+    }
+
+  }
+
+  handleScrub(evt) {
+
+    if (this.mouseDown) this.handleVideoSeek(evt, false);
 
   }
 
@@ -543,6 +560,10 @@ export default class AudioPlayer extends Component {
       }
 
       this.setPlaying(false);
+
+      let {currentTimeString} = this.state;
+      currentTimeString = `00:00`;
+      this.setState({currentTimeString});
 
       //PlaylistActions.setVideoMode(!videoMode);
       if (!videoMode) { setTimeout(() => PlaylistActions.setSong(song), 1); }
@@ -699,8 +720,13 @@ export default class AudioPlayer extends Component {
     } else if (videoMode) { // render normal progress bar
 
       return (
-        <div className='video-pos-wrapper' onClick={evt => this.handleVideoSeek(evt)}>
+        <div className='video-pos-wrapper'
+          onMouseDown={() => { this.mouseDown = true; }}
+          onMouseMove={evt => this.handleScrub(evt)}
+          onMouseUp={evt => this.handleVideoSeek(evt)}
+        >
           <div className='video-pos-progress'>&nbsp;</div>
+          <div className='video-pos-scrubber'>&nbsp;</div>
         </div>
       );
 
@@ -780,10 +806,11 @@ export default class AudioPlayer extends Component {
       const order = 1;
       const key = `fsPreview`;
       const fsPreview = true;
+      const disableButtons = false;
 
       return (
         <div className='current-song-wrapper'>
-          <SongSummary {...song} order={order} key={key} fsPreview={fsPreview} voteMode={voteMode} />
+          <SongSummary {...song} order={order} key={key} fsPreview={fsPreview} voteMode={voteMode} disableButtons={disableButtons} />
         </div>
       );
 

@@ -17,7 +17,8 @@ export default class YoutubeVideo extends Component {
       visible: PlaylistStore.getVideoMode(),
       song: PlaylistStore.getSong(UserStore.getSynched()),
       playing: false,
-      player: null
+      player: null,
+      disableButtons: false
     };
 
     window.YTConfig = {
@@ -29,6 +30,8 @@ export default class YoutubeVideo extends Component {
     this.prevSongId = ``;
     this.currentTimeString = `00:00`;
     this.skipFrames = 0;
+    this.allowSongChange = false; // avoid automatic changing of song when removed from queue by speaker
+    this.mouseDown = false;
 
     // -- Events ----
     this.evtUpdateVisible = () => this.updateVisible();
@@ -37,6 +40,9 @@ export default class YoutubeVideo extends Component {
     this.evtSeekVideoTo = () => this.seekVideoTo();
     this.evtPlayVideo = () => this.playVideo();
     this.evtPauseVideo = () => this.pauseVideo();
+
+    window.onmousedown = () => { this.mouseDown = true; };
+    window.onmouseup = () => { this.mouseDown = false; };
 
   }
 
@@ -81,21 +87,27 @@ export default class YoutubeVideo extends Component {
 
   updateSong() {
 
-    let {id, song} = this.state;
+    if (this.allowSongChange) {
 
-    song = PlaylistStore.getSong(UserStore.getSynched());
-    id = song.general.id;
+      let {id, song} = this.state;
 
-    this.setState({id, song});
+      song = PlaylistStore.getSong(UserStore.getSynched());
+      id = song.general.id;
+
+      this.setState({id, song});
+      this.allowSongChange = false;
+
+    }
 
   }
 
   updateUservote() {
 
-    let {song} = this.state;
-    const currentSong = PlaylistStore.getSong(UserStore.getSynched());
+    let {song, votingDisabled} = this.state;
+    const currentSong = PlaylistStore.getSong(false);
 
-    if (song && song.queue) {
+    if (song && song.queue && currentSong === song) {
+
       if (
         song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
         song.uservote !== currentSong.uservote
@@ -103,6 +115,12 @@ export default class YoutubeVideo extends Component {
         song = currentSong;
         this.setState({song});
       }
+
+    } else if (currentSong !== song) {
+
+      votingDisabled = true;
+      this.setState({votingDisabled});
+
     }
 
   }
@@ -111,15 +129,19 @@ export default class YoutubeVideo extends Component {
 
     const {player, playing} = this.state;
     const $progressBar = document.querySelector(`.video-pos-progress`);
+    const $progressScrubber = document.querySelector(`.video-pos-scrubber`);
 
-    if (player && playing && $progressBar) {
+    if (player && playing && $progressBar && $progressScrubber) {
 
       const currentTime = player.getCurrentTime();
       const duration = player.getDuration();
       const progress = currentTime / duration;
       const barWidth = Math.round((window.innerWidth - 260) * progress);
 
-      $progressBar.style.width = `${barWidth}px`;
+      if (!this.mouseDown) {
+        $progressBar.style.width = `${barWidth}px`;
+        $progressScrubber.style.left = `${barWidth}px`;
+      }
 
       if (this.skipFrames <= 0) {
 
@@ -130,14 +152,13 @@ export default class YoutubeVideo extends Component {
         if (currentSeconds < 10) { currentTimeString = `0${currentMinutes}:0${currentSeconds}`; }
 
         if (currentTimeString !== this.currentTimeString) {
-          console.log(`[VideoPlayer] Updating current time str:`, currentTimeString);
           this.currentTimeString = currentTimeString;
           PlaylistActions.setCurrentTimeString(currentTimeString);
         }
 
         this.skipFrames = 10;
 
-      } else { this.skipFrames--; }/**/
+      } else { this.skipFrames--; }
 
       this.request = requestAnimationFrame(() => this.updateProgress());
 
@@ -221,6 +242,8 @@ export default class YoutubeVideo extends Component {
     let {playing, player, id} = this.state;
 
     this.prevSongId = id;
+    this.allowSongChange = true;
+
     playing = false;
     player = null;
     id = ``;
@@ -228,6 +251,7 @@ export default class YoutubeVideo extends Component {
     PlaylistActions.pausePlay();
 
     document.querySelector(`.video-pos-progress`).style.width = `0px`;
+    document.querySelector(`.video-pos-scrubber`).style.left = `0px`;
     PlaylistActions.setCurrentTimeString(`00:00`);
 
     this.setState({playing, player, id});
@@ -238,10 +262,16 @@ export default class YoutubeVideo extends Component {
   renderCurrentSongIndicator() {
 
     let {song} = this.state;
+    const currentSong = PlaylistStore.getSong(UserStore.getSynched());
 
-    song = PlaylistStore.getSong(UserStore.getSynched());
+    if (currentSong && currentSong.general.id !== `` && currentSong.queue && currentSong.queue.votes && _.isNumber(currentSong.queue.votes.currentQueueScore)) {
 
-    if (song && song.general.id !== `` && song.queue && song.queue.votes && _.isNumber(song.queue.votes.currentQueueScore)) {
+      let disableButtons = false;
+      if (song.general.id === currentSong.general.id) {
+        song = currentSong;
+      } else {
+        disableButtons = true;
+      }
 
       const voteMode = UserStore.getVoteMode();
 
@@ -255,7 +285,7 @@ export default class YoutubeVideo extends Component {
 
       return (
         <div className='current-song-wrapper'>
-          <SongSummary {...song} order={order} key={key} fsPreview={fsPreview} voteMode={voteMode} />
+          <SongSummary {...song} order={order} key={key} fsPreview={fsPreview} voteMode={voteMode} disableButtons={disableButtons} />
         </div>
       );
 
@@ -279,7 +309,9 @@ export default class YoutubeVideo extends Component {
         loop: 1,
         playlist: id,
         origin: getBaseURL(),
-        enablejsapi: `1`
+        enablejsapi: `1`,
+        controls: 0,
+        showinfo: 0
       }
     };
 
@@ -322,6 +354,8 @@ export default class YoutubeVideo extends Component {
             {this.renderPlayer()}
             {this.renderCurrentSongIndicator()}
           </section>
+          <div className='btn-play-prev-video' onClick={() => { this.allowSongChange = true;PlaylistActions.startPrevSongUnsynched(this.prevSongId); }}><span>&nbsp;</span></div>
+          <div className='btn-play-next-video' onClick={() => { this.allowSongChange = true;PlaylistActions.startNextSongUnsynched(this.prevSongId); }}><span>&nbsp;</span></div>
         </article>
       );
 
@@ -331,6 +365,8 @@ export default class YoutubeVideo extends Component {
         <article className={videoModalClasses}>
           <div className='lightbox' onClick={() => this.exitVideoMode()}>&nbsp;</div>
           <section className='video-wrapper'></section>
+          <div className='btn-play-prev-video' onClick={() => { this.allowSongChange = true;PlaylistActions.startPrevSongUnsynched(this.prevSongId); }}><span>&nbsp;</span></div>
+          <div className='btn-play-next-video' onClick={() => { this.allowSongChange = true;PlaylistActions.startNextSongUnsynched(this.prevSongId); }}><span>&nbsp;</span></div>
         </article>
       );
 
@@ -342,13 +378,15 @@ export default class YoutubeVideo extends Component {
 
     console.log(`[VideoPlayer] Saved player to state`);
 
+    // access to player in all event handlers with event.target saved to the state
     let {player} = this.state;
-
-    // access to player in all event handlers via event.target
     player = event.target;
     player.playVideo();
-
     this.setState({player});
+
+    const {id} = this.state;
+    this.prevSongId = id;
+    this.allowSongChange = false;
 
   }
 
