@@ -2,7 +2,6 @@ require("rootpath")();
 var _ = require("lodash");
 
 var config = require(__base + "config");
-var authConfig = require(__base + "config/auth");
 var search = require('youtube-search');
 var ytDurationFormat = require('youtube-duration-format');
 var xhr = require('xhr');
@@ -39,7 +38,7 @@ module.exports = (app) => {
 
     var opts = {
       maxResults: 30,
-      key: authConfig.googleAuth.apiKey,
+      key: config.googleAuth.apiKey,
       safeSearch: 'moderate',
       topicId: '/m/04rlf', // music general
       type: 'video',
@@ -82,7 +81,8 @@ module.exports = (app) => {
           var body = JSON.parse(body);
 
           var i = 0;
-          this.loopsLeft = body.items.length;
+          this.loopsLeft = 0;
+          if(body.items) { this.loopsLeft = body.items.length; }
 
           _.forEach(body.items, (vid) => {
           //body.items.forEach((vid) => {

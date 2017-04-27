@@ -4,15 +4,6 @@ module.exports = {
   version: {
 
   },
-  /*session: {
-      name: "D01Music",
-      secret: "d1str1ctO1Mus1c1sGr3@t",
-      domain: "http://localhost:3020",
-      collections: "sessions",
-      resave: true,
-      saveUninitialized: true,
-      cookieExpiration: 604800000 // 1000 * 60 * 60 * 24 * 7
-  },*/
   language: {
       // All languages should be configured here
       config: [{

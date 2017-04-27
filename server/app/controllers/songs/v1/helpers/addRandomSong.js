@@ -23,14 +23,21 @@ module.exports = (setPlaying=false) => {
 
   this.setPlaying = setPlaying;
 
+  var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
+  SongHelper.getBestOfAllTime().then((bestSongsOfAllTime) => {
+    console.log('-/- [AddRandomSong] -/- Got best songs of all time: (length:', bestSongsOfAllTime.length, ')');
+  }, (failData) => {
+    console.log('-!- [AddRandomSong] -!- Best fetch failed:', failData);
+  });
+
   this.init = () => {
 
     console.log('[AddRandomSong:28] Initialising... (checking songs)');
 
-    var query = { 'queue.inQueue': false, 'queue.votes.legacyScore': { $gt: config.auto.minLegacyScore } };
+    var query = { 'queue.inQueue': false, 'votes.legacyScore': { $gt: config.auto.minLegacyScore } };
 
     // Find fetch list of best songs of all time
-    SongModel.find(query).sort('-queue.votes.legacyScore').exec((err, songs) => {
+    SongModel.find(query).sort('-votes.legacyScore').exec((err, songs) => {
 
       if(err){
         console.log('-!- [AddRandomSong:37] -!- An error occured while searching for random song: \n', err, '\n-!-');
@@ -62,7 +69,7 @@ module.exports = (setPlaying=false) => {
 
             console.log('[AddRandomSong:59] Found random song:', song.general.title);
 
-            if(song.general.isDownloaded){
+            if(song.audio.isDownloaded){
               this.saveSong(song);
             }else{
               this.downloadSong(song);
@@ -104,8 +111,8 @@ module.exports = (setPlaying=false) => {
       if(err == null) { // file already exists
 
         console.log('-!- [AddRandomSong:102] -!- File already exists');
-        song.general.filename = audioFilename;
-        song.general.isDownloaded = true;
+        song.audio.filename = audioFilename;
+        song.audio.isDownloaded = true;
         this.saveSong(song);
 
       } else if(err.code == 'ENOENT') { // file doesn't exist
@@ -135,8 +142,8 @@ module.exports = (setPlaying=false) => {
               fs.unlinkSync(tempOutput);
 
               console.log('-f- [AddRandomSong:127] -f- Finished downloading song to:', audioOutput);
-              song.general.filename = audioFilename;
-              song.general.isDownloaded = true;
+              song.audio.filename = audioFilename;
+              song.audio.isDownloaded = true;
 
               this.saveSong(song);
 
@@ -159,9 +166,9 @@ module.exports = (setPlaying=false) => {
 
     console.log('[AddRandomSong:149] Attempting to save song back to queue ...');
 
-    song.general.isDownloaded = true;
-    song.general.isFileAboutToBeRemoved = false;
-    song.queue.votes.currentQueueScore = 0;
+    song.audio.isDownloaded = true;
+    song.audio.scheduledForRemoval = false;
+    song.votes.currentQueueScore = 0;
     song.queue.lastAddedBy.googleId = 'cronbot';
     song.queue.lastAddedBy.userName = 'cronbot';
     song.queue.lastAddedBy.profileImage = '/assets/img/defaultProfile.png';
@@ -187,7 +194,6 @@ module.exports = (setPlaying=false) => {
   this.emitCurrentQueue = () => {
 
     var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
-
     SongHelper.getCurrentQueue().then((currentQueue) => {
       console.log('-/- [AddRandomSong] -/- Broadcasting for queue update (length:', currentQueue.length, ')');
       EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);

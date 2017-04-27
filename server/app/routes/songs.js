@@ -22,7 +22,7 @@ module.exports = (app) => {
    *     }
    *
    */
-  app.route("/api/songs/queue/").get(SongsController.getAllQueued);
+  app.get("/api/songs/queue/", SongsController.getAllQueued);
 
   /** --- Add Song to Queue -----------------------------------------------------------------------------
    * @api {post} /api/songs/queue/ Add youtube song to queue
@@ -47,8 +47,13 @@ module.exports = (app) => {
    *          "title": "youtube-title",
    *          "channel": "youtube-channel",
    *          "duration": "song-duration",
-   *          "filename": "server-filename"
    *        },
+   *        "audio": {
+   *          "filename": "server-filename",
+   *          "isDownloaded": true/false,
+   *          "scheduledForRemoval": true/false,
+   *          "audioRemovable": true/false
+   *        }
    *        "queue": {
    *          "inQueue": "true/false",
    *          "lastAddedBy": {
@@ -61,11 +66,11 @@ module.exports = (app) => {
    *            "userName": "user-fullname",
    *            "profileImage": "google-user-profile-image-url"
    *          },
-   *          "votes": {
-   *            "currentQueueScore": "current-score",
-   *            "legacyScore": "legacy-score"
-   *          }
    *        },
+   *        "votes": {
+   *          "currentQueueScore": "current-score",
+   *          "legacyScore": "legacy-score"
+   *        }
    *        "thumbs": {
    *          "default": {
    *            "url": "youtube-thumb-url",

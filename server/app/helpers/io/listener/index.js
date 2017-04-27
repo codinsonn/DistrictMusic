@@ -17,10 +17,12 @@ module.exports = function(socket, event, data) {
       break;
 
     case "SOCKET_ID_CHANGED":
+      return "default";
       break;
 
     default:
-      console.log("Socket type not defined:", event); // eslint-disable-line no-console
+      console.log("[IOListener:23] Socket type not defined:", event); // eslint-disable-line no-console
+      break;
 
   }
 

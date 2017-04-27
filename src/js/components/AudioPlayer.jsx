@@ -146,9 +146,9 @@ export default class AudioPlayer extends Component {
     let {song} = this.state;
     const currentSong = PlaylistStore.getSong(UserStore.getSynched());
 
-    if (song && song.queue) {
+    if (song && song.votes) {
       if (
-        song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
+        song.votes.currentQueueScore !== currentSong.votes.currentQueueScore ||
         song.uservote !== currentSong.uservote
       ) {
         song = currentSong;
@@ -248,6 +248,7 @@ export default class AudioPlayer extends Component {
     let {currentTimeString} = this.state;
 
     currentTimeString = PlaylistStore.getCurrentTimeString();
+    if (currentTimeString.indexOf(`NaN`) > - 1) currentTimeString = `00:00`;
 
     this.setState({currentTimeString});
 
@@ -504,7 +505,11 @@ export default class AudioPlayer extends Component {
 
     }
 
-    if (!isSynched && song.general.id !== PlaylistStore.getSong(true).general.id) {
+    if (
+      !isSynched &&
+      PlaylistStore.getSpeakerConnected() &&
+      song.general.id !== PlaylistStore.getSong(true).general.id
+    ) {
       song = {general: ``};
       pos = 0;
       currentTimeString = `00:00`;
@@ -702,7 +707,7 @@ export default class AudioPlayer extends Component {
 
     if (song.general !== `` && !videoMode) { // render waveform progress bar
 
-      const audioFile = `assets/audio/${song.general.filename}`;
+      const audioFile = `assets/audio/${song.audio.filename}`;
 
       return (
         <Wavesurfer
@@ -794,12 +799,12 @@ export default class AudioPlayer extends Component {
 
     song = PlaylistStore.getSong(UserStore.getSynched());
 
-    if (song && song.general.id !== `` && song.queue && song.queue.votes && _.isNumber(song.queue.votes.currentQueueScore)) {
+    if (song && song.general.id !== `` && song.queue && song.votes && _.isNumber(song.votes.currentQueueScore)) {
 
       const isLoggedIn = UserStore.getLoggedIn();
       const voteMode = UserStore.getVoteMode();
 
-      if (!isLoggedIn || song.uservote === undefined) {
+      if (/*!isLoggedIn || */song.uservote === undefined) {
         song.uservote = {hasVoted: false};
       }
 

@@ -18,7 +18,6 @@ module.exports = {
       name: "D01Music",
       secret: "d1str1ctO1Mus1c1sGr3@t",
       domain: "districtmusic.herokuapp.com",
-      //domain: "",
       collections: "sessions",
       resave: true,
       saveUninitialized: true,
@@ -30,6 +29,11 @@ module.exports = {
       'callbackURL': 'https://districtmusic.herokuapp.com/auth/google/callback',
       'apiKey': 'AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU'
     },
+    'whitelistedEmails': [
+      'thorrstevens@gmail.com',
+      'shaunie1993@msn.com',
+      'niels.bril@gmail.com'
+    ],
     auto: {
       resetVetos: 1, // amount of 'vetos left' to reset to every week
       resetSuperVotes: 2, // amount of 'super votes left' to reset to every week
@@ -41,8 +45,9 @@ module.exports = {
       cronPatternCheckQueueEmpty: '00 * * * * 1-60', // every minute
       cronPatternAddRandomSong: '00 00 09 * * 1-5', // every weekday in the morning
       cronPatternResetVotes: '00 00 07 * * 1', // every monday morning at 7:00
+      cronPatternCheckAudioRemovable: '00 00 22 * * 7', // every sunday night at 22:00
       cronPatternScheduleFilesToBeRemoved: '00 00 23 * * 7', // every sunday night at 23:00
-      cronPatternRemoveScheduledFiles: '00 00 08 * * 1', // every monday morning at 8:00
-      cronPatternRemoveUnusedFiles: '00 05 08 * * 1' // every monday morning at 8:05
+      cronPatternRemoveScheduledFiles: '00 00 06 * * 1', // every monday morning at 6:00
+      cronPatternRemoveUnusedFiles: '00 05 07 * * 1' // every monday morning at 7:05
     }
 };

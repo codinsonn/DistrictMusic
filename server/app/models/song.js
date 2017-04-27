@@ -27,7 +27,9 @@ var SongSchema = new Schema({
         type: String,
         index: true,
         required: true
-      },
+      }
+    },
+    audio: {
       filename: {
         type: String,
         index: true,
@@ -37,9 +39,23 @@ var SongSchema = new Schema({
         type: Boolean,
         default: false
       },
-      isFileAboutToBeRemoved: {
+      scheduledForRemoval: {
         type: Boolean,
         default: false
+      },
+      audioRemovable: {
+        type: Boolean,
+        default: true
+      }
+    },
+    votes: {
+      currentQueueScore: {
+        type: Number,
+        default: 0
+      },
+      legacyScore: {
+        type: Number,
+        default: 0
       }
     },
     queue: {
@@ -89,16 +105,6 @@ var SongSchema = new Schema({
         added: {
           type: Date,
           default: (new Date()).getTime()
-        }
-      },
-      votes: {
-        currentQueueScore: {
-          type: Number,
-          default: 0
-        },
-        legacyScore: {
-          type: Number,
-          default: 0
         }
       }
     },

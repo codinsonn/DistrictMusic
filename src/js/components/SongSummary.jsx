@@ -19,9 +19,9 @@ export default class SongSummary extends Component {
       id: props.general.id,
       title: props.general.title,
       duration: props.general.duration,
-      filename: props.general.filename,
-      currentQueueScore: props.queue.votes.currentQueueScore,
-      legacyScore: props.queue.votes.legacyScore,
+      filename: props.audio.filename,
+      currentQueueScore: props.votes.currentQueueScore,
+      legacyScore: props.votes.legacyScore,
       isPlaying: props.queue.isPlaying,
       isVetoed: props.queue.isVetoed,
       thumbs: props.thumbs,
@@ -65,9 +65,9 @@ export default class SongSummary extends Component {
       id = nextProps.general.id;
       title = nextProps.general.title;
       duration = nextProps.general.duration;
-      filename = nextProps.general.filename;
-      currentQueueScore = nextProps.queue.votes.currentQueueScore;
-      legacyScore = nextProps.queue.votes.legacyScore;
+      filename = nextProps.audio.filename;
+      currentQueueScore = nextProps.votes.currentQueueScore;
+      legacyScore = nextProps.votes.legacyScore;
       isPlaying = nextProps.queue.isPlaying;
       isVetoed = nextProps.queue.isVetoed;
       thumbs = nextProps.thumbs;
@@ -333,6 +333,8 @@ export default class SongSummary extends Component {
 SongSummary.propTypes = {
   order: PropTypes.number,
   general: PropTypes.object,
+  audio: PropTypes.object,
+  votes: PropTypes.object,
   queue: PropTypes.object,
   thumbs: PropTypes.object,
   uservote: PropTypes.object,

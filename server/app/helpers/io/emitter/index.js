@@ -13,6 +13,7 @@ var set = module.exports.set = (type) => {
         break;
 
       case "DOWNLOAD_PROGRESS":
+        console.log('[IO Emitter:16] DOWNLOAD_PROGRESS');
         return "DOWNLOAD_PROGRESS";
         break;
 

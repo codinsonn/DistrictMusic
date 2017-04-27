@@ -157,24 +157,24 @@ module.exports = (req, res, done) => {
       if(song){
 
         // update current queue score
-        song.queue.votes.currentQueueScore += voteValue;
+        song.votes.currentQueueScore += voteValue;
 
         // update legacy score
-        song.queue.votes.legacyScore += voteValue;
+        song.votes.legacyScore += voteValue;
 
         // -- check if veto ----
         if(this.uservote.voteType === 'veto_upvote'){
           song.queue.isVetoed = true;
         }else if(this.uservote.voteType === 'veto_downvote'){
-          song.queue.currentQueueScore = 0;
+          song.votes.currentQueueScore = 0;
           song.queue.inQueue = false;
           song.queue.isPlaying = false;
           SongHelper.removeVotesForSong(song.general.id);
         }
 
         // -- check if under minimum vote score ----
-        if(song.queue.votes.currentQueueScore < config.auto.minVoteScore){
-          song.queue.currentQueueScore = 0;
+        if(song.votes.currentQueueScore < config.auto.minVoteScore){
+          song.votes.currentQueueScore = 0;
           song.queue.inQueue = false;
           song.queue.isPlaying = false;
           SongHelper.removeVotesForSong(song.general.id);
@@ -214,7 +214,7 @@ module.exports = (req, res, done) => {
       console.log('-e- [VoteSong] -e- Vote successfull! Broadcasting for update');
       EmitHelper.broadcast('QUEUE_UPDATED', currentQueue);
 
-      console.log('-/- [VoteSong] -/- Song score updated! =>', song.queue.votes.currentQueueScore);
+      console.log('-/- [VoteSong] -/- Song score updated! =>', song.votes.currentQueueScore);
       res.setHeader('Last-Modified', (new Date()).toUTCString());
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       res.setHeader("Pragma", "no-cache");

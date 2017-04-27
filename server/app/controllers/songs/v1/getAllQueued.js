@@ -50,6 +50,8 @@ module.exports = (req, res, done) => {
           }
 
           newQueueItem.general = queueItem.general;
+          newQueueItem.audio = queueItem.audio;
+          newQueueItem.votes = queueItem.votes;
           newQueueItem.queue = queueItem.queue;
           newQueueItem.thumbs = queueItem.thumbs;
 
@@ -62,26 +64,26 @@ module.exports = (req, res, done) => {
               var s1 = 0;
               if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
               if(song1.queue.isVetoed) s1 += 10; // sort by veto
-              if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-              if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+              if(song1.votes.currentQueueScore > song2.votes.currentQueueScore) s1 += 5; // sort by current score
+              if(!song1.queue.isVetoed && song1.votes.legacyScore > song2.votes.legacyScore) s1 += 3; // sort by legacy score
               if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
               var s2 = 0;
               if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
               if(song2.queue.isVetoed) s2 += 10;
-              if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-              if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+              if(song2.votes.currentQueueScore > song1.votes.currentQueueScore) s2 += 5;
+              if(!song2.queue.isVetoed && song2.votes.legacyScore > song1.votes.legacyScore) s2 += 3;
               if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
               return s2 - s1;
 
             });
 
-            console.log('[GetAllQueued:60] Returning queue (length:', returnQueue.length, ')');
+            console.log('[GetAllQueued:82] Returning queue (length:', returnQueue.length, ')');
 
             res.setHeader('Last-Modified', (new Date()).toUTCString());
             res.statusCode = 200;
-            return done(null, res.json(returnQueue));
+            res.json(returnQueue);
 
           }
 
@@ -93,22 +95,22 @@ module.exports = (req, res, done) => {
 
     }else{ // User not in session, return queue without uservotes
 
-      console.log('[GetAllQueued:96] About to sort current Queue');
+      console.log('[GetAllQueued:99] About to sort current Queue');
 
       currentQueue.sort((song1, song2) => {
 
         var s1 = 0;
         if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
         if(song1.queue.isVetoed) s1 += 10; // sort by veto
-        if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-        if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+        if(song1.votes.currentQueueScore > song2.votes.currentQueueScore) s1 += 5; // sort by current score
+        if(!song1.queue.isVetoed && song1.votes.legacyScore > song2.votes.legacyScore) s1 += 3; // sort by legacy score
         if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
         var s2 = 0;
         if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
         if(song2.queue.isVetoed) s2 += 10;
-        if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-        if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+        if(song2.votes.currentQueueScore > song1.votes.currentQueueScore) s2 += 5;
+        if(!song2.queue.isVetoed && song2.votes.legacyScore > song1.votes.legacyScore) s2 += 3;
         if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
         return s2 - s1;
@@ -122,7 +124,7 @@ module.exports = (req, res, done) => {
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", 0);
       res.statusCode = 200;
-      return res.json(currentQueue);
+      res.json(currentQueue);
 
     }
 
@@ -131,7 +133,7 @@ module.exports = (req, res, done) => {
     console.log('-?- [GetAllQueued:131] -?- Promise Failed: No songs in queue');
 
     res.statusCode = 404;
-    return res.json(failData);
+    res.json(failData);
 
   });
 

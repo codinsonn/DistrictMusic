@@ -109,7 +109,7 @@ export default class YoutubeVideo extends Component {
     if (song && song.queue && currentSong === song) {
 
       if (
-        song.queue.votes.currentQueueScore !== currentSong.queue.votes.currentQueueScore ||
+        song.votes.currentQueueScore !== currentSong.votes.currentQueueScore ||
         song.uservote !== currentSong.uservote
       ) {
         song = currentSong;
@@ -148,8 +148,11 @@ export default class YoutubeVideo extends Component {
         const currentMinutes = Math.floor(currentTime / 60);
         const currentSeconds = Math.round(currentTime % 60);
 
-        let currentTimeString = `0${currentMinutes}:${currentSeconds}`;
-        if (currentSeconds < 10) { currentTimeString = `0${currentMinutes}:0${currentSeconds}`; }
+        let currentTimeString = `00:00`;
+        if (_.isNumber(currentMinutes) && _.isNumber(currentSeconds)) {
+          currentTimeString = `0${currentMinutes}:${currentSeconds}`;
+          if (currentSeconds < 10) { currentTimeString = `0${currentMinutes}:0${currentSeconds}`; }
+        }
 
         if (currentTimeString !== this.currentTimeString) {
           this.currentTimeString = currentTimeString;
@@ -264,7 +267,7 @@ export default class YoutubeVideo extends Component {
     let {song} = this.state;
     const currentSong = PlaylistStore.getSong(UserStore.getSynched());
 
-    if (currentSong && currentSong.general.id !== `` && currentSong.queue && currentSong.queue.votes && _.isNumber(currentSong.queue.votes.currentQueueScore)) {
+    if (currentSong && currentSong.general.id !== `` && currentSong.queue && currentSong.votes && _.isNumber(currentSong.votes.currentQueueScore)) {
 
       let disableButtons = false;
       if (song.general.id === currentSong.general.id) {

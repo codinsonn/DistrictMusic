@@ -47,7 +47,7 @@ module.exports = (req, res, done) => {
 
         }else{ // song no longer in queue / downloaded
 
-          if(song.general.isDownloaded){
+          if(song.audio.isDownloaded){
             console.log('[AddSongToQueue:51] About to update song in db');
             this.updateInDb(song);
           }else{
@@ -102,7 +102,7 @@ module.exports = (req, res, done) => {
         console.log('-!- [AddSongToQueue:102] -!- File already exists');
         if(!songIsNew){
 
-          song.general.filename = audioFilename;
+          song.audio.filename = audioFilename;
           this.updateInDb(song);
 
         }else{
@@ -183,9 +183,9 @@ module.exports = (req, res, done) => {
     if(songIsNew){
       this.saveToDb(suggestion);
     }else{
-      song.general.filename = suggestion.filename;
-      song.general.isDownloaded = true;
-      song.general.isFileAboutToBeRemoved = false;
+      song.audio.filename = suggestion.filename;
+      song.audio.isDownloaded = true;
+      song.audio.scheduledForRemoval = false;
       this.updateInDb(song);
     }
 
@@ -202,7 +202,7 @@ module.exports = (req, res, done) => {
     song.queue.lastAddedBy.added = (new Date()).getTime();
 
     // reset queue score
-    song.queue.votes.currentQueueScore = 0;
+    song.votes.currentQueueScore = 0;
 
     // put back in queue
     song.queue.isPlaying = false;
@@ -233,9 +233,9 @@ module.exports = (req, res, done) => {
     var newSong = new SongModel();
 
     // -- file settings --------
-    newSong.general.filename = suggestion.filename;
-    newSong.general.isDownloaded = true;
-    newSong.general.isFileAboutToBeRemoved = false;
+    newSong.audio.filename = suggestion.filename;
+    newSong.audio.isDownloaded = true;
+    newSong.audio.scheduledForRemoval = false;
 
     // -- general info ---------
     newSong.general.id = suggestion.id;
@@ -249,8 +249,8 @@ module.exports = (req, res, done) => {
     newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
     newSong.queue.originallyAddedBy.added = (new Date()).getTime();
     newSong.queue.lastAddedBy = newSong.queue.originallyAddedBy;
-    newSong.queue.votes.legacyScore = 0;
-    newSong.queue.votes.currentQueueScore = 0;
+    newSong.votes.legacyScore = 0;
+    newSong.votes.currentQueueScore = 0;
 
     // -- thumbs info ---------
     newSong.thumbs = suggestion.thumbs;
@@ -343,15 +343,15 @@ module.exports = (req, res, done) => {
       var s1 = 0;
       if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
       if(song1.queue.isVetoed) s1 += 10; // sort by veto
-      if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-      if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+      if(song1.votes.currentQueueScore > song2.votes.currentQueueScore) s1 += 5; // sort by current score
+      if(!song1.queue.isVetoed && song1.votes.legacyScore > song2.votes.legacyScore) s1 += 3; // sort by legacy score
       if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
       var s2 = 0;
       if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
       if(song2.queue.isVetoed) s2 += 10;
-      if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+      if(song2.votes.currentQueueScore > song1.votes.currentQueueScore) s2 += 5;
+      if(!song2.queue.isVetoed && song2.votes.legacyScore > song1.votes.legacyScore) s2 += 3;
       if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
       return s2 - s1;

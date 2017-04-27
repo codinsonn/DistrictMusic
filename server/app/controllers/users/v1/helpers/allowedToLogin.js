@@ -1,7 +1,7 @@
 // Packages
 require("rootpath")();
 
-var authConfig = require(__base + "config/auth");
+var config = require(__base + "config");
 
 module.exports = function(profile) {
 
@@ -10,7 +10,7 @@ module.exports = function(profile) {
   var idx = profileEmail.lastIndexOf('@');
   if (idx > -1 && profileEmail.slice(idx+1) === 'district01.be') {
     return true;
-  }else if(authConfig.whitelistedEmails.indexOf(profileEmail) > -1){
+  }else if(config.whitelistedEmails.indexOf(profileEmail) > -1){
     return true;
   }else{
     return false;

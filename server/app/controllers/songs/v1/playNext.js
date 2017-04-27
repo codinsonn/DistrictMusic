@@ -29,7 +29,7 @@ module.exports = (req, res, done) => {
       console.log('[PlayNext:32] Found current song:', song.general.title, song.queue.isPlaying);
 
       // reset queue score
-      song.queue.votes.currentQueueScore = 0;
+      song.votes.currentQueueScore = 0;
 
       // put back in queue
       song.queue.isPlaying = false;
@@ -106,15 +106,15 @@ module.exports = (req, res, done) => {
                 var s1 = 0;
                 if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
                 if(song1.queue.isVetoed) s1 += 10; // sort by veto
-                if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-                if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+                if(song1.votes.currentQueueScore > song2.votes.currentQueueScore) s1 += 5; // sort by current score
+                if(!song1.queue.isVetoed && song1.votes.legacyScore > song2.votes.legacyScore) s1 += 3; // sort by legacy score
                 if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
                 var s2 = 0;
                 if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
                 if(song2.queue.isVetoed) s2 += 10;
-                if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-                if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+                if(song2.votes.currentQueueScore > song1.votes.currentQueueScore) s2 += 5;
+                if(!song2.queue.isVetoed && song2.votes.legacyScore > song1.votes.legacyScore) s2 += 3;
                 if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
                 return s2 - s1;

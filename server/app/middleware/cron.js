@@ -35,15 +35,15 @@ module.exports = function(timeZone) {
       var s1 = 0;
       if(song1.queue.isPlaying) s1 = 20; // don't skip the song currently playing
       if(song1.queue.isVetoed) s1 += 10; // sort by veto
-      if(song1.queue.votes.currentQueueScore > song2.queue.votes.currentQueueScore) s1 += 5; // sort by current score
-      if(!song1.queue.isVetoed && song1.queue.votes.legacyScore > song2.queue.votes.legacyScore) s1 += 3; // sort by legacy score
+      if(song1.votes.currentQueueScore > song2.votes.currentQueueScore) s1 += 5; // sort by current score
+      if(!song1.queue.isVetoed && song1.votes.legacyScore > song2.votes.legacyScore) s1 += 3; // sort by legacy score
       if(song1.queue.lastAddedBy.added < song2.queue.lastAddedBy.added) s1++; // sort by date added
 
       var s2 = 0;
       if(song2.queue.isPlaying) s2 = 20; // don't skip the song currently playing
       if(song2.queue.isVetoed) s2 += 10;
-      if(song2.queue.votes.currentQueueScore > song1.queue.votes.currentQueueScore) s2 += 5;
-      if(!song2.queue.isVetoed && song2.queue.votes.legacyScore > song1.queue.votes.legacyScore) s2 += 3;
+      if(song2.votes.currentQueueScore > song1.votes.currentQueueScore) s2 += 5;
+      if(!song2.queue.isVetoed && song2.votes.legacyScore > song1.votes.legacyScore) s2 += 3;
       if(song2.queue.lastAddedBy.added < song1.queue.lastAddedBy.added) s2++;
 
       return s2 - s1;
@@ -193,8 +193,8 @@ module.exports = function(timeZone) {
 
     console.log('-CRON- Scheduling files for removal -CRON-');
 
-      var updateConditions = { 'queue.inQueue': false, 'general.isDownloaded': true, 'general.isFileAboutToBeRemoved': false };
-      var updateQuery = { 'general.isFileAboutToBeRemoved': true };
+      var updateConditions = { 'queue.inQueue': false, 'audio.isDownloaded': true, 'audio.scheduledForRemoval': false, 'audio.audioRemovable': true };
+      var updateQuery = { 'audio.scheduledForRemoval': true };
       var updateOptions = {};
 
       SongModel.update(updateConditions, updateQuery, updateOptions, () => {
@@ -219,41 +219,9 @@ module.exports = function(timeZone) {
 
     console.log('-CRON- Removing files scheduled for removal -CRON-');
 
-      var removeConditions = { 'queue.inQueue': false, 'general.isFileAboutToBeRemoved': true };
-      var removeQuery = { 'general.isDownloaded': false, 'general.isFileAboutToBeRemoved': false };
+      var removeConditions = { 'queue.inQueue': false, 'audio.scheduledForRemoval': true, 'audio.audioRemovable': true };
+      var removeQuery = { 'audio.isDownloaded': false, 'audio.scheduledForRemoval': false };
       var removeOptions = {};
-
-      /*SongModel.find(removeConditions).exec((err, songs) => {
-
-        if(err){
-          console.log('-!- [CRON:228] An error occured while removing files -!-\n', err, '\n-!-');
-        }
-
-        if(songs){
-
-          console.log('-?- [CRON:233] Songs to be removed: ', songs.length,' -?-');
-
-          _.forEach(songs, (song) => {
-
-            var audioFilename = song.general.filename;
-
-            var uploadsFolder = `${__base}uploads/audio/`;
-            var uploadedFilePath = path.resolve(uploadsFolder, audioFilename);
-
-            var publicFolder = `${__base}public/assets/audio/`;
-            var publicFilePath = path.resolve(publicFolder, audioFilename);
-
-            fs.unlinkSync(uploadedFilePath);
-            fs.unlinkSync(publicFilePath);
-
-            console.log('[CRON] Removed file:', publicFilePath);
-            EmitHelper.broadcast('USER_PROFILE_CHANGED');
-
-          });
-
-        }
-
-      });*/
 
       SongModel.update(removeConditions, removeQuery, removeOptions, () => {
 
@@ -272,13 +240,34 @@ module.exports = function(timeZone) {
 
   );
 
-/* --- Weekly: Remove unused audio files  ---------------------------------------------------------- */
+  /* --- Daily: Avoid best songs audiofiles being removed -------------------------------------------- */
+
+  this.cronCheckAudioRemovable = new CronJob(config.auto.cronPatternCheckAudioRemovable, () => {
+
+    console.log('-CRON- Checking which audiofiles can be removed -CRON-');
+
+    var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
+    SongHelper.getBestOfAllTime().then((bestSongsOfAllTime) => {
+
+      _.forEach(bestSongsOfAllTime, (song) => {
+
+
+
+      });
+
+    }, (failData) => {
+      console.log('-!- [CRON:255] -!- Best fetch failed:', failData);
+    });
+
+  });
+
+  /* --- Weekly: Remove unused audio files  ---------------------------------------------------------- */
 
   this.cronRemoveUnusedFiles = new CronJob(config.auto.cronPatternRemoveUnusedFiles, () => {
 
     console.log('-CRON- Removing files scheduled for removal -CRON-');
 
-      var removeConditions = { 'queue.inQueue': false, 'general.isDownloaded': false };
+      var removeConditions = { 'queue.inQueue': false, 'audio.isDownloaded': false, 'audio.audioRemovable': true };
 
       SongModel.find(removeConditions).exec((err, songs) => {
 
@@ -292,7 +281,7 @@ module.exports = function(timeZone) {
 
           _.forEach(songs, (song) => {
 
-            var audioFilename = song.general.filename;
+            var audioFilename = song.audio.filename;
 
             var uploadsFolder = `${__base}uploads/audio/`;
             var uploadedFilePath = path.resolve(uploadsFolder, audioFilename);

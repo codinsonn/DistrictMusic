@@ -1,9 +1,7 @@
 require("rootpath")();
 var config = require(__base + "config");
-//var authConfig = require(__base + "config/auth");
 var passport = require("passport");
 var UsersController = require(__base + "app/controllers/users/v1");
-//var UserHelper = require(__base + "app/controllers/users/v1/helpers");
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var PassportHelper = require(__base + "app/helpers/passport");
 var baseUrlUser = "user/";
@@ -28,7 +26,6 @@ module.exports = (app) => {
   /** --- Update Speaker SocketId -----------------------------------------------------------------
    * @api {post} /auth/speaker Update the socketId for the speaker or unset as speaker
    */
-  //app.post("/auth/speaker", UserHelper.authorizeSpeaker);
   app.post("/auth/speaker", UsersController.authorizeSpeaker);
 
   /** --- Login User -----------------------------------------------------------------------------
@@ -75,7 +72,7 @@ module.exports = (app) => {
    *
    * @apiUse messageUnauthorized
    */
-  app.route("/api/sess/profile").get(UsersController.userSession.returnProfile);
+  app.get("/api/sess/profile", UsersController.userSession.returnProfile);
 
   /** --- Logout User -----------------------------------------------------------------------------
    * @api {get} /auth/user/logout Logout the user

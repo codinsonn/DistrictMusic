@@ -415,6 +415,8 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  -webkit-transition: background .2s;
+  transition: background .2s;
   cursor: pointer;
 }
 

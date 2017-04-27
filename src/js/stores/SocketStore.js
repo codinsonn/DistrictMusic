@@ -68,7 +68,7 @@ class SocketStore extends EventEmitter {
 
   }
 
-  emit(event, data) {
+  socketEmit(event, data) {
 
     this.socket.emit(event, data);
 
