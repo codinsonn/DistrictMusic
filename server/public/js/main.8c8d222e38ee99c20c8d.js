@@ -51501,10 +51501,9 @@ var AudioPlayer = function (_Component) {
 
     if (song && song.general.id !== '' && song.queue && song.votes && __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.isNumber(song.votes.currentQueueScore)) {
 
-      var isLoggedIn = __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getLoggedIn();
       var voteMode = __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getVoteMode();
 
-      if (!isLoggedIn || song.uservote === undefined) {
+      if (song.uservote === undefined) {
         song.uservote = { hasVoted: false };
       }
 
@@ -51517,12 +51516,12 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-song-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 817
+            lineNumber: 816
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components__["j" /* SongSummary */], _extends({}, song, { order: order, key: key, fsPreview: fsPreview, voteMode: voteMode, disableButtons: disableButtons, __source: {
             fileName: _jsxFileName,
-            lineNumber: 818
+            lineNumber: 817
           }
         }))
       );
@@ -51547,21 +51546,21 @@ var AudioPlayer = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 835
+            lineNumber: 834
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'district-music-logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 836
+              lineNumber: 835
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'audiodisc-large-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 837
+                lineNumber: 836
               }
             },
             '\xA0'
@@ -51570,7 +51569,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-large-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 838
+                lineNumber: 837
               }
             },
             '\xA0'
@@ -51579,7 +51578,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 839
+                lineNumber: 838
               }
             },
             '\xA0'
@@ -51588,7 +51587,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 840
+                lineNumber: 839
               }
             },
             '\xA0'
@@ -51597,7 +51596,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 841
+                lineNumber: 840
               }
             },
             '\xA0'
@@ -51606,7 +51605,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 842
+                lineNumber: 841
               }
             },
             '\xA0'
@@ -51616,6 +51615,26 @@ var AudioPlayer = function (_Component) {
           'div',
           { className: 'btn-play-prev', onClick: function onClick() {
               return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this12.prevSongId);
+            }, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 843
+            }
+          },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 843
+              }
+            },
+            '\xA0'
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'btn-exit-fullscreen', onClick: function onClick() {
+              return _this12.setPlayMode('normal');
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 844
@@ -51634,8 +51653,8 @@ var AudioPlayer = function (_Component) {
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
-          { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return _this12.setPlayMode('normal');
+          { className: 'btn-play-next', onClick: function onClick() {
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this12.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 845
@@ -51647,26 +51666,6 @@ var AudioPlayer = function (_Component) {
               __source: {
                 fileName: _jsxFileName,
                 lineNumber: 845
-              }
-            },
-            '\xA0'
-          )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'div',
-          { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this12.prevSongId);
-            }, __source: {
-              fileName: _jsxFileName,
-              lineNumber: 846
-            }
-          },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'span',
-            {
-              __source: {
-                fileName: _jsxFileName,
-                lineNumber: 846
               }
             },
             '\xA0'
@@ -51707,13 +51706,33 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: audioPlayerClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 875
+          lineNumber: 874
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
             return _this13.toggleSynched();
+          }, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 875
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 875
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this13.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 876
@@ -51732,9 +51751,7 @@ var AudioPlayer = function (_Component) {
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this13.togglePlay();
-          }, __source: {
+        { className: 'current-time', __source: {
             fileName: _jsxFileName,
             lineNumber: 877
           }
@@ -51747,32 +51764,16 @@ var AudioPlayer = function (_Component) {
               lineNumber: 877
             }
           },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'current-time', __source: {
-            fileName: _jsxFileName,
-            lineNumber: 878
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 878
-            }
-          },
           currentTimeString
         )
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
-        { className: 'pos-wrapper', __source: {
+        { className: 'pos-wrapper', onClick: function onClick() {
+            _this13.skipFrames = 60;console.log('[AudioPlayer:878] Skip Frames:', _this13.skipFrames);
+          }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 879
+            lineNumber: 878
           }
         },
         this.renderPlayer()
@@ -51781,7 +51782,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 882
+            lineNumber: 881
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51789,7 +51790,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 882
+              lineNumber: 881
             }
           },
           song.general.duration
@@ -81595,4 +81596,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.b3193d362946ec266be3.js.map
+//# sourceMappingURL=main.8c8d222e38ee99c20c8d.js.map

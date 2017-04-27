@@ -40,7 +40,7 @@ module.exports = {
       minVoteScore: -10, // auto delete on downvote
       minLegacyScore: 0, // available for random additions by cronbot
       minSongsInQueue: 3, // minimum number of songs in queue before auto re adding old ones
-      maxRandomBestPool: 50, // maximum number of best songs to choose from for random additions (Best = DESC > legacyScore)
+      maxRandomBestPool: 20, // maximum number of best songs to choose from for random additions (Best = DESC > legacyScore)
       cronPatternCheckSpeakerQueueUpdate: '00 * * * * 1-60/10', // every 10 seconds
       cronPatternCheckQueueEmpty: '00 * * * * 1-60', // every minute
       cronPatternAddRandomSong: '00 00 09 * * 1-5', // every weekday in the morning

@@ -143,6 +143,10 @@ export default class YoutubeVideo extends Component {
         $progressScrubber.style.left = `${barWidth}px`;
       }
 
+      if (duration - currentTime <= 0.4) {
+        this.handleOnVideoEnd();
+      }
+
       if (this.skipFrames <= 0) {
 
         const currentMinutes = Math.floor(currentTime / 60);
@@ -312,6 +316,7 @@ export default class YoutubeVideo extends Component {
         loop: 1,
         playlist: id,
         origin: getBaseURL(),
+        /*iv_load_policy: 3,*/
         enablejsapi: `1`,
         controls: 0,
         showinfo: 0

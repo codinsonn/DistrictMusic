@@ -63,6 +63,7 @@ export default class AudioPlayer extends Component {
     this.isActive = true;
     this.playOnSongReady = false;
     this.mouseDown = false;
+    this.resetPlayingOnModeChanged = false;
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
@@ -227,6 +228,12 @@ export default class AudioPlayer extends Component {
       this.setState({song});
     }, 1);
 
+    if (this.resetPlayingOnModeChanged) {
+      //setTimeout(() => { this.setPlaying(true); }, 1);
+      this.setPlaying(true);
+      this.resetPlayingOnModeChanged = false;
+    }
+
     this.setState({song, playMode});
 
   }
@@ -337,7 +344,7 @@ export default class AudioPlayer extends Component {
 
   setPlayMode(playMode) {
 
-    const {pos, videoMode} = this.state;
+    const {playing, pos, videoMode} = this.state;
 
     this.changingPlayModes = true;
     this.preChangedPlayModePos = pos;
@@ -346,6 +353,11 @@ export default class AudioPlayer extends Component {
       this.setPlaying(false);
       this.setState({currentTimeString: `00:00`});
       PlaylistActions.setVideoMode(false);
+    }
+
+    if (playing) {
+      this.setPlaying(false);
+      this.resetPlayingOnModeChanged = true;
     }
 
     PlaylistActions.setPlayMode(playMode);
@@ -487,6 +499,18 @@ export default class AudioPlayer extends Component {
 
   }
 
+  avoidAudioSeekError() {
+
+    const {playing} = this.state;
+
+    if (playing) {
+      this.setPlaying(false);
+      setTimeout(() => { this.setPlaying(true); }, 1);
+      this.skipFrames = 60;
+    }
+
+  }
+
   toggleSynched() {
 
     const {isSpeaker, isSynched, videoMode} = this.state;
@@ -525,7 +549,7 @@ export default class AudioPlayer extends Component {
 
     playing = playOrNot;
 
-    if (playing) {
+    if (playing && !this.songHasStarted) {
       this.songHasStarted = true;
     }
 
@@ -599,18 +623,19 @@ export default class AudioPlayer extends Component {
 
     let maxFrequencyScale = maxFrequency / 225;
     let medFrequencyScale = medFrequency / 140;if (medFrequencyScale > 1.6) { medFrequencyScale = 1.3; }
-    let minFrequencyScale = minFrequency / 8;if (minFrequencyScale > 1.5) { minFrequencyScale = 1.3; }
+    //let minFrequencyScale = minFrequency / 8;if (minFrequencyScale > 1.5) { minFrequencyScale = 1.3; }
 
-    if (maxFrequency > 250) { maxFrequencyScale = medFrequency / 140; }
-    if (maxFrequencyScale < 0.4) { maxFrequencyScale = 1; }
+    if (maxFrequency > 250) { maxFrequencyScale = medFrequency / 150; }
+    if (maxFrequencyScale < 0.6) { maxFrequencyScale = 1; }
+    if (maxFrequencyScale > 1.4) { maxFrequencyScale = 1.3; }
 
-    const largeCircleScale = 0.65 + (0.35 * maxFrequencyScale);
-    const mediumCircleScale = 0.9 + (0.1 * minFrequencyScale);
+    const largeCircleScale = 0.7 + (0.3 * maxFrequencyScale);
+    //const mediumCircleScale = 0.9 + (0.1 * minFrequencyScale);
 
     transform(document.querySelector(`.audiodisc-large-left`), {scale: [largeCircleScale, largeCircleScale]});
     transform(document.querySelector(`.audiodisc-large-right`), {scale: [largeCircleScale, largeCircleScale]});
-    transform(document.querySelector(`.audiodisc-medium-left`), {scale: [mediumCircleScale, mediumCircleScale]});
-    transform(document.querySelector(`.audiodisc-medium-right`), {scale: [mediumCircleScale, mediumCircleScale]});
+    //transform(document.querySelector(`.audiodisc-medium-left`), {scale: [mediumCircleScale, mediumCircleScale]});
+    //transform(document.querySelector(`.audiodisc-medium-right`), {scale: [mediumCircleScale, mediumCircleScale]});
 
   }
 
@@ -630,7 +655,7 @@ export default class AudioPlayer extends Component {
       let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
-      this.skipFrames = 10; // number of frames to skip in button mode
+      this.skipFrames = 11; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
@@ -647,9 +672,8 @@ export default class AudioPlayer extends Component {
       let frequencies = []; // fake frequency data for non supported browsers
       if (this.audioContextSupported && this.audioContextSet) {
         frequencies = this.frequencyData.slice(0, maxBars); // only use as much frequency data as bars needed
-        if (playMode === `normal` && Math.max.apply(Math, frequencies) < 10) { frequencies = [80, 170, 90]; } // use standard values for button
+        if (playMode === `normal` && Math.max.apply(Math, this.frequencyData) < 60) { frequencies = [60, 170, 90]; } // use standard values for button
       } else {
-        console.log(`USING RAND ARRAY`);
         frequencies = randomArray(maxBars, 0, 255);
       }
 
@@ -667,9 +691,10 @@ export default class AudioPlayer extends Component {
 
         let minFrequency = Math.min.apply(Math, frequencies); // used for bar scaling
         let maxFrequency = Math.max.apply(Math, frequencies); // used for bar scaling
-        if (minFrequency === 0) { minFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { minFrequency = 0; }
-        if (maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
-        if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); } // make sure the middle bar is always the highest in button mode
+        //console.log(`Min`, minFrequency, `Max`, maxFrequency);
+        if (playMode === `normal` && minFrequency === 0) { minFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { minFrequency = 0; }
+        if (playMode === `normal` && maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
+        if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); /*console.log(`FIXED?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`);*/ } //else { console.log(`FREQS?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`); } // make sure the middle bar is always the highest in button mode
         const frequencyScale = Math.round(frequencies[index] - minFrequency); // main influencer for bar height
 
         if (playMode === `fullscreen`) { this.updateLogoAudioVisualisation(frequencies, minFrequency, maxFrequency); }
@@ -801,10 +826,9 @@ export default class AudioPlayer extends Component {
 
     if (song && song.general.id !== `` && song.queue && song.votes && _.isNumber(song.votes.currentQueueScore)) {
 
-      const isLoggedIn = UserStore.getLoggedIn();
       const voteMode = UserStore.getVoteMode();
 
-      if (/*!isLoggedIn || */song.uservote === undefined) {
+      if (song.uservote === undefined) {
         song.uservote = {hasVoted: false};
       }
 
@@ -876,7 +900,7 @@ export default class AudioPlayer extends Component {
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
         <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>
-        <div className='pos-wrapper'>
+        <div className='pos-wrapper' onClick={() => this.avoidAudioSeekError()}>
           {this.renderPlayer()}
         </div>
         <div className='total-duration'><span>{song.general.duration}</span></div>

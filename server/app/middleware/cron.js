@@ -246,20 +246,38 @@ module.exports = function(timeZone) {
 
     console.log('-CRON- Checking which audiofiles can be removed -CRON-');
 
-    var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
-    SongHelper.getBestOfAllTime().then((bestSongsOfAllTime) => {
+      var resetConditions = { 'audio.audioRemovable': false };
+      var resetQuery = { 'audio.audioRemovable': true };
+      var resetOptions = {};
 
-      _.forEach(bestSongsOfAllTime, (song) => {
+      SongModel.update(resetConditions, resetQuery, resetOptions, () => {
 
+        var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
+        SongHelper.getBestOfAllTime().then((bestSongsOfAllTime) => {
 
+          _.forEach(bestSongsOfAllTime, (song) => {
+
+            song.audio.audioRemovable = false;
+            song.audio.scheduledForRemoval = false;
+            song.save();
+
+          });
+
+        }, (failData) => {
+          console.log('-!- [CRON:255] -!- Best fetch failed:', failData);
+        });
 
       });
 
-    }, (failData) => {
-      console.log('-!- [CRON:255] -!- Best fetch failed:', failData);
-    });
+    }, () => { // Callback after job is done
 
-  });
+      console.log('-/CRON/- Finished resetting removable audio -/CRON/-');
+
+    },
+    true, // Start the job right now
+    timeZone // Time zone of this job
+
+  );
 
   /* --- Weekly: Remove unused audio files  ---------------------------------------------------------- */
 

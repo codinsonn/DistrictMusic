@@ -23,20 +23,13 @@ module.exports = (setPlaying=false) => {
 
   this.setPlaying = setPlaying;
 
-  var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
-  SongHelper.getBestOfAllTime().then((bestSongsOfAllTime) => {
-    console.log('-/- [AddRandomSong] -/- Got best songs of all time: (length:', bestSongsOfAllTime.length, ')');
-  }, (failData) => {
-    console.log('-!- [AddRandomSong] -!- Best fetch failed:', failData);
-  });
-
   this.init = () => {
 
     console.log('[AddRandomSong:28] Initialising... (checking songs)');
 
-    var query = { 'queue.inQueue': false, 'votes.legacyScore': { $gt: config.auto.minLegacyScore } };
+    var query = { 'audio.audioRemovable': false };
 
-    // Find fetch list of best songs of all time
+    // Find fetch list of songs that definitely still have their audio files on server
     SongModel.find(query).sort('-votes.legacyScore').exec((err, songs) => {
 
       if(err){
