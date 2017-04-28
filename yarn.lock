@@ -39,7 +39,7 @@ JSONStream@^0.8.4:
     jsonparse "0.0.5"
     through ">=2.2.7 <3"
 
-JSONStream@~1.3.0:
+JSONStream@^1.0.7, JSONStream@~1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
   dependencies:
@@ -2357,6 +2357,12 @@ defaults@^1.0.3:
   dependencies:
     clone "^1.0.2"
 
+deferential@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/deferential/-/deferential-1.0.0.tgz#f481c95e2b61a121c8aab9d6b41f78e04544097d"
+  dependencies:
+    native-promise-only "^0.8.1"
+
 define-properties@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/define-properties/-/define-properties-1.1.2.tgz#83a73f2fea569898fb737193c8f873caf6d45c94"
@@ -3298,6 +3304,20 @@ fd-slicer@~1.0.1:
   dependencies:
     pend "~1.2.0"
 
+ffmpeg@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ffmpeg/-/ffmpeg-0.0.4.tgz#1c460df8e7da5127f62ceef4bfa06c59c89630cb"
+  dependencies:
+    when ">= 0.0.1"
+
+ffprobe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ffprobe/-/ffprobe-1.1.0.tgz#f64f0ea44e33c80fc1f7aefe31fc4b3707d2acce"
+  dependencies:
+    JSONStream "^1.0.7"
+    bl "^1.0.0"
+    deferential "^1.0.0"
+
 figures@^1.3.5:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-1.7.0.tgz#cbe1e3affcf1cd44b80cadfed28dc793a9701d2e"
@@ -3424,9 +3444,16 @@ flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
 
-fluent-ffmpeg@^2.1.0:
+fluent-ffmpeg@^2.1.0, fluent-ffmpeg@~2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/fluent-ffmpeg/-/fluent-ffmpeg-2.1.0.tgz#e6ab85e75ba8e49119a3900cd9df10d39831d392"
+  dependencies:
+    async ">=0.2.9"
+    which "^1.1.1"
+
+"fluent-ffmpeg@github:fluent-ffmpeg/node-fluent-ffmpeg":
+  version "2.1.2"
+  resolved "https://codeload.github.com/fluent-ffmpeg/node-fluent-ffmpeg/tar.gz/77018ccf5b927b0d5f0c0cb843a0006484a96b46"
   dependencies:
     async ">=0.2.9"
     which "^1.1.1"
@@ -4057,6 +4084,14 @@ home-or-tmp@^2.0.0:
 hooks-fixed@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hooks-fixed/-/hooks-fixed-1.2.0.tgz#0d2772d4d7d685ff9244724a9f0b5b2559aac96b"
+
+horizon-youtube-mp3@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/horizon-youtube-mp3/-/horizon-youtube-mp3-1.0.2.tgz#79c4ce83140fbe77ab27df109faca9ad93e28f68"
+  dependencies:
+    fluent-ffmpeg "~2.1.0"
+    shortid "~2.1.3"
+    ytdl-core "~0.7.19"
 
 hosted-git-info@^2.1.4, hosted-git-info@^2.1.5, hosted-git-info@~2.2.0:
   version "2.2.0"
@@ -4934,6 +4969,12 @@ limiter@^1.0.5:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.0.tgz#6e2bd12ca3fcdaa11f224e2e53c896df3f08d913"
 
+liquid-ffmpeg@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/liquid-ffmpeg/-/liquid-ffmpeg-1.0.2.tgz#2772dae3d141fc7824fa9879d972158c51f24380"
+  dependencies:
+    winston ">=0.5.10"
+
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -5480,6 +5521,10 @@ mozjpeg@^4.0.0:
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
 
+mp4-convert@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/mp4-convert/-/mp4-convert-1.0.2.tgz#3f7464a94d33b96c7f29019ffeed8226acb254f0"
+
 mpath@0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.2.1.tgz#3a4e829359801de96309c27a6b2e102e89f9e96e"
@@ -5531,6 +5576,10 @@ mute-stream@0.0.5, mute-stream@~0.0.4:
 nan@^2.3.0:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.1.tgz#d5b01691253326a97a2bbee9e61c55d8d60351e2"
+
+native-promise-only@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/native-promise-only/-/native-promise-only-0.8.1.tgz#20a318c30cb45f71fe7adfbf7b21c99c1472ef11"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -7798,6 +7847,10 @@ shelljs@^0.7.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
+shortid@~2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/shortid/-/shortid-2.1.3.tgz#27b40b0991aa2df2551efd62831b5ea2f25fc1bc"
+
 shush@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shush/-/shush-1.0.0.tgz#c27415a9e458f2fed39b27cf8eb37c003782b431"
@@ -8914,6 +8967,18 @@ verror@1.3.6:
   dependencies:
     extsprintf "1.0.2"
 
+video-converter@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/video-converter/-/video-converter-1.0.0.tgz#15c673dd4cb8e84baeb89bd4ea1a980ca678c1dc"
+  dependencies:
+    fluent-ffmpeg "^2.1.0"
+
+video-format-converter@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/video-format-converter/-/video-format-converter-1.1.0.tgz#aa24b141bb35cc0a67461b2a1a543c9d8f66a7db"
+  dependencies:
+    fluent-ffmpeg "github:fluent-ffmpeg/node-fluent-ffmpeg"
+
 viewport-dimensions@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/viewport-dimensions/-/viewport-dimensions-0.2.0.tgz#de740747db5387fd1725f5175e91bac76afdf36c"
@@ -9071,6 +9136,10 @@ whatwg-url-compat@~0.6.5:
   dependencies:
     tr46 "~0.0.1"
 
+"when@>= 0.0.1":
+  version "3.7.8"
+  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
+
 whet.extend@~0.9.9:
   version "0.9.9"
   resolved "https://registry.yarnpkg.com/whet.extend/-/whet.extend-0.9.9.tgz#f877d5bf648c97e5aa542fadc16d6a259b9c11a1"
@@ -9120,7 +9189,7 @@ winston@0.8.0:
     pkginfo "0.3.x"
     stack-trace "0.0.x"
 
-winston@0.8.x, winston@~0.8.1:
+winston@0.8.x, winston@>=0.5.10, winston@~0.8.1:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/winston/-/winston-0.8.3.tgz#64b6abf4cd01adcaefd5009393b1d8e8bec19db0"
   dependencies:
@@ -9379,6 +9448,13 @@ youtube-search@^1.0.8:
 ytdl-core@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-0.10.0.tgz#e968658e09eb8f0711bf278b40ddb06d22262d67"
+  dependencies:
+    html-entities "^1.1.3"
+    sax "^1.1.3"
+
+ytdl-core@~0.7.19:
+  version "0.7.24"
+  resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-0.7.24.tgz#446569beeff09b4b6195f77eb10443a84b9917b9"
   dependencies:
     html-entities "^1.1.3"
     sax "^1.1.3"

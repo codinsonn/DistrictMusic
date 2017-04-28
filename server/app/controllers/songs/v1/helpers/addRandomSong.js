@@ -95,7 +95,7 @@ module.exports = (setPlaying=false) => {
     var audioFolder = `${__base}uploads/audio/`;
     var songTitleStripped = song.general.title;
     songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-    var audioFilename = `${song.general.id}_${songTitleStripped}.mp4`;
+    var audioFilename = `${song.general.id}_${songTitleStripped}.webm`;
     var tempOutput = path.resolve(tempFolder, audioFilename);
     var audioOutput = path.resolve(audioFolder, audioFilename);
 
@@ -112,38 +112,62 @@ module.exports = (setPlaying=false) => {
 
         console.log('[AddRandomSong:109] Attempting to save video as song in: ', tempOutput);
 
-        ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
-          .on('response', (res) => {
-            var totalSize = res.headers['content-length'];
-            var dataRead = 0;
-            res.on('data', (data) => {
+        let audioFormat = {};
+        ytdl.getInfo(song.general.id, (err, info) => {
 
-              dataRead += data.length;
-              var percent = dataRead / totalSize;
-              var strPercent = (percent * 100).toFixed(2) + '%';
+          if(err) throw err;
 
-              process.stdout.cursorTo(0);
-              process.stdout.clearLine(1);
-              process.stdout.write(strPercent);
+          let i = info.formats.length;
+          _.forEach(info.formats, format => {
 
-            });
-            res.on('end', () => {
+            console.log('[YTDL] Checking format:', format.type);
 
-              process.stdout.write('\n');
-              fse.copySync(tempOutput, audioOutput);
-              fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-              fs.unlinkSync(tempOutput);
+            if(format.type.indexOf('audio/webm') > -1){
+              audioFormat = format;
+              //console.log('[YTDL] Found compatible format!', audioFormat);
+            }
 
-              console.log('-f- [AddRandomSong:127] -f- Finished downloading song to:', audioOutput);
-              song.audio.filename = audioFilename;
-              song.audio.isDownloaded = true;
+            i--;
+            if (i === 0) {
 
-              this.saveSong(song);
+              ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
+                .on('response', (res) => {
+                  var totalSize = res.headers['content-length'];
+                  var dataRead = 0;
+                  res.on('data', (data) => {
 
-            });
-          })
-          .pipe(fs.createWriteStream(tempOutput))
-        ;
+                    dataRead += data.length;
+                    var percent = dataRead / totalSize;
+                    var strPercent = (percent * 100).toFixed(2) + '%';
+
+                    process.stdout.cursorTo(0);
+                    process.stdout.clearLine(1);
+                    process.stdout.write(strPercent);
+
+                  });
+                  res.on('end', () => {
+
+                    process.stdout.write('\n');
+                    fse.copySync(tempOutput, audioOutput);
+                    fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
+                    fs.unlinkSync(tempOutput);
+
+                    console.log('-f- [AddRandomSong:127] -f- Finished downloading song to:', audioOutput);
+                    song.audio.filename = audioFilename;
+                    song.audio.isDownloaded = true;
+
+                    this.saveSong(song);
+
+                  });
+                })
+                .pipe(fs.createWriteStream(tempOutput))
+              ;
+
+            }
+
+          });
+
+        });
 
       } else { // other error
 

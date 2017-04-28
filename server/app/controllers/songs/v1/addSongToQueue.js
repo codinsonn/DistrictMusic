@@ -88,7 +88,7 @@ module.exports = (req, res, done) => {
     console.log('[AddSongToQueue:95] Assigned title:', songTitleStripped);
     songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
     console.log('[AddSongToQueue:97] Stripped title:', songTitleStripped);
-    var audioFilename = `${suggestion.id}_${songTitleStripped}.mp4`;
+    var audioFilename = `${suggestion.id}_${songTitleStripped}.webm`;
     console.log('[AddSongToQueue:99] Setup file naming for file:', audioFilename);
     var tempOutput = path.resolve(tempFolder, audioFilename);
     console.log('[AddSongToQueue:101] Setup file naming for temp:', tempOutput);
@@ -119,44 +119,73 @@ module.exports = (req, res, done) => {
 
         console.log('[AddSongToQueue:131] Attempting to save video as song in: ', req.session.isUploading, tempOutput);
 
-        ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
-          .on('response', (res) => {
-            var totalSize = res.headers['content-length'];
-            var dataRead = 0;
-            res.on('data', (data) => {
+        let audioFormat = {};
+        ytdl.getInfo(suggestion.id, (err, info) => {
 
-              dataRead += data.length;
-              var percent = dataRead / totalSize;
-              var strPercent = (percent * 100).toFixed(2) + '%';
+          if(err) throw err;
 
-              UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
-                EmitHelper.emit('DOWNLOAD_PROGRESS', user.meta.socketIds, {percent: percent, str: strPercent});
-              });
+          let i = info.formats.length;
+          _.forEach(info.formats, format => {
 
-              process.stdout.cursorTo(0);
-              process.stdout.clearLine(1);
-              process.stdout.write(strPercent);
+            console.log('[YTDL] Checking format:', format.type);
 
-            });
-            res.on('end', () => {
+            if(format.type.indexOf('audio/webm') > -1){
+              audioFormat = format;
+              //console.log('[YTDL] Found compatible format!', audioFormat);
+            }
 
-              process.stdout.write('\n');
-              fse.copySync(tempOutput, audioOutput);
-              fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-              fs.unlinkSync(tempOutput);
+            i--;
+            if (i === 0) {
 
-              console.log('-f- Finished downloading song to:', audioOutput);
-              UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
-                EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
-              });
+              console.log('[YTDL] Downloading song...');
+              ytdl(url, { format: audioFormat })
+                .on('response', (res) => {
 
-              suggestion.filename = audioFilename;
-              this.finishedDownload(songIsNew, suggestion, song);
+                  var totalSize = res.headers['content-length'];
+                  var dataRead = 0;
 
-            });
-          })
-          .pipe(fs.createWriteStream(tempOutput))
-        ;
+                  res.on('data', (data) => {
+
+                    dataRead += data.length;
+                    var percent = dataRead / totalSize;
+                    var strPercent = (percent * 100).toFixed(2) + '%';
+
+                    UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
+                      EmitHelper.emit('DOWNLOAD_PROGRESS', user.meta.socketIds, {percent: percent, str: strPercent});
+                    });
+
+                    process.stdout.cursorTo(0);
+                    process.stdout.clearLine(1);
+                    process.stdout.write(strPercent);
+
+                  });
+
+                  res.on('end', () => {
+
+                    process.stdout.write('\n');
+                    fse.copySync(tempOutput, audioOutput);
+                    fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
+                    fs.unlinkSync(tempOutput);
+
+                    console.log('-f- Finished downloading song to:', audioOutput);
+                    UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
+                      EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
+                    });
+
+                    suggestion.filename = audioFilename;
+                    this.finishedDownload(songIsNew, suggestion, song);
+
+                  });
+
+                })
+                .pipe(fs.createWriteStream(tempOutput))
+              ;
+
+            }
+
+          });
+
+        });
 
       } else { // other error
 
