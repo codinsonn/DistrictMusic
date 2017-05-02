@@ -198,6 +198,7 @@ export default class SongSummary extends Component {
       UserActions.setSynched(false);
 
       setTimeout(() => PlaylistActions.setSong(song), 10);
+      setTimeout(() => PlaylistActions.startPlay(), 500);
 
     } else {
       NotifActions.addError(`Cannot change song as speaker`);
