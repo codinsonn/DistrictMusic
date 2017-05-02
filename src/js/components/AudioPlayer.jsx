@@ -732,7 +732,8 @@ export default class AudioPlayer extends Component {
 
     if (song.general !== `` && !videoMode) { // render waveform progress bar
 
-      const audioFile = `assets/audio/${song.audio.filename}`;
+      //const audioFile = `assets/audio/${song.audio.filename}`;
+      const audioFile = `download/audio/${song.audio.filename}`;
 
       return (
         <Wavesurfer

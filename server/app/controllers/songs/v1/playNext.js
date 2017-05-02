@@ -13,7 +13,6 @@ module.exports = (req, res, done) => {
 
   console.log('--- [PlayNext] --- Removing current song from queue...', req.body.general.id, req.body.general.title, '---');
 
-  //SongModel.findOne({ 'queue.isPlaying': true }, (err, song) => {
   SongModel.findOne({ 'general.id': req.body.general.id, 'general.title': req.body.general.title }, (err, song) => {
 
     if (err){

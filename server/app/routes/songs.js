@@ -6,6 +6,19 @@ var baseUrlUser = "songs/";
 
 module.exports = (app) => {
 
+  /** --- Get audiofile -----------------------------------------------------------------------------
+   * @api {get} /assets/audioo/{{filename}} Download file
+   * @apiDescription Stream file to the frontend. Authentication not required.
+   * @apiVersion 1.0.0
+   * @apiGroup File
+   * @apiParam {String} id MongoDB id of the file.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *
+   */
+  app.route("/download/audio/:filename").get(SongsController.getAudioFile);
+
   /** --- Get current playlist queue -----------------------------------------------------------------------------
    * @api {get} /api/songs/queue/ Search youtube videos
    * @apiDescription Return search results

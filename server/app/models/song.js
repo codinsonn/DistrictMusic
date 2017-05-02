@@ -30,6 +30,11 @@ var SongSchema = new Schema({
       }
     },
     audio: {
+      fileId: {
+        type: String,
+        index: true,
+        required: true
+      },
       filename: {
         type: String,
         index: true,

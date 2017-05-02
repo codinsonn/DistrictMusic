@@ -4,6 +4,7 @@ var removeVotesForSong = require("./removeVotesForSong");
 var getCurrentQueue = require("./getCurrentQueue");
 var getBestOfAllTime = require("./getBestOfAllTime");
 var addRandomSong = require("./addRandomSong");
+var downloadSong = require("./downloadSong");
 
 module.exports = {
   validateVoteType: validateVoteType,
@@ -11,5 +12,6 @@ module.exports = {
   removeVotesForSong: removeVotesForSong,
   getCurrentQueue: getCurrentQueue,
   getBestOfAllTime: getBestOfAllTime,
-  addRandomSong: addRandomSong
+  addRandomSong: addRandomSong,
+  downloadSong: downloadSong
 };

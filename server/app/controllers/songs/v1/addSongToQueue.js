@@ -1,16 +1,11 @@
 // Packages
 require("rootpath")();
 var _ = require("lodash");
-
 var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var ytdl = require('ytdl-core');
-var ffmpeg = require('fluent-ffmpeg');
 
 // Helpers
-var EmitHelper = require(__base + "app/helpers/io/emitter");
 var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
+var EmitHelper = require(__base + "app/helpers/io/emitter");
 
 // Models
 var SongModel = require(__base + "app/models/song");
@@ -75,123 +70,30 @@ module.exports = (req, res, done) => {
 
   }
 
-  this.downloadSong = (songIsNew, suggestion, song={}) => {
+  this.downloadSong = (songIsNew, suggestion, song = {}) => {
 
-    console.log('-?- [AddSongToQueue:87] -?- Creating new song from suggestion');
+    console.log('-?- [AddSongToQueue:87] -?- Downloading song from suggestion');
 
-    var url = `https://www.youtube.com/watch?v=${suggestion.id}`;
-    var tempFolder = `${__base}uploads/temp/`;
-    console.log('[AddSongToQueue:91] Setup folder for temp:', tempFolder);
-    var audioFolder = `${__base}uploads/audio/`;
-    console.log('[AddSongToQueue:93] Setup folder for audio:', audioFolder);
-    var songTitleStripped = suggestion.title;
-    console.log('[AddSongToQueue:95] Assigned title:', songTitleStripped);
-    songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-    console.log('[AddSongToQueue:97] Stripped title:', songTitleStripped);
-    var audioFilename = `${suggestion.id}_${songTitleStripped}.webm`;
-    console.log('[AddSongToQueue:99] Setup file naming for file:', audioFilename);
-    var tempOutput = path.resolve(tempFolder, audioFilename);
-    console.log('[AddSongToQueue:101] Setup file naming for temp:', tempOutput);
-    var audioOutput = path.resolve(audioFolder, audioFilename);
-    console.log('[AddSongToQueue:103] Setup file naming for audio:', audioOutput);
+    req.session.isUploading = true;
 
-    fs.stat(tempOutput, (err, stat) => {
+    UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
 
-      if(err == null) { // file already exists
+      SongHelper.downloadSong(suggestion.id, suggestion.title, true, user.meta.socketIds).then((fileData) => {
 
-        console.log('-!- [AddSongToQueue:102] -!- File already exists');
-        if(!songIsNew){
+        console.log('[AddSongToQueue] Song Downloaded:', fileData.fileId, fileData.filename);
 
-          song.audio.filename = audioFilename;
-          this.updateInDb(song);
+        suggestion.filename = fileData.filename;
+        suggestion.fileId = fileData.fileId;
 
-        }else{
+        this.finishedDownload(songIsNew, suggestion, song);
 
-          console.log('-!- [AddSongToQueue:110] -!- File exists on server, but not in db, weird!');
-          res.statusCode = 412;
-          return res.json({ errors: [ 'Song exists on server, but not in db, weird...' ] });
+      }, (error) => {
 
-        }
+        console.log('-!- [AddSongToQueue] -!- YOUTUBE DOWNLOAD FAILED:', error);
+        res.statusCode = 500;
+        return res.json({ errors: [ 'Song upload failed' ] });
 
-      } else if(err.code == 'ENOENT') { // file doesn't exist
-
-        req.session.isUploading = true;
-
-        console.log('[AddSongToQueue:131] Attempting to save video as song in: ', req.session.isUploading, tempOutput);
-
-        let audioFormat = {};
-        ytdl.getInfo(suggestion.id, (err, info) => {
-
-          if(err) throw err;
-
-          let i = info.formats.length;
-          _.forEach(info.formats, format => {
-
-            console.log('[YTDL] Checking format:', format.type);
-
-            if(format.type.indexOf('audio/webm') > -1){
-              audioFormat = format;
-              //console.log('[YTDL] Found compatible format!', audioFormat);
-            }
-
-            i--;
-            if (i === 0) {
-
-              console.log('[YTDL] Downloading song...');
-              ytdl(url, { format: audioFormat })
-                .on('response', (res) => {
-
-                  var totalSize = res.headers['content-length'];
-                  var dataRead = 0;
-
-                  res.on('data', (data) => {
-
-                    dataRead += data.length;
-                    var percent = dataRead / totalSize;
-                    var strPercent = (percent * 100).toFixed(2) + '%';
-
-                    UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
-                      EmitHelper.emit('DOWNLOAD_PROGRESS', user.meta.socketIds, {percent: percent, str: strPercent});
-                    });
-
-                    process.stdout.cursorTo(0);
-                    process.stdout.clearLine(1);
-                    process.stdout.write(strPercent);
-
-                  });
-
-                  res.on('end', () => {
-
-                    process.stdout.write('\n');
-                    fse.copySync(tempOutput, audioOutput);
-                    fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-                    fs.unlinkSync(tempOutput);
-
-                    console.log('-f- Finished downloading song to:', audioOutput);
-                    UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
-                      EmitHelper.emit('DOWNLOAD_DONE', user.meta.socketIds, {percent: 0});
-                    });
-
-                    suggestion.filename = audioFilename;
-                    this.finishedDownload(songIsNew, suggestion, song);
-
-                  });
-
-                })
-                .pipe(fs.createWriteStream(tempOutput))
-              ;
-
-            }
-
-          });
-
-        });
-
-      } else { // other error
-
-        console.log('-!- [AddSongToQueue:166] -!- Error occurred while testing audiofile', err.code);
-
-      }
+      });
 
     });
 
@@ -213,6 +115,7 @@ module.exports = (req, res, done) => {
       this.saveToDb(suggestion);
     }else{
       song.audio.filename = suggestion.filename;
+      song.audio.fileId = suggestion.fileId;
       song.audio.isDownloaded = true;
       song.audio.scheduledForRemoval = false;
       this.updateInDb(song);
@@ -263,6 +166,7 @@ module.exports = (req, res, done) => {
 
     // -- file settings --------
     newSong.audio.filename = suggestion.filename;
+    newSong.audio.fileId = suggestion.fileId;
     newSong.audio.isDownloaded = true;
     newSong.audio.scheduledForRemoval = false;
 
@@ -319,9 +223,7 @@ module.exports = (req, res, done) => {
 
         SongModel.findOne({'queue.inQueue': true}).exec((err, song) => {
 
-          if(err){
-            console.log('[AddSongToQueue:310] Err:', err);
-          }
+          if(err){ console.log('[AddSongToQueue:310] Err:', err); }
 
           if(song){
 

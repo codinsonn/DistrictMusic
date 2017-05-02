@@ -2,10 +2,6 @@
 require("rootpath")();
 var _ = require("lodash");
 var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var ytdl = require('ytdl-core');
-var ffmpeg = require('fluent-ffmpeg');
 
 // Config
 var config = require(__base + "config");
@@ -32,9 +28,7 @@ module.exports = (setPlaying=false) => {
     // Find fetch list of songs that definitely still have their audio files on server
     SongModel.find(query).sort('-votes.legacyScore').exec((err, songs) => {
 
-      if(err){
-        console.log('-!- [AddRandomSong:37] -!- An error occured while searching for random song: \n', err, '\n-!-');
-      }
+      if(err){ console.log('-!- [AddRandomSong:37] -!- An error occured while searching for random song: \n', err, '\n-!-'); }
 
       if(songs && songs.length >= 1){
 
@@ -90,90 +84,19 @@ module.exports = (setPlaying=false) => {
 
     console.log('[AddRandomSong:87] Attempting to download song:', song.general.title);
 
-    var url = `https://www.youtube.com/watch?v=${song.general.id}`;
-    var tempFolder = `${__base}uploads/temp/`;
-    var audioFolder = `${__base}uploads/audio/`;
-    var songTitleStripped = song.general.title;
-    songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-    var audioFilename = `${song.general.id}_${songTitleStripped}.webm`;
-    var tempOutput = path.resolve(tempFolder, audioFilename);
-    var audioOutput = path.resolve(audioFolder, audioFilename);
+    SongHelper.downloadSong(song.general.id, song.general.title).then((fileData) => {
 
-    fs.stat(tempOutput, (err, stat) => {
+      console.log('[AddRandomSong:95] Song Downloaded:', fileData.fileId, fileData.filename);
 
-      if(err == null) { // file already exists
+      song.audio.filename = fileData.filename;
+      song.audio.fileId = fileData.fileId;
+      song.audio.isDownloaded = true;
 
-        console.log('-!- [AddRandomSong:102] -!- File already exists');
-        song.audio.filename = audioFilename;
-        song.audio.isDownloaded = true;
-        this.saveSong(song);
+      this.saveSong(song);
 
-      } else if(err.code == 'ENOENT') { // file doesn't exist
+    }, (error) => {
 
-        console.log('[AddRandomSong:109] Attempting to save video as song in: ', tempOutput);
-
-        let audioFormat = {};
-        ytdl.getInfo(song.general.id, (err, info) => {
-
-          if(err) throw err;
-
-          let i = info.formats.length;
-          _.forEach(info.formats, format => {
-
-            console.log('[YTDL] Checking format:', format.type);
-
-            if(format.type.indexOf('audio/webm') > -1){
-              audioFormat = format;
-              //console.log('[YTDL] Found compatible format!', audioFormat);
-            }
-
-            i--;
-            if (i === 0) {
-
-              ytdl(url, { filter: (f) => { return f.container === 'mp4' && !f.encoding; }})
-                .on('response', (res) => {
-                  var totalSize = res.headers['content-length'];
-                  var dataRead = 0;
-                  res.on('data', (data) => {
-
-                    dataRead += data.length;
-                    var percent = dataRead / totalSize;
-                    var strPercent = (percent * 100).toFixed(2) + '%';
-
-                    process.stdout.cursorTo(0);
-                    process.stdout.clearLine(1);
-                    process.stdout.write(strPercent);
-
-                  });
-                  res.on('end', () => {
-
-                    process.stdout.write('\n');
-                    fse.copySync(tempOutput, audioOutput);
-                    fse.copySync(audioOutput, path.resolve(`${__base}public/assets/audio/`, audioFilename));
-                    fs.unlinkSync(tempOutput);
-
-                    console.log('-f- [AddRandomSong:127] -f- Finished downloading song to:', audioOutput);
-                    song.audio.filename = audioFilename;
-                    song.audio.isDownloaded = true;
-
-                    this.saveSong(song);
-
-                  });
-                })
-                .pipe(fs.createWriteStream(tempOutput))
-              ;
-
-            }
-
-          });
-
-        });
-
-      } else { // other error
-
-        console.log('-!- [AddRandomSong:139] -!- Error occurred while testing audiofile', err.code);
-
-      }
+      console.log('-!- [AddRandomSong:105] -!- YOUTUBE DOWNLOAD FAILED:', error);
 
     });
 

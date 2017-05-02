@@ -21,4 +21,4 @@ mongoose.connection.on('error', function (err) {
 mongoose.Promise = require("pinkie");
 
 // Initialize GridFS
-//GridFS.initialize();
+GridFS.initialize();
