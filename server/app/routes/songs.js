@@ -17,7 +17,7 @@ module.exports = (app) => {
    *     HTTP/1.1 200 OK
    *
    */
-  app.route("/download/audio/:filename").get(SongsController.getAudioFile);
+  app.route("/stream/audio/:filename").get(SongsController.getAudioFile);
 
   /** --- Get current playlist queue -----------------------------------------------------------------------------
    * @api {get} /api/songs/queue/ Search youtube videos

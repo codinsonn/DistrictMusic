@@ -11,36 +11,40 @@ var EmitHelper = require(__base + "app/helpers/io/emitter");
 // Models
 var SongModel = require(__base + "app/models/song");
 
-module.exports = () => new Promise((resolve, reject) => {
+module.exports = () => {
 
-  console.log('--- [GetBestOfAllTime] --- Attempting to get best songs ---');
+  return new Promise((resolve, reject) => {
 
-  // If one or no song in queue
-  SongModel.find({ 'votes.legacyScore': { $gt: config.auto.minLegacyScore } }).sort('-votes.legacyScore').exec((err, songs) => {
+    console.log('--- [GetBestOfAllTime] --- Attempting to get best songs ---');
 
-    if(err){
-      console.log('-!- [GetBestOfAllTime:18] -!- An error occured while looking for best songs:\n', err, '\n-!-');
-    }
+    // If one or no song in queue
+    SongModel.find({ 'votes.legacyScore': { $gt: config.auto.minLegacyScore } }).sort('-votes.legacyScore').exec((err, songs) => {
 
-    if(songs && songs.length >= 1){
-
-      var limit = config.auto.maxRandomBestPool;
-      if(limit > songs.length){
-        limit = songs.length;
+      if(err){
+        console.log('-!- [GetBestOfAllTime:18] -!- An error occured while looking for best songs:\n', err, '\n-!-');
       }
 
-      var bestSongsOfAllTime = songs.slice(0, limit);
+      if(songs && songs.length >= 1){
 
-      console.log('-/- [GetBestOfAllTime] -/- Resolving Promise ( length:', bestSongsOfAllTime.length, '| first:', bestSongsOfAllTime[0].general.title, '| firstIsPlaying:', bestSongsOfAllTime[0].queue.isPlaying, ')');
-      resolve(bestSongsOfAllTime);
+        var limit = config.auto.maxRandomBestPool;
+        if(limit > songs.length){
+          limit = songs.length;
+        }
 
-    }else{
+        var bestSongsOfAllTime = songs.slice(0, limit);
 
-      console.log('-!- [GetBestOfAllTime:48] -!- Promise Rejected: No best song at the time');
-      reject('No best songs at the time');
+        console.log('-/- [GetBestOfAllTime] -/- Resolving Promise ( length:', bestSongsOfAllTime.length, '| first:', bestSongsOfAllTime[0].general.title, '| firstIsPlaying:', bestSongsOfAllTime[0].queue.isPlaying, ')');
+        resolve(bestSongsOfAllTime);
 
-    }
+      }else{
+
+        console.log('-!- [GetBestOfAllTime:48] -!- Promise Rejected: No best song at the time');
+        reject('No best songs at the time');
+
+      }
+
+    });
 
   });
 
-});
+};

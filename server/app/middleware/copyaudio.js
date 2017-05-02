@@ -7,7 +7,7 @@ var SongModel = require(__base + "app/models/song");
 
 module.exports = function() {
 
-  SongModel.find({'audio.isDownloaded': true}).exec((err, songs) => {
+  /*SongModel.find({'audio.isDownloaded': true}).exec((err, songs) => {
 
     if(err){
       console.log('-!- An error occured while copying audio files -!-\n', err, '\n-!-');
@@ -31,7 +31,7 @@ module.exports = function() {
 
     }
 
-  });
+  });*/
 
 };
 

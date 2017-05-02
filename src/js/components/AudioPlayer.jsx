@@ -691,7 +691,6 @@ export default class AudioPlayer extends Component {
 
         let minFrequency = Math.min.apply(Math, frequencies); // used for bar scaling
         let maxFrequency = Math.max.apply(Math, frequencies); // used for bar scaling
-        //console.log(`Min`, minFrequency, `Max`, maxFrequency);
         if (playMode === `normal` && minFrequency === 0) { minFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { minFrequency = 0; }
         if (playMode === `normal` && maxFrequency === 0) { maxFrequency = 1; } else if (playMode === `fullscreen` && maxFrequency < 180) { maxFrequency = 255; }
         if (playMode === `normal`) { frequencies = curveArrayAtRandom(frequencies); /*console.log(`FIXED?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`);*/ } //else { console.log(`FREQS?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`); } // make sure the middle bar is always the highest in button mode
@@ -732,8 +731,7 @@ export default class AudioPlayer extends Component {
 
     if (song.general !== `` && !videoMode) { // render waveform progress bar
 
-      //const audioFile = `assets/audio/${song.audio.filename}`;
-      const audioFile = `download/audio/${song.audio.filename}`;
+      const audioFile = `stream/audio/${song.audio.filename}`;
 
       return (
         <Wavesurfer

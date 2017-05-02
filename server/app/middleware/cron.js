@@ -5,11 +5,11 @@ var config = require(__base + "config");
 var _ = require("lodash");
 var CronJob = require('cron').CronJob;
 var path = require('path');
-var fs = require('fs');
 
 // Helpers
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
+var GridFsHelper = require(__base + "app/helpers/gridfs");
 
 // Models
 var UserModel = require(__base + "app/models/user");
@@ -300,46 +300,15 @@ module.exports = function(timeZone) {
           _.forEach(songs, (song) => {
 
             var audioFilename = song.audio.filename;
+            var fileId = song.audio.fileId;
 
-            var uploadsFolder = `${__base}uploads/audio/`;
-            var uploadedFilePath = path.resolve(uploadsFolder, audioFilename);
+            GridFsHelper.exists(fileId).then(audioFile => {
 
-            var publicFolder = `${__base}public/assets/audio/`;
-            var publicFilePath = path.resolve(publicFolder, audioFilename);
+              console.log('-!- [CRON:310] -!- File exists, removing the file from db');
 
-            // Check in public/assets/audio folder and remove if found
-            fs.stat(uploadedFilePath, (err, stat) => {
+              GridFsHelper.remove(fileId);
 
-              if(err == null) { // file exists on server
-
-                console.log('-!- [CRON:310] -!- File already exists');
-                fs.unlinkSync(uploadedFilePath);
-                console.log('[CRON] Removed file:', uploadedFilePath);
-
-              } else if(err.code == 'ENOENT') { // file doesn't exist on server
-                // Do nothing
-              } else { // other error
-                console.log('-!- [CRON:342] -!- Error occurred while testing audiofile', err.code);
-              }
-
-            });
-
-            // Check in uploads folder and remove if found
-            fs.stat(uploadedFilePath, (err, stat) => {
-
-              if(err == null) { // file exists on server
-
-                console.log('-!- [CRON:327] -!- File already exists');
-                fs.unlinkSync(publicFilePath);
-                console.log('[CRON] Removed file:', publicFilePath);
-
-              } else if(err.code == 'ENOENT') { // file doesn't exist on server
-                // Do nothing
-              } else { // other error
-                console.log('-!- [CRON:342] -!- Error occurred while testing audiofile', err.code);
-              }
-
-            });
+            }, error => { /* Do nothing */ });
 
           });
 

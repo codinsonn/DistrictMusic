@@ -81,7 +81,7 @@ require("./app/routes")(app);
 require("./app/middleware/cron")(process.env.TZ);
 
 // Copy audio files
-require("./app/middleware/copyaudio")();
+//require("./app/middleware/copyaudio")();
 
 // Reset speaker
 require("./app/middleware/resetspeaker")();
