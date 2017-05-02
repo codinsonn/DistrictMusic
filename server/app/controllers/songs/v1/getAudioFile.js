@@ -22,7 +22,7 @@ module.exports = (req, res, done) => {
 
     if(song) {
 
-      GridFSHelper.download(res, song.audio.fileId);
+      GridFSHelper.download(req, res, song.audio.fileId);
 
     } else {
       console.log('-!- [GetAudioFile:29] -!- Song for audiofile not found -!-');
