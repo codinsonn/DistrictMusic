@@ -39,6 +39,8 @@ class PlaylistStore extends EventEmitter {
     this.speakerPos = 0;
     this.lastSpeakerPosUpdate = 0;
 
+    this.setMaxListeners(0);
+
   }
 
   updateQueue() {

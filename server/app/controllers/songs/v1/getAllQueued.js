@@ -51,6 +51,7 @@ module.exports = (req, res, done) => {
 
           newQueueItem.general = queueItem.general;
           newQueueItem.audio = queueItem.audio;
+          newQueueItem.waveform = queueItem.waveform;
           newQueueItem.votes = queueItem.votes;
           newQueueItem.queue = queueItem.queue;
           newQueueItem.thumbs = queueItem.thumbs;

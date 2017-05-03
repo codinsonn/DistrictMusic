@@ -80,9 +80,6 @@ require("./app/routes")(app);
 // Load all cron jobs
 require("./app/middleware/cron")(process.env.TZ);
 
-// Copy audio files
-//require("./app/middleware/copyaudio")();
-
 // Reset speaker
 require("./app/middleware/resetspeaker")();
 
@@ -96,12 +93,16 @@ server.listen(port, function() {
 
 process.on('uncaughtException', (err) => {
 
-  console.log('-!- Uncaught exception -!-', err);
+  if(err){
 
-  if(err && err.code != 'EADDRINUSE'){
-    //console.log('-!- Uncaught exception -!-', err);
-    //io.close();
-    //server.close();
+    var strErr = String(err);
+
+    if(err.code != 'EADDRINUSE' && !strErr.indexOf('EADDRINUSE') > -1){
+      console.log('-!- Uncaught exception -!-', err);
+      //io.close();
+      //server.close();
+    }
+
   }
 
 });

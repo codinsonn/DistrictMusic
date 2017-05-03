@@ -27,6 +27,8 @@ class UserStore extends EventEmitter {
       }
     };
 
+    this.setMaxListeners(0);
+
   }
 
   updateSessionSocketId(socketId) {

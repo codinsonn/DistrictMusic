@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var config = require(__base + "config");
 var GridFS = require(__base + "app/middleware/gridfs");
 
-let connectUrl = `mongodb://${config.mongo.url}/${config.mongo.db}`;
+var connectUrl = `mongodb://${config.mongo.url}/${config.mongo.db}`;
 if(config.production){
   connectUrl = `mongodb://${config.mongo.admin}:${config.mongo.password}@ds145750.mlab.com:45750/${config.mongo.db}`;
 }

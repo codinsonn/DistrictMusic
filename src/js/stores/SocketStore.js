@@ -13,6 +13,8 @@ class SocketStore extends EventEmitter {
     this.socket = io();
     this.socketId = ``;
 
+    this.setMaxListeners(0);
+
     // -- Vars ---------
     this.appearBusy = false;
     this.downloadProgress = 0;

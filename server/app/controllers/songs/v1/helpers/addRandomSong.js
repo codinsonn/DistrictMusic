@@ -13,7 +13,9 @@ var SongHelper = require(__base + "app/controllers/songs/v1/helpers");
 // Models
 var SongModel = require(__base + "app/models/song");
 
-module.exports = (setPlaying=false) => {
+module.exports = (setPlaying) => {
+
+  if(typeof(setPlaying) === 'undefined') setPlaying = false;
 
   console.log('--- [AddRandomSong] --- Attempting to re add random song to queue with ( minLegacyScore:', config.auto.minLegacyScore, ') ---');
 

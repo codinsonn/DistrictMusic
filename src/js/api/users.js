@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 import {checkStatus/*, buildBody*/} from '../util/';
 import {api} from '../helpers/globals.js';
 
-console.log(`[API:Users] using:`, api);
+//console.log(`[API:Users] using:`, api);
 const base = api;
 
 const getOptions = {

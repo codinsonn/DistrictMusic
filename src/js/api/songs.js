@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import {checkStatus} from '../util/';
 import {api} from '../helpers/globals.js';
 
-console.log(`[API:Songs] using:`, api);
 const base = api;
 
 const getOptions = {
@@ -22,6 +21,21 @@ const postOptions = {
   },
   credentials: `same-origin`,
   withCredentials: true
+};
+
+export const saveAudioVisualisation = (songId, progressData, imageData, type) => {
+
+  const data = {
+    imageData: imageData,
+    progressData: progressData
+  };
+
+  const postRequest = {body: JSON.stringify({...data}), ...postOptions};
+
+  return fetch(`${base}/api/songs/${songId}/${type}/`, postRequest)
+    .then(checkStatus)
+  ;
+
 };
 
 export const youtubeSearch = query => {
@@ -77,6 +91,7 @@ export const endSongAndPlayNext = song => {
 };
 
 export default {
+  saveAudioVisualisation,
   youtubeSearch,
   getAllQueued,
   addToQueue,

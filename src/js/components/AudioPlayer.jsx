@@ -9,6 +9,7 @@ import SocketStore from '../stores/SocketStore';
 import * as UserActions from '../actions/UserActions';
 import * as NotifActions from '../actions/NotifActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
+import songs from '../api/songs';
 import {randomArray, curveArrayAtRandom} from '../util/';
 
 const MAX_BAR_HEIGHT = window.innerHeight * 0.15;
@@ -27,7 +28,8 @@ export default class AudioPlayer extends Component {
       isSpeaker: UserStore.getIsSpeaker(),
       isSynched: UserStore.getSynched(),
       playMode: PlaylistStore.getPlayMode(),
-      videoMode: PlaylistStore.getVideoMode()
+      videoMode: PlaylistStore.getVideoMode(),
+      drawFromImage: false
     };
 
     this.waveOptionsNormal = {
@@ -37,7 +39,10 @@ export default class AudioPlayer extends Component {
       waveColor: `#c6c6c6`,
       progressColor: `#fecb58`,
       backend: `MediaElement`,
-      mediaType: `audio`
+      mediaType: `audio`,
+      barWidth: 2,
+      barHeight: .8,
+      pixelRatio: 2
     };
 
     this.waveOptionsFullscreen = {
@@ -64,6 +69,11 @@ export default class AudioPlayer extends Component {
     this.playOnSongReady = false;
     this.mouseDown = false;
     this.resetPlayingOnModeChanged = false;
+    this.wavesurfer = {};
+    this.barsSaved = false;
+    this.waveSaved = false;
+
+    setTimeout(() => { this.checkWaveform(); }, 100);
 
     // -- events ----
     this.evtUpdateSong = () => this.updateSong();
@@ -127,6 +137,80 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
+  checkWaveform(waveformReady = false) {
+
+    const {song, playMode} = this.state;
+    let {drawFromImage} = this.state;
+
+    if (typeof (song.waveform) !== `undefined`) {
+
+      const prevDrawFromImage = drawFromImage;
+
+      this.barsSaved = song.waveform.barsSaved;
+      this.waveSaved = song.waveform.barsSaved;
+
+      console.log(`[AudioPlayer] barsSaved:`, this.barsSaved, `| waveSaved:`, this.waveSaved);
+
+      if (!this.songHasStarted && playMode === `normal` && this.barsSaved) {
+        console.log(`[AudioPlayer] Drawing audiobars overlay...`);
+        drawFromImage = true;
+      } else if (waveformReady && playMode === `normal` && this.barsSaved) {
+        console.log(`[AudioPlayer] Removing audiobars overlay...`);
+        drawFromImage = false;
+      } else if (waveformReady && playMode === `normal` && !this.barsSaved && window.innerWidth >= 1200) {
+        console.log(`[AudioPlayer] Saving audiobars images...`);
+        this.saveAudioBars();
+      }
+
+      if (!this.songHasStarted && playMode === `fullscreen` && this.waveSaved) {
+        console.log(`[AudioPlayer] Drawing audiowave overlay...`);
+        drawFromImage = true;
+      } else if (waveformReady && playMode === `fullscreen` && this.waveSaved) {
+        console.log(`[AudioPlayer] Removing audiowave overlay...`);
+        drawFromImage = false;
+      } else if (waveformReady && playMode === `fullscreen` && !this.waveSaved && window.innerWidth >= 1200) {
+        console.log(`[AudioPlayer] Saving audiowave images...`);
+        this.saveAudioWaves();
+      }
+
+      if (drawFromImage !== prevDrawFromImage) this.setState({drawFromImage});
+
+    }
+
+  }
+
+  saveAudioBars() {
+
+    const {song} = this.state;
+
+    const audiobars = document.querySelectorAll(`wave canvas`);
+    const barsProgressData = audiobars[0].toDataURL(`image/png`);
+    const barsImageData = audiobars[1].toDataURL(`image/png`);
+
+    songs.saveAudioVisualisation(song.general.id, barsProgressData, barsImageData, `bars`).then(() => {
+      song.waveform.barsSaved = true;
+      this.barsSaved = true;
+      this.setState({song});
+    });
+
+  }
+
+  saveAudioWaves() {
+
+    const {song} = this.state;
+
+    const audiowaves = document.querySelectorAll(`wave canvas`);
+    const waveProgressData = audiowaves[0].toDataURL(`image/png`);
+    const waveImageData = audiowaves[1].toDataURL(`image/png`);
+
+    songs.saveAudioVisualisation(song.general.id, waveProgressData, waveImageData, `wave`).then(() => {
+      song.waveform.waveSaved = true;
+      this.waveSaved = true;
+      this.setState({song});
+    });
+
+  }
+
   checkSongUpdate() {
 
     const {isSynched} = this.state;
@@ -178,9 +262,11 @@ export default class AudioPlayer extends Component {
 
     this.songHasStarted = false;
     //this.audioContextSet = false;
+    this.wavesurfer = {};
+
+    setTimeout(() => { this.checkWaveform(); }, 100);
 
     this.setPlaying(playing);
-
     this.setState({song, pos});
 
   }
@@ -274,9 +360,12 @@ export default class AudioPlayer extends Component {
 
   }
 
-  handleReadyToPlay() {
+  handleWavesurferReady(args) {
 
     const {playing, song, isSpeaker} = this.state;
+
+    this.wavesurfer = args.wavesurfer;
+    this.wavesurfer.on(`waveform-ready`, () => this.checkWaveform(true));
 
     if (this.audioContextSupported && !this.audioCtx) {
 
@@ -655,7 +744,7 @@ export default class AudioPlayer extends Component {
       let barScale = 1; // start bar height at 60%
       let scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = `white`;
-      this.skipFrames = 11; // number of frames to skip in button mode
+      this.skipFrames = 8; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
@@ -737,7 +826,7 @@ export default class AudioPlayer extends Component {
         <Wavesurfer
           audioFile={audioFile}
           pos={pos}
-          onReady={() => this.handleReadyToPlay()}
+          onReady={args => this.handleWavesurferReady(args)}
           onPosChange={e => this.handlePosChange(e)}
           onSeek={() => this.handleSeek()}
           onFinish={() => this.handleSongEnd()}

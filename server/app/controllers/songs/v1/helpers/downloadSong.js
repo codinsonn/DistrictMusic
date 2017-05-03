@@ -11,7 +11,10 @@ var ytdl = require('ytdl-core');
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 var GridFsHelper = require(__base + "app/helpers/gridfs");
 
-module.exports = (songId, songTitle, emitProgress = false, socketIdsToEmitTo = []) => {
+module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
+
+  if(typeof(emitProgress) === 'undefined') emitProgress = false;
+  if(typeof(socketIdsToEmitTo) === 'undefined') socketIdsToEmitTo = [];
 
   return new Promise((resolve, reject) => {
 

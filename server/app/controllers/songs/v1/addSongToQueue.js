@@ -70,7 +70,9 @@ module.exports = (req, res, done) => {
 
   }
 
-  this.downloadSong = (songIsNew, suggestion, song = {}) => {
+  this.downloadSong = (songIsNew, suggestion, song) => {
+
+    if(typeof(song) === 'undefined') song = {};
 
     console.log('-?- [AddSongToQueue:87] -?- Downloading song from suggestion');
 
@@ -169,6 +171,10 @@ module.exports = (req, res, done) => {
     newSong.audio.fileId = suggestion.fileId;
     newSong.audio.isDownloaded = true;
     newSong.audio.scheduledForRemoval = false;
+
+    // -- wave settings --------
+    newSong.waveform.barsSaved = false;
+    newSong.waveform.waveSaved = false;
 
     // -- general info ---------
     newSong.general.id = suggestion.id;

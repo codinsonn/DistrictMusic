@@ -6,8 +6,8 @@ var baseUrlUser = "songs/";
 
 module.exports = (app) => {
 
-  /** --- Get audiofile -----------------------------------------------------------------------------
-   * @api {get} /assets/audioo/{{filename}} Download file
+  /** --- Save audio visualisation -----------------------------------------------------------------------------
+   * @api {get} /stream/audio/{{filename}} Download file
    * @apiDescription Stream file to the frontend. Authentication not required.
    * @apiVersion 1.0.0
    * @apiGroup File
@@ -157,5 +157,18 @@ module.exports = (app) => {
    * @apiUse messageNotFound
    **/
   app.post("/api/songs/queue/vote/", UsersController.userSession.require, UsersController.permissions.checkVotesLeft, SongsController.voteSong);
+
+  /** --- Post audiofile -----------------------------------------------------------------------------
+   * @api {post} /assets/audioo/{{filename}} Download file
+   * @apiDescription Stream file to the frontend. Authentication not required.
+   * @apiVersion 1.0.0
+   * @apiGroup File
+   * @apiParam {String} id MongoDB id of the file.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *
+   */
+  app.post("/api/songs/:song_id/:type", SongsController.saveAudioVisualisation);
 
 }

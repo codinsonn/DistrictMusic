@@ -75,7 +75,7 @@ module.exports = (req, res, id) => {
 
             onFinished(res, () => {
               console.log('-/- [Download] Stream ended and destroyed -/-');
-              if(stream) stream.destroy();
+              //if(stream) stream.destroy();
             });
 
             stream.pipe(res);

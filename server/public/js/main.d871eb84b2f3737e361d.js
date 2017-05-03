@@ -5646,6 +5646,8 @@ var UserStore = function (_EventEmitter) {
       }
     };
 
+    _this.setMaxListeners(0);
+
     return _this;
   }
 
@@ -6291,6 +6293,8 @@ var PlaylistStore = function (_EventEmitter) {
     _this.hasSynchedToSpeaker = false;
     _this.speakerPos = 0;
     _this.lastSpeakerPosUpdate = 0;
+
+    _this.setMaxListeners(0);
 
     return _this;
   }
@@ -27250,6 +27254,8 @@ var SocketStore = function (_EventEmitter) {
     _this.socket = __WEBPACK_IMPORTED_MODULE_0_socket_io_client___default()();
     _this.socketId = '';
 
+    _this.setMaxListeners(0);
+
     // -- Vars ---------
     _this.appearBusy = false;
     _this.downloadProgress = 0;
@@ -28255,7 +28261,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-console.log('[API:Songs] using:', __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */]);
+//console.log(`[API:Songs] using:`, api);
 var base = __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */];
 
 var getOptions = {
@@ -29987,6 +29993,8 @@ var NotificationsStore = function (_EventEmitter) {
 
     _this.notifs = [];
     _this.emptyNotif = { type: '', message: '' };
+
+    _this.setMaxListeners(0);
 
     return _this;
   }
@@ -33725,7 +33733,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-console.log('[API:Users] using:', __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */]);
+//console.log(`[API:Users] using:`, api);
 var base = __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */];
 
 var getOptions = {
@@ -50537,7 +50545,10 @@ var AudioPlayer = function (_Component) {
       waveColor: '#c6c6c6',
       progressColor: '#fecb58',
       backend: 'MediaElement',
-      mediaType: 'audio'
+      mediaType: 'audio',
+      barWidth: 2,
+      barHeight: .8,
+      pixelRatio: 2
     };
 
     _this.waveOptionsFullscreen = {
@@ -50564,6 +50575,13 @@ var AudioPlayer = function (_Component) {
     _this.playOnSongReady = false;
     _this.mouseDown = false;
     _this.resetPlayingOnModeChanged = false;
+    _this.waveformReady = false;
+    _this.barsSaved = false;
+    _this.waveSaved = false;
+
+    setTimeout(function () {
+      _this.checkWaveformSaved();
+    }, 100);
 
     // -- events ----
     _this.evtUpdateSong = function () {
@@ -50660,6 +50678,19 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].removeListener('QUEUE_CHANGED', this.evtUpdateUservote);
   };
 
+  AudioPlayer.prototype.checkWaveformSaved = function checkWaveformSaved() {
+    var song = this.state.song;
+
+
+    if (typeof song.waveform !== 'undefined') {
+
+      this.barsSaved = song.waveform.barsSaved;
+      this.waveSaved = song.waveform.barsSaved;
+
+      console.log('[AudioPlayer] barsSaved:', this.barsSaved, '| waveSaved:', this.waveSaved);
+    }
+  };
+
   AudioPlayer.prototype.checkSongUpdate = function checkSongUpdate() {
     var _this2 = this;
 
@@ -50695,6 +50726,8 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updateSong = function updateSong() {
+    var _this3 = this;
+
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     var isSynched = this.state.isSynched;
     var _state2 = this.state,
@@ -50718,13 +50751,17 @@ var AudioPlayer = function (_Component) {
     this.songHasStarted = false;
     //this.audioContextSet = false;
 
+    setTimeout(function () {
+      _this3.checkWaveformSaved();
+    }, 100);
+
     this.setPlaying(playing);
 
     this.setState({ song: song, pos: pos });
   };
 
   AudioPlayer.prototype.updateSpeaker = function updateSpeaker() {
-    var _this3 = this;
+    var _this4 = this;
 
     var isSpeaker = this.state.isSpeaker;
 
@@ -50734,7 +50771,7 @@ var AudioPlayer = function (_Component) {
     if (isSpeaker && this.audioContextSet) {
       this.playOnSongReady = true;
       setTimeout(function () {
-        _this3.setPlayMode('fullscreen');
+        _this4.setPlayMode('fullscreen');
       }, 10);
     }
 
@@ -50755,7 +50792,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updatePlayMode = function updatePlayMode() {
-    var _this4 = this;
+    var _this5 = this;
 
     var _state3 = this.state,
         song = _state3.song,
@@ -50767,10 +50804,10 @@ var AudioPlayer = function (_Component) {
 
     // To reset waveOptions
     setTimeout(function () {
-      var song = _this4.state.song;
+      var song = _this5.state.song;
 
       song = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getSong(__WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getSynched());
-      _this4.setState({ song: song });
+      _this5.setState({ song: song });
     }, 1);
 
     if (this.resetPlayingOnModeChanged) {
@@ -50816,7 +50853,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handleReadyToPlay = function handleReadyToPlay() {
-    var _this5 = this;
+    var _this6 = this;
 
     var _state4 = this.state,
         playing = _state4.playing,
@@ -50836,7 +50873,7 @@ var AudioPlayer = function (_Component) {
         //NotifActions.addError(`Audio Context not supported by browser`);
       } else if (isSpeaker) {
         setTimeout(function () {
-          _this5.setPlayMode('fullscreen');
+          _this6.setPlayMode('fullscreen');
         }, 10);
       }
     }
@@ -50858,8 +50895,8 @@ var AudioPlayer = function (_Component) {
     if (this.changingPlayModes) {
       setTimeout(function () {
         console.log('[AudioPlayer] Changed Play Mode');
-        _this5.setState({ pos: _this5.preChangedPlayModePos });
-        _this5.changingPlayModes = false;
+        _this6.setState({ pos: _this6.preChangedPlayModePos });
+        _this6.changingPlayModes = false;
       }, 100);
     }
 
@@ -50911,7 +50948,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
-    var _this6 = this;
+    var _this7 = this;
 
     var _state6 = this.state,
         playing = _state6.playing,
@@ -50957,12 +50994,12 @@ var AudioPlayer = function (_Component) {
         // Base audio visualisation on frequencies
         this.analyser.getByteFrequencyData(this.frequencyData);
         window.requestAnimationFrame(function () {
-          return _this6.updateAudioVisualisation();
+          return _this7.updateAudioVisualisation();
         });
       } else if (!this.audioContextSupported) {
         // Fake the audio frequencies for visual effect
         window.requestAnimationFrame(function () {
-          return _this6.updateAudioVisualisation(true);
+          return _this7.updateAudioVisualisation(true);
         });
       }
     }
@@ -51002,7 +51039,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
-    var _this7 = this;
+    var _this8 = this;
 
     if (this.songHasStarted) {
       var _state9 = this.state,
@@ -51023,7 +51060,7 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["k" /* endSongAndPlayNext */](song);
       } else if (!isSynched) {
         setTimeout(function () {
-          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this7.prevSongId);
+          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this8.prevSongId);
         }, 100);
       }
 
@@ -51060,8 +51097,15 @@ var AudioPlayer = function (_Component) {
     if (this.mouseDown) this.handleVideoSeek(evt, false);
   };
 
+  AudioPlayer.prototype.handleWaveFormDrawn = function handleWaveFormDrawn() {
+
+    console.log('[WaveformsDrawn]');
+
+    this.checkWaveformSaved();
+  };
+
   AudioPlayer.prototype.avoidAudioSeekError = function avoidAudioSeekError() {
-    var _this8 = this;
+    var _this9 = this;
 
     var playing = this.state.playing;
 
@@ -51069,14 +51113,14 @@ var AudioPlayer = function (_Component) {
     if (playing) {
       this.setPlaying(false);
       setTimeout(function () {
-        _this8.setPlaying(true);
+        _this9.setPlaying(true);
       }, 1);
       this.skipFrames = 60;
     }
   };
 
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this9 = this;
+    var _this10 = this;
 
     var _state11 = this.state,
         isSpeaker = _state11.isSpeaker,
@@ -51105,7 +51149,7 @@ var AudioPlayer = function (_Component) {
       pos = 0;
       currentTimeString = '00:00';
       setTimeout(function () {
-        return _this9.updateSong(true);
+        return _this10.updateSong(true);
       }, 10);
       this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
     }
@@ -51247,7 +51291,7 @@ var AudioPlayer = function (_Component) {
       var barScale = 1; // start bar height at 60%
       var scaleStep = 0; // will avoid making a curve (since there's only three bars)
       this.canvasCtx.fillStyle = 'white';
-      this.skipFrames = 11; // number of frames to skip in button mode
+      this.skipFrames = 8; // number of frames to skip in button mode
 
       // - Fullscreen Settings -
       if (playMode === 'fullscreen') {
@@ -51326,7 +51370,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this10 = this;
+    var _this11 = this;
 
     var _state16 = this.state,
         song = _state16.song,
@@ -51350,22 +51394,25 @@ var AudioPlayer = function (_Component) {
         audioFile: audioFile,
         pos: pos,
         onReady: function onReady() {
-          return _this10.handleReadyToPlay();
+          return _this11.handleReadyToPlay();
+        },
+        onWaveFormReady: function onWaveFormReady() {
+          return _this11.handleWaveFormDrawn();
         },
         onPosChange: function onPosChange(e) {
-          return _this10.handlePosChange(e);
+          return _this11.handlePosChange(e);
         },
         onSeek: function onSeek() {
-          return _this10.handleSeek();
+          return _this11.handleSeek();
         },
         onFinish: function onFinish() {
-          return _this10.handleSongEnd();
+          return _this11.handleSongEnd();
         },
         playing: playing,
         options: waveOptions,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 737
+          lineNumber: 770
         }
       });
     } else if (videoMode) {
@@ -51375,24 +51422,24 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'video-pos-wrapper',
           onMouseDown: function onMouseDown() {
-            _this10.mouseDown = true;
+            _this11.mouseDown = true;
           },
           onMouseMove: function onMouseMove(evt) {
-            return _this10.handleScrub(evt);
+            return _this11.handleScrub(evt);
           },
           onMouseUp: function onMouseUp(evt) {
-            return _this10.handleVideoSeek(evt);
+            return _this11.handleVideoSeek(evt);
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 752
+            lineNumber: 786
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'video-pos-progress', __source: {
               fileName: _jsxFileName,
-              lineNumber: 757
+              lineNumber: 791
             }
           },
           '\xA0'
@@ -51401,7 +51448,7 @@ var AudioPlayer = function (_Component) {
           'div',
           { className: 'video-pos-scrubber', __source: {
               fileName: _jsxFileName,
-              lineNumber: 758
+              lineNumber: 792
             }
           },
           '\xA0'
@@ -51411,7 +51458,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderVideoModeButton = function renderVideoModeButton() {
-    var _this11 = this;
+    var _this12 = this;
 
     var _state17 = this.state,
         playMode = _state17.playMode,
@@ -51428,10 +51475,10 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleVideoClasses, onClick: function onClick() {
-            return _this11.toggleVideoMode();
+            return _this12.toggleVideoMode();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 778
+            lineNumber: 812
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51439,7 +51486,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 778
+              lineNumber: 812
             }
           },
           '\xA0'
@@ -51449,7 +51496,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderAudioVisualisation = function renderAudioVisualisation() {
-    var _this12 = this;
+    var _this13 = this;
 
     var _state18 = this.state,
         playMode = _state18.playMode,
@@ -51464,24 +51511,24 @@ var AudioPlayer = function (_Component) {
 
       if (!playing) {
         setTimeout(function () {
-          _this12.updateAudioVisualisation();
+          _this13.updateAudioVisualisation();
         }, 10);
       }
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'visualisation', onClick: function onClick() {
-            return _this12.setPlayMode('fullscreen');
+            return _this13.setPlayMode('fullscreen');
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 799
+            lineNumber: 833
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: canvasWidth, height: canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 800
+              lineNumber: 834
             }
           },
           '\xA0'
@@ -51496,14 +51543,14 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'visualisation', __source: {
             fileName: _jsxFileName,
-            lineNumber: 810
+            lineNumber: 844
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 811
+              lineNumber: 845
             }
           },
           '\xA0'
@@ -51512,7 +51559,7 @@ var AudioPlayer = function (_Component) {
           'canvas',
           { className: 'audio-visualisation-top', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 812
+              lineNumber: 846
             }
           },
           '\xA0'
@@ -51544,12 +51591,12 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-song-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 840
+            lineNumber: 874
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components__["j" /* SongSummary */], _extends({}, song, { order: order, key: key, fsPreview: fsPreview, voteMode: voteMode, disableButtons: disableButtons, __source: {
             fileName: _jsxFileName,
-            lineNumber: 841
+            lineNumber: 875
           }
         }))
       );
@@ -51557,7 +51604,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderFullscreenExtras = function renderFullscreenExtras() {
-    var _this13 = this;
+    var _this14 = this;
 
     var _state19 = this.state,
         playMode = _state19.playMode,
@@ -51574,21 +51621,21 @@ var AudioPlayer = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 858
+            lineNumber: 892
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'district-music-logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 859
+              lineNumber: 893
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'audiodisc-large-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 860
+                lineNumber: 894
               }
             },
             '\xA0'
@@ -51597,7 +51644,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-large-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 861
+                lineNumber: 895
               }
             },
             '\xA0'
@@ -51606,7 +51653,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 862
+                lineNumber: 896
               }
             },
             '\xA0'
@@ -51615,7 +51662,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 863
+                lineNumber: 897
               }
             },
             '\xA0'
@@ -51624,7 +51671,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 864
+                lineNumber: 898
               }
             },
             '\xA0'
@@ -51633,7 +51680,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 865
+                lineNumber: 899
               }
             },
             '\xA0'
@@ -51642,10 +51689,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-prev', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this13.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this14.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 867
+              lineNumber: 901
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51653,7 +51700,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 867
+                lineNumber: 901
               }
             },
             '\xA0'
@@ -51662,10 +51709,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return _this13.setPlayMode('normal');
+              return _this14.setPlayMode('normal');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 868
+              lineNumber: 902
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51673,7 +51720,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 868
+                lineNumber: 902
               }
             },
             '\xA0'
@@ -51682,10 +51729,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this13.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this14.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 869
+              lineNumber: 903
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51693,7 +51740,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 869
+                lineNumber: 903
               }
             },
             '\xA0'
@@ -51705,7 +51752,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.render = function render() {
-    var _this14 = this;
+    var _this15 = this;
 
     var _state20 = this.state,
         song = _state20.song,
@@ -51734,16 +51781,16 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: audioPlayerClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 898
+          lineNumber: 932
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
-            return _this14.toggleSynched();
+            return _this15.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 899
+            lineNumber: 933
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51751,7 +51798,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 899
+              lineNumber: 933
             }
           },
           '\xA0'
@@ -51760,10 +51807,10 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: togglePlayClasses, onClick: function onClick() {
-            return _this14.togglePlay();
+            return _this15.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 900
+            lineNumber: 934
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51771,7 +51818,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 900
+              lineNumber: 934
             }
           },
           '\xA0'
@@ -51781,7 +51828,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-time', __source: {
             fileName: _jsxFileName,
-            lineNumber: 901
+            lineNumber: 935
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51789,7 +51836,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 901
+              lineNumber: 935
             }
           },
           currentTimeString
@@ -51798,10 +51845,10 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'pos-wrapper', onClick: function onClick() {
-            return _this14.avoidAudioSeekError();
+            return _this15.avoidAudioSeekError();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 902
+            lineNumber: 936
           }
         },
         this.renderPlayer()
@@ -51810,7 +51857,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 905
+            lineNumber: 939
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51818,7 +51865,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 905
+              lineNumber: 939
             }
           },
           song.general.duration
@@ -53392,6 +53439,7 @@ var SongSummary = function (_Component) {
       isPlaying: props.queue.isPlaying,
       isVetoed: props.queue.isVetoed,
       thumbs: props.thumbs,
+      waveform: props.waveform,
       lastAddedBy: props.queue.lastAddedBy,
       originallyAddedBy: props.queue.originallyAddedBy,
       song: props,
@@ -53587,7 +53635,7 @@ var SongSummary = function (_Component) {
         }, 10);
         setTimeout(function () {
           return __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["d" /* startPlay */]();
-        }, 2000);
+        }, 500);
       })();
     } else {
       __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Cannot change song as speaker');
@@ -53626,14 +53674,14 @@ var SongSummary = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 232
+            lineNumber: 233
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'play-video-button', __source: {
               fileName: _jsxFileName,
-              lineNumber: 233
+              lineNumber: 234
             }
           },
           '\xA0'
@@ -53642,7 +53690,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 234
+              lineNumber: 235
             }
           },
           duration
@@ -53742,14 +53790,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: playlistItemClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 314
+          lineNumber: 315
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 315
+            lineNumber: 316
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -53758,7 +53806,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 316
+              lineNumber: 317
             }
           },
           '\xA0'
@@ -53767,7 +53815,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 317
+              lineNumber: 318
             }
           },
           currentQueueScore
@@ -53778,7 +53826,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 318
+              lineNumber: 319
             }
           },
           '\xA0'
@@ -53790,7 +53838,7 @@ var SongSummary = function (_Component) {
             return _this6.playVideoHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 320
+            lineNumber: 321
           }
         },
         this.renderThumbExtras(duration)
@@ -53801,14 +53849,14 @@ var SongSummary = function (_Component) {
             return _this6.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 323
+            lineNumber: 324
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 324
+              lineNumber: 325
             }
           },
           tags,
@@ -53818,7 +53866,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 325
+              lineNumber: 326
             }
           },
           'Submitted ',
@@ -53826,7 +53874,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 325
+                lineNumber: 326
               }
             },
             fromNow
@@ -53837,7 +53885,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 325
+                lineNumber: 326
               }
             },
             lastAddedBy.userName
@@ -53860,6 +53908,7 @@ SongSummary.propTypes = {
   votes: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   queue: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   thumbs: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
+  waveform: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   uservote: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].object,
   voteMode: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].string,
   fsPreview: __WEBPACK_IMPORTED_MODULE_0_react__["PropTypes"].bool,
@@ -81634,4 +81683,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.27d5f94322383405feeb.js.map
+//# sourceMappingURL=main.d871eb84b2f3737e361d.js.map

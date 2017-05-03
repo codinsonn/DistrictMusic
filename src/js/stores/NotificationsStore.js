@@ -10,6 +10,8 @@ class NotificationsStore extends EventEmitter {
     this.notifs = [];
     this.emptyNotif = {type: ``, message: ``};
 
+    this.setMaxListeners(0);
+
   }
 
   emitNotifChange() {
