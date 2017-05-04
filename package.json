@@ -10,7 +10,7 @@
   },
   "main": "server/index.js",
   "engines": {
-    "node": ">=0.10.32 <=6.8.0"
+    "node": ">=0.10.3 <=6.8.0"
   },
   "dependencies": {
     "@joegesualdo/youtube-video-info-node": "^0.0.2",
@@ -33,6 +33,7 @@
     "fs-extra": "^2.0.0",
     "glob": "^7.1.1",
     "gridfs-stream": "^1.1.1",
+    "gridfs-locking-stream": "^1.1.1",
     "horizon-youtube-mp3": "^1.0.2",
     "i": "^0.3.5",
     "inert": "^4.0.2",
