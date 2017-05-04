@@ -6,12 +6,12 @@ var baseUrlUser = "songs/";
 
 module.exports = (app) => {
 
-  /** --- Save audio visualisation -----------------------------------------------------------------------------
-   * @api {get} /stream/audio/{{filename}} Download file
+  /** --- Stream audio file -----------------------------------------------------------------------------
+   * @api {get} /stream/audio/{{filename}} Download file (stream audioBlobs)
    * @apiDescription Stream file to the frontend. Authentication not required.
    * @apiVersion 1.0.0
    * @apiGroup File
-   * @apiParam {String} id MongoDB id of the file.
+   * @apiParam {String} GridFs previous filename
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
@@ -19,10 +19,23 @@ module.exports = (app) => {
    */
   app.route("/stream/audio/:filename").get(SongsController.getAudioFile);
 
-  /** --- Get current playlist queue -----------------------------------------------------------------------------
-   * @api {get} /api/songs/queue/ Search youtube videos
-   * @apiDescription Return search results
-   * @apiGroup Authentication
+  /** --- Stream visualisation (bars / waveform) ---------------------------------------------------------
+   * @api {get} /stream/audio/visuals/{{filename}} Download file (stream imageBlob)
+   * @apiDescription Stream file to the frontend. Authentication not required.
+   * @apiVersion 1.0.0
+   * @apiGroup File
+   * @apiParam {String} Filename as MongoDb id
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *
+   */
+  app.route("/stream/audio/visuals/:filename").get(SongsController.getAudioVisualisation);
+
+  /** --- Get current playlist queue --------------------------------------------------------------------
+   * @api {get} /api/songs/queue/
+   * @apiDescription Return current queue
+   * @apiGroup Songs
    * @apiVersion 1.0.0
    *
    * @apiSuccessExample {json} Request-Example:
@@ -39,8 +52,8 @@ module.exports = (app) => {
 
   /** --- Add Song to Queue -----------------------------------------------------------------------------
    * @api {post} /api/songs/queue/ Add youtube song to queue
-   * @apiDescription Return search results
-   * @apiGroup Authentication
+   * @apiDescription Add song to db and current queue
+   * @apiGroup Songs
    * @apiVersion 1.0.0
    *
    * @apiSuccessExample {json} Request-Example:
@@ -110,8 +123,8 @@ module.exports = (app) => {
   app.post("/api/songs/queue/", UsersController.userSession.require, SongsController.addSongToQueue);
 
   /** --- Remove current song from queue -----------------------------------------------------------------------------
-   * @api {post} /api/songs/queue/next Vote for song to change ranking
-   * @apiDescription Up/Down vote song, return new score
+   * @api {post} /api/songs/queue/next Play next song
+   * @apiDescription End current song by removing it from the queue so the next in line starts playing
    * @apiGroup Authentication
    * @apiVersion 1.0.0
    *

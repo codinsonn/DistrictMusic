@@ -5,8 +5,13 @@ var Schema = mongoose.Schema;
 
 var ImageSchema = new Schema({
     file: {
+      filename: {
+        type: String,
+        required: true,
+        index: true
+      },
       imgData: {
-        data: Buffer,
+        data: String,
         contentType: String
       }
     },

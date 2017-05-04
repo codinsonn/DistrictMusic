@@ -260,11 +260,16 @@ body {
 }
 
 .pos-wrapper {
-  display: block;
   cursor: ew-resize;
 }
 
-.play-mode-normal .pos-wrapper {
+.loading-overlay {
+  display: block;
+  cursor: wait;
+}
+
+.play-mode-normal .pos-wrapper,
+.play-mode-normal .loading-overlay {
   position: absolute;
   width: calc(100vw - 250px);
   height: 32px;
@@ -274,6 +279,31 @@ body {
 
 .is-speaker .pos-wrapper {
   cursor: not-allowed;
+}
+
+.progress-wrapper {
+  position: absolute;
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  cursor: wait;
+  z-index: 120;
+}
+
+.play-mode-normal .progress-visualisation,
+.play-mode-normal .song-visualisation {
+  position: absolute;
+  width: calc(100vw - 250px);
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: contain;
+  cursor: wait;
+  z-index: 120;
 }
 
 .play-mode-normal .btn-toggle-synch,
@@ -506,13 +536,35 @@ body {
   right: calc(50% - 65px);
 }
 
-.play-mode-fullscreen .pos-wrapper {
+.play-mode-fullscreen .pos-wrapper,
+.play-mode-fullscreen .loading-overlay {
   position: fixed;
   width: 60vw;
   height: 80px;
   top: calc(50vh - 15px);
   left: 20vw;
+}
+
+.play-mode-fullscreen .pos-wrapper {
   z-index: 100;
+}
+
+.play-mode-fullscreen .loading-overlay {
+  z-index: 120;
+}
+
+.play-mode-fullscreen .progress-visualisation,
+.play-mode-fullscreen .song-visualisation {
+  position: absolute;
+  width: 60vw;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  cursor: wait;
+  z-index: 120;
 }
 
 .play-mode-fullscreen .btn-toggle-synch,

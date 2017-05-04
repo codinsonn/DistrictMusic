@@ -21,19 +21,58 @@ module.exports = (req, res, done) => {
 
     if(song) {
 
-      console.log('[SaveAudioVisualisation:] imageData:', req.body.imageData);
-      console.log('[SaveAudioVisualisation:] progressData:', req.body.progressData);
+      var imgFilename = `img${song.general.id}${req.params.type}.png`;
+      var prgFilename = `prg${song.general.id}${req.params.type}.png`;
 
-      /*SongHelper.downloadVisualisation().then(imageId => {
+      console.log('imgFile:', imgFilename, '| prgFile:', prgFilename);
+
+      SongHelper.uploadVisualisation(imgFilename, req.body.imageData).then(imgFilename => {
+
+        if (req.params.type === 'bars') song.waveform.barsImage = imgFilename;
+        if (req.params.type === 'wave') song.waveform.waveImage = imgFilename;
+
+        SongHelper.uploadVisualisation(prgFilename, req.body.progressData).then(prgFilename => {
+
+          if (req.params.type === 'bars') song.waveform.barsProgress = prgFilename;
+          if (req.params.type === 'wave') song.waveform.waveProgress = prgFilename;
+
+          if (req.params.type === 'bars') song.waveform.barsSaved = true;
+          if (req.params.type === 'wave') song.waveform.waveSaved = true;
+
+          song.save((err) => {
+
+            if (!err) {
+
+              console.log('-/- [SaveAudioVisualisation:41] -/- Saved visualisations to db');
+              res.statusCode = 200;
+              return res.json(song);
+
+            }
+
+          });
+
+        }, failData => {
+
+          console.log('-!- [SaveAudioVisualisation:53] -!- Unable to save progress visualisation -!-', failData);
+          res.statusCode = 404;
+          return res.json({ errors: [ 'Could not save progress visualisation' ] });
+
+        });
 
       }, failData => {
 
-      });*/
+        console.log('-!- [SaveAudioVisualisation:59] -!- Unable to save image visualisation -!-', failData);
+        res.statusCode = 404;
+        return res.json({ errors: [ 'Could not save image visualisation' ] });
+
+      });
 
     } else {
-      console.log('-!- [SaveAudioVisualisation:29] -!- Song for audio visualisation not found -!-');
+
+      console.log('-!- [SaveAudioVisualisation:67] -!- Song for audio visualisation not found -!-');
       res.statusCode = 404;
       return res.json({ errors: [ 'Could not find song' ] });
+
     }
 
   });

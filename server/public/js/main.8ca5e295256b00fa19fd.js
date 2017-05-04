@@ -5605,7 +5605,7 @@ module.exports = emptyFunction;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_events__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dispatcher__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SocketStore__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SocketStore__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api___ = __webpack_require__(119);
@@ -6244,7 +6244,7 @@ module.exports = ReactCurrentOwner;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dispatcher__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__api___ = __webpack_require__(119);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_SocketStore__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_SocketStore__ = __webpack_require__(47);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -8682,7 +8682,7 @@ module.exports = function(it){
 
 var dP         = __webpack_require__(65)
   , createDesc = __webpack_require__(130);
-module.exports = __webpack_require__(48) ? function(object, key, value){
+module.exports = __webpack_require__(49) ? function(object, key, value){
   return dP.f(object, key, createDesc(1, value));
 } : function(object, key, value){
   object[key] = value;
@@ -27174,6 +27174,106 @@ module.exports = React;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util___ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__ = __webpack_require__(121);
+/* unused harmony export saveAudioVisualisation */
+/* unused harmony export youtubeSearch */
+/* unused harmony export getAllQueued */
+/* unused harmony export addToQueue */
+/* unused harmony export voteSong */
+/* unused harmony export endSongAndPlayNext */
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+
+
+var base = __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */];
+
+var getOptions = {
+  method: 'get',
+  headers: new Headers({
+    Accept: 'application/json, application/xml, text/plain, text/html, *.*'
+  }),
+  credentials: 'same-origin',
+  withCredentials: true
+};
+
+var postOptions = {
+  method: 'post',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  },
+  credentials: 'same-origin',
+  withCredentials: true
+};
+
+var saveAudioVisualisation = function saveAudioVisualisation(songId, progressData, imageData, type) {
+
+  var data = {
+    imageData: imageData,
+    progressData: progressData
+  };
+
+  var postRequest = _extends({ body: JSON.stringify(_extends({}, data)) }, postOptions);
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/' + songId + '/' + type + '/', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+var youtubeSearch = function youtubeSearch(query) {
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/youtube/search/' + query, getOptions).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+var getAllQueued = function getAllQueued() {
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/', getOptions).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+var addToQueue = function addToQueue(song) {
+
+  var postRequest = _extends({ body: JSON.stringify(_extends({}, song)) }, postOptions);
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+var voteSong = function voteSong(songId, songTitle, voteType) {
+
+  var uservote = {
+    songId: songId,
+    songTitle: songTitle,
+    voteType: voteType
+  };
+
+  var postRequest = _extends({ body: JSON.stringify(_extends({}, uservote)) }, postOptions);
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/vote', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+var endSongAndPlayNext = function endSongAndPlayNext(song) {
+
+  var postRequest = _extends({ body: JSON.stringify(_extends({}, song)) }, postOptions);
+
+  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/next', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = {
+  saveAudioVisualisation: saveAudioVisualisation,
+  youtubeSearch: youtubeSearch,
+  getAllQueued: getAllQueued,
+  addToQueue: addToQueue,
+  voteSong: voteSong,
+  endSongAndPlayNext: endSongAndPlayNext
+};
+
+/***/ }),
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__LoginModal__ = __webpack_require__(309);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_0__LoginModal__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Profile__ = __webpack_require__(312);
@@ -27220,7 +27320,7 @@ module.exports = React;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27373,14 +27473,14 @@ window.dispatcher = __WEBPACK_IMPORTED_MODULE_2__dispatcher__["a" /* default */]
 /* harmony default export */ __webpack_exports__["a"] = socketStore;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
@@ -27389,13 +27489,13 @@ module.exports = !__webpack_require__(126)(function(){
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports) {
 
 module.exports = {};
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -27564,7 +27664,7 @@ Emitter.prototype.hasListeners = function(event){
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27590,7 +27690,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(92),
@@ -27624,7 +27724,7 @@ module.exports = baseGetTag;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 /**
@@ -27659,7 +27759,7 @@ module.exports = isObjectLike;
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27943,7 +28043,7 @@ module.exports = EventPluginHub;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27959,7 +28059,7 @@ module.exports = EventPluginHub;
 
 
 
-var EventPluginHub = __webpack_require__(54);
+var EventPluginHub = __webpack_require__(55);
 var EventPluginUtils = __webpack_require__(96);
 
 var accumulateInto = __webpack_require__(277);
@@ -28083,7 +28183,7 @@ module.exports = EventPropagators;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28136,7 +28236,7 @@ var ReactInstanceMap = {
 module.exports = ReactInstanceMap;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28200,7 +28300,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 module.exports = SyntheticUIEvent;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28240,93 +28340,6 @@ var component = oneOfType([func, string]);
 var components = oneOfType([component, object]);
 var route = oneOfType([object, element]);
 var routes = oneOfType([route, arrayOf(route)]);
-
-/***/ }),
-/* 59 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch__ = __webpack_require__(149);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util___ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__ = __webpack_require__(121);
-/* unused harmony export youtubeSearch */
-/* unused harmony export getAllQueued */
-/* unused harmony export addToQueue */
-/* unused harmony export voteSong */
-/* unused harmony export endSongAndPlayNext */
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-
-
-//console.log(`[API:Songs] using:`, api);
-var base = __WEBPACK_IMPORTED_MODULE_2__helpers_globals_js__["a" /* api */];
-
-var getOptions = {
-  method: 'get',
-  headers: new Headers({
-    Accept: 'application/json, application/xml, text/plain, text/html, *.*'
-  }),
-  credentials: 'same-origin',
-  withCredentials: true
-};
-
-var postOptions = {
-  method: 'post',
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  },
-  credentials: 'same-origin',
-  withCredentials: true
-};
-
-var youtubeSearch = function youtubeSearch(query) {
-
-  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/youtube/search/' + query, getOptions).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
-};
-
-var getAllQueued = function getAllQueued() {
-
-  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/', getOptions).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
-};
-
-var addToQueue = function addToQueue(song) {
-
-  var postRequest = _extends({ body: JSON.stringify(_extends({}, song)) }, postOptions);
-
-  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
-};
-
-var voteSong = function voteSong(songId, songTitle, voteType) {
-
-  var uservote = {
-    songId: songId,
-    songTitle: songTitle,
-    voteType: voteType
-  };
-
-  var postRequest = _extends({ body: JSON.stringify(_extends({}, uservote)) }, postOptions);
-
-  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/vote', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
-};
-
-var endSongAndPlayNext = function endSongAndPlayNext(song) {
-
-  var postRequest = _extends({ body: JSON.stringify(_extends({}, song)) }, postOptions);
-
-  return __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(base + '/api/songs/queue/next', postRequest).then(__WEBPACK_IMPORTED_MODULE_1__util___["b" /* checkStatus */]);
-};
-
-/* harmony default export */ __webpack_exports__["a"] = {
-  youtubeSearch: youtubeSearch,
-  getAllQueued: getAllQueued,
-  addToQueue: addToQueue,
-  voteSong: voteSong,
-  endSongAndPlayNext: endSongAndPlayNext
-};
 
 /***/ }),
 /* 60 */
@@ -28395,7 +28408,7 @@ var anObject       = __webpack_require__(35)
   , toPrimitive    = __webpack_require__(355)
   , dP             = Object.defineProperty;
 
-exports.f = __webpack_require__(48) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+exports.f = __webpack_require__(49) ? Object.defineProperty : function defineProperty(O, P, Attributes){
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
@@ -29444,7 +29457,7 @@ module.exports = ReactBrowserEventEmitter;
 
 
 
-var SyntheticUIEvent = __webpack_require__(57);
+var SyntheticUIEvent = __webpack_require__(58);
 var ViewportMetrics = __webpack_require__(276);
 
 var getEventModifierState = __webpack_require__(104);
@@ -30180,7 +30193,7 @@ module.exports = function(it){
  */
 
 var parser = __webpack_require__(37);
-var Emitter = __webpack_require__(50);
+var Emitter = __webpack_require__(51);
 
 /**
  * Module exports.
@@ -31680,7 +31693,7 @@ module.exports = ReactErrorUtils;
 var _prodInvariant = __webpack_require__(5);
 
 var ReactCurrentOwner = __webpack_require__(18);
-var ReactInstanceMap = __webpack_require__(56);
+var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
 var ReactUpdates = __webpack_require__(17);
 
@@ -32976,7 +32989,7 @@ var _prodInvariant = __webpack_require__(31);
 var ReactNoopUpdateQueue = __webpack_require__(114);
 
 var canDefineProperty = __webpack_require__(116);
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(52);
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
 
@@ -33704,7 +33717,7 @@ function error(data){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__songs__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__songs__ = __webpack_require__(45);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__songs__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__users__ = __webpack_require__(120);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__users__["a"]; });
@@ -33905,7 +33918,7 @@ module.exports = (
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(16)
-  , core      = __webpack_require__(47)
+  , core      = __webpack_require__(48)
   , ctx       = __webpack_require__(62)
   , hide      = __webpack_require__(36)
   , PROTOTYPE = 'prototype';
@@ -33995,7 +34008,7 @@ var LIBRARY        = __webpack_require__(129)
   , redefine       = __webpack_require__(349)
   , hide           = __webpack_require__(36)
   , has            = __webpack_require__(63)
-  , Iterators      = __webpack_require__(49)
+  , Iterators      = __webpack_require__(50)
   , $iterCreate    = __webpack_require__(339)
   , setToStringTag = __webpack_require__(81)
   , getPrototypeOf = __webpack_require__(345)
@@ -46734,14 +46747,14 @@ var ReactDOMComponentTree = __webpack_require__(8);
 var ReactDOMContainerInfo = __webpack_require__(476);
 var ReactDOMFeatureFlags = __webpack_require__(478);
 var ReactFeatureFlags = __webpack_require__(270);
-var ReactInstanceMap = __webpack_require__(56);
+var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
 var ReactMarkupChecksum = __webpack_require__(498);
 var ReactReconciler = __webpack_require__(41);
 var ReactUpdateQueue = __webpack_require__(101);
 var ReactUpdates = __webpack_require__(17);
 
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(52);
 var instantiateReactComponent = __webpack_require__(281);
 var invariant = __webpack_require__(2);
 var setInnerHTML = __webpack_require__(76);
@@ -48130,7 +48143,7 @@ function isPromise(obj) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PatternUtils__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(59);
 
 
 
@@ -49248,7 +49261,7 @@ module.exports = ReactPropTypesSecret;
 
 var eio = __webpack_require__(375);
 var Socket = __webpack_require__(299);
-var Emitter = __webpack_require__(50);
+var Emitter = __webpack_require__(51);
 var parser = __webpack_require__(118);
 var on = __webpack_require__(298);
 var bind = __webpack_require__(136);
@@ -49843,7 +49856,7 @@ function on (obj, ev, fn) {
  */
 
 var parser = __webpack_require__(118);
-var Emitter = __webpack_require__(50);
+var Emitter = __webpack_require__(51);
 var toArray = __webpack_require__(572);
 var on = __webpack_require__(298);
 var bind = __webpack_require__(136);
@@ -50486,14 +50499,15 @@ module.exports = function(arraybuffer, start, end) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_dom_css_transform___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_dom_css_transform__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_wavesurfer__ = __webpack_require__(549);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_wavesurfer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_wavesurfer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__util___ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__api_songs__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__util___ = __webpack_require__(34);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/AudioPlayer.jsx';
@@ -50503,6 +50517,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -50535,7 +50550,8 @@ var AudioPlayer = function (_Component) {
       isSpeaker: __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getIsSpeaker(),
       isSynched: __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getSynched(),
       playMode: __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getPlayMode(),
-      videoMode: __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getVideoMode()
+      videoMode: __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getVideoMode(),
+      drawFromImage: false
     };
 
     _this.waveOptionsNormal = {
@@ -50575,12 +50591,13 @@ var AudioPlayer = function (_Component) {
     _this.playOnSongReady = false;
     _this.mouseDown = false;
     _this.resetPlayingOnModeChanged = false;
-    _this.waveformReady = false;
+    _this.wavesurfer = {};
     _this.barsSaved = false;
     _this.waveSaved = false;
+    _this.savingVisualisation = false;
 
     setTimeout(function () {
-      _this.checkWaveformSaved();
+      _this.checkWaveform();
     }, 100);
 
     // -- events ----
@@ -50678,27 +50695,93 @@ var AudioPlayer = function (_Component) {
     __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].removeListener('QUEUE_CHANGED', this.evtUpdateUservote);
   };
 
-  AudioPlayer.prototype.checkWaveformSaved = function checkWaveformSaved() {
-    var song = this.state.song;
+  AudioPlayer.prototype.checkWaveform = function checkWaveform() {
+    var waveformReady = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var _state = this.state,
+        song = _state.song,
+        playMode = _state.playMode,
+        videoMode = _state.videoMode;
+    var drawFromImage = this.state.drawFromImage;
 
 
-    if (typeof song.waveform !== 'undefined') {
+    if (typeof song.waveform !== 'undefined' && !videoMode) {
+
+      var prevDrawFromImage = drawFromImage;
 
       this.barsSaved = song.waveform.barsSaved;
-      this.waveSaved = song.waveform.barsSaved;
+      this.waveSaved = song.waveform.waveSaved;
 
-      console.log('[AudioPlayer] barsSaved:', this.barsSaved, '| waveSaved:', this.waveSaved);
+      console.log('[AudioPlayer] barsSaved:', this.barsSaved, '| waveSaved:', this.waveSaved, '| savingVisualisation:', this.savingVisualisation);
+
+      if (!waveformReady && playMode === 'normal' && this.barsSaved) {
+        console.log('[AudioPlayer] Drawing audiobars overlay...');
+        drawFromImage = true;
+      } else if (waveformReady && playMode === 'normal' && !this.barsSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
+        console.log('[AudioPlayer] Saving audiobars images...');
+        this.saveAudioVisualisation('bars');
+        drawFromImage = false;
+      } else if (waveformReady && playMode === 'normal' && this.barsSaved) {
+        console.log('[AudioPlayer] Removing audiobars overlay...');
+        drawFromImage = false;
+      }
+
+      if (!waveformReady && playMode === 'fullscreen' && this.waveSaved) {
+        console.log('[AudioPlayer] Drawing audiowave overlay...');
+        drawFromImage = true;
+      } else if (waveformReady && playMode === 'fullscreen' && !this.waveSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
+        console.log('[AudioPlayer] Saving audiowave images...');
+        this.saveAudioVisualisation('wave');
+        drawFromImage = false;
+      } else if (waveformReady && playMode === 'fullscreen' && this.waveSaved) {
+        console.log('[AudioPlayer] Removing audiowave overlay...');
+        drawFromImage = false;
+      }
+
+      if (drawFromImage !== prevDrawFromImage) this.setState({ drawFromImage: drawFromImage });
+    }
+  };
+
+  AudioPlayer.prototype.saveAudioVisualisation = function saveAudioVisualisation(type) {
+    var _this2 = this;
+
+    if (!this.savingVisualisation) {
+      (function () {
+        var song = _this2.state.song;
+
+
+        _this2.savingVisualisation = true;
+
+        var audiovisuals = document.querySelectorAll('wave canvas');
+        var visualProgressData = audiovisuals[0].toDataURL('image/png');
+        var visualImageData = audiovisuals[1].toDataURL('image/png');
+
+        __WEBPACK_IMPORTED_MODULE_11__api_songs__["a" /* default */].saveAudioVisualisation(song.general.id, visualProgressData, visualImageData, type).then(function (updatedSong) {
+
+          _this2.savingVisualisation = false;
+
+          song.waveform = updatedSong.waveform;
+
+          _this2.barsSaved = song.waveform.barsSaved;
+          _this2.waveSaved = song.waveform.waveSaved;
+
+          _this2.setState({ song: song });
+        }, function (failData) {
+
+          console.log('[AudioPlayer] -!- Error while saving audio visualisation -!-', failData);
+          _this2.savingVisualisation = false;
+        });
+      })();
     }
   };
 
   AudioPlayer.prototype.checkSongUpdate = function checkSongUpdate() {
-    var _this2 = this;
+    var _this3 = this;
 
     var isSynched = this.state.isSynched;
-    var _state = this.state,
-        song = _state.song,
-        pos = _state.pos,
-        currentTimeString = _state.currentTimeString;
+    var _state2 = this.state,
+        song = _state2.song,
+        pos = _state2.pos,
+        currentTimeString = _state2.currentTimeString;
 
 
     if (isSynched) {
@@ -50706,7 +50789,7 @@ var AudioPlayer = function (_Component) {
       pos = 0;
       currentTimeString = '00:00';
       setTimeout(function () {
-        return _this2.updateSong(true);
+        return _this3.updateSong(true);
       }, 10);
       this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
     }
@@ -50726,14 +50809,14 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updateSong = function updateSong() {
-    var _this3 = this;
+    var _this4 = this;
 
     var asSynched = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     var isSynched = this.state.isSynched;
-    var _state2 = this.state,
-        song = _state2.song,
-        pos = _state2.pos,
-        playing = _state2.playing;
+    var _state3 = this.state,
+        song = _state3.song,
+        pos = _state3.pos,
+        playing = _state3.playing;
 
 
     if (asSynched) {
@@ -50750,18 +50833,18 @@ var AudioPlayer = function (_Component) {
 
     this.songHasStarted = false;
     //this.audioContextSet = false;
+    this.wavesurfer = {};
 
     setTimeout(function () {
-      _this3.checkWaveformSaved();
+      _this4.checkWaveform();
     }, 100);
 
     this.setPlaying(playing);
-
     this.setState({ song: song, pos: pos });
   };
 
   AudioPlayer.prototype.updateSpeaker = function updateSpeaker() {
-    var _this4 = this;
+    var _this5 = this;
 
     var isSpeaker = this.state.isSpeaker;
 
@@ -50771,7 +50854,7 @@ var AudioPlayer = function (_Component) {
     if (isSpeaker && this.audioContextSet) {
       this.playOnSongReady = true;
       setTimeout(function () {
-        _this4.setPlayMode('fullscreen');
+        _this5.setPlayMode('fullscreen');
       }, 10);
     }
 
@@ -50784,19 +50867,17 @@ var AudioPlayer = function (_Component) {
 
     isSynched = __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getSynched();
 
-    if (isSynched) {
-      this.synchPosToSpeakerAndPlay();
-    }
+    if (isSynched) this.synchPosToSpeakerAndPlay();
 
     this.setState({ isSynched: isSynched });
   };
 
   AudioPlayer.prototype.updatePlayMode = function updatePlayMode() {
-    var _this5 = this;
+    var _this6 = this;
 
-    var _state3 = this.state,
-        song = _state3.song,
-        playMode = _state3.playMode;
+    var _state4 = this.state,
+        song = _state4.song,
+        playMode = _state4.playMode;
 
 
     playMode = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getPlayMode();
@@ -50804,10 +50885,11 @@ var AudioPlayer = function (_Component) {
 
     // To reset waveOptions
     setTimeout(function () {
-      var song = _this5.state.song;
+      var song = _this6.state.song;
 
       song = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getSong(__WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getSynched());
-      _this5.setState({ song: song });
+      _this6.setState({ song: song });
+      _this6.checkWaveform();
     }, 1);
 
     if (this.resetPlayingOnModeChanged) {
@@ -50852,28 +50934,31 @@ var AudioPlayer = function (_Component) {
     this.setState({ pos: pos });
   };
 
-  AudioPlayer.prototype.handleReadyToPlay = function handleReadyToPlay() {
-    var _this6 = this;
+  AudioPlayer.prototype.handleWavesurferReady = function handleWavesurferReady(args) {
+    var _this7 = this;
 
-    var _state4 = this.state,
-        playing = _state4.playing,
-        song = _state4.song,
-        isSpeaker = _state4.isSpeaker;
+    var _state5 = this.state,
+        playing = _state5.playing,
+        song = _state5.song,
+        isSpeaker = _state5.isSpeaker;
 
+
+    this.wavesurfer = args.wavesurfer;
+    this.wavesurfer.on('waveform-ready', function () {
+      return _this7.checkWaveform(true);
+    });
 
     if (this.audioContextSupported && !this.audioCtx) {
 
       var _constructor = window.AudioContext || window.webkitAudioContext || AudioContext() || false;
-      if (_constructor) {
-        this.audioCtx = new _constructor();
-      }
+      if (_constructor) this.audioCtx = new _constructor();
 
       if (!_constructor) {
         this.audioContextSupported = false;
         //NotifActions.addError(`Audio Context not supported by browser`);
       } else if (isSpeaker) {
         setTimeout(function () {
-          _this6.setPlayMode('fullscreen');
+          _this7.setPlayMode('fullscreen');
         }, 10);
       }
     }
@@ -50895,8 +50980,8 @@ var AudioPlayer = function (_Component) {
     if (this.changingPlayModes) {
       setTimeout(function () {
         console.log('[AudioPlayer] Changed Play Mode');
-        _this6.setState({ pos: _this6.preChangedPlayModePos });
-        _this6.changingPlayModes = false;
+        _this7.setState({ pos: _this7.preChangedPlayModePos });
+        _this7.changingPlayModes = false;
       }, 100);
     }
 
@@ -50924,10 +51009,10 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.setPlayMode = function setPlayMode(playMode) {
-    var _state5 = this.state,
-        playing = _state5.playing,
-        pos = _state5.pos,
-        videoMode = _state5.videoMode;
+    var _state6 = this.state,
+        playing = _state6.playing,
+        pos = _state6.pos,
+        videoMode = _state6.videoMode;
 
 
     this.changingPlayModes = true;
@@ -50948,14 +51033,14 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
-    var _this7 = this;
+    var _this8 = this;
 
-    var _state6 = this.state,
-        playing = _state6.playing,
-        isSpeaker = _state6.isSpeaker;
     var _state7 = this.state,
-        pos = _state7.pos,
-        currentTimeString = _state7.currentTimeString;
+        playing = _state7.playing,
+        isSpeaker = _state7.isSpeaker;
+    var _state8 = this.state,
+        pos = _state8.pos,
+        currentTimeString = _state8.currentTimeString;
 
 
     pos = e.originalArgs[0];
@@ -50964,23 +51049,15 @@ var AudioPlayer = function (_Component) {
     var currentSeconds = Math.round(pos % 60);
 
     currentTimeString = '0' + currentMinutes + ':' + currentSeconds;
-    if (currentSeconds < 10) {
-      currentTimeString = '0' + currentMinutes + ':0' + currentSeconds;
-    }
+    if (currentSeconds < 10) currentTimeString = '0' + currentMinutes + ':0' + currentSeconds;
 
     var sendSocketEvent = false;
-    if (isSpeaker && currentTimeString !== this.prevTimeString) {
-      sendSocketEvent = true;
-    }
+    if (isSpeaker && currentTimeString !== this.prevTimeString) sendSocketEvent = true;
 
-    if (playing) {
-      this.speakerPosWorker.postMessage({ pos: pos, sendSocketEvent: sendSocketEvent });
-    }
+    if (playing) this.speakerPosWorker.postMessage({ pos: pos, sendSocketEvent: sendSocketEvent });
 
     var showAnimation = true;
-    if (this.isSpeaker && !this.isActive) {
-      showAnimation = false;
-    }
+    if (this.isSpeaker && !this.isActive) showAnimation = false;
 
     if (this.skipFrames > 0) {
       showAnimation = false;
@@ -50994,12 +51071,12 @@ var AudioPlayer = function (_Component) {
         // Base audio visualisation on frequencies
         this.analyser.getByteFrequencyData(this.frequencyData);
         window.requestAnimationFrame(function () {
-          return _this7.updateAudioVisualisation();
+          return _this8.updateAudioVisualisation();
         });
       } else if (!this.audioContextSupported) {
         // Fake the audio frequencies for visual effect
         window.requestAnimationFrame(function () {
-          return _this7.updateAudioVisualisation(true);
+          return _this8.updateAudioVisualisation(true);
         });
       }
     }
@@ -51021,9 +51098,9 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.unSynch = function unSynch() {
-    var _state8 = this.state,
-        isSynched = _state8.isSynched,
-        isSpeaker = _state8.isSpeaker;
+    var _state9 = this.state,
+        isSynched = _state9.isSynched,
+        isSpeaker = _state9.isSpeaker;
 
 
     if (isSynched) {
@@ -51039,39 +51116,59 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
-    var _this8 = this;
+    var _this9 = this;
 
     if (this.songHasStarted) {
-      var _state9 = this.state,
-          isSynched = _state9.isSynched,
-          isSpeaker = _state9.isSpeaker;
       var _state10 = this.state,
           song = _state10.song,
           pos = _state10.pos,
           currentTimeString = _state10.currentTimeString;
 
 
-      console.log('-!- SONG ENDED -!-', song.general.id, song.general.title);
+      var curMinutes = Math.floor(pos / 60);
+      var curSeconds = Math.round(pos % 60);
+      var curSecondsTotal = curMinutes * 60 + curSeconds;
+      console.log('[AudioPlayer] curMin:', curMinutes, '| curSec:', curSeconds, '| curTot:', curSecondsTotal);
 
-      this.prevSongId = song.general.id;
+      var durMinutes = Number(song.general.duration.slice(1, 2));
+      var durSeconds = Number(song.general.duration.slice(3, 5));
+      var durSecondsTotal = durMinutes * 60 + durSeconds;
+      console.log('[AudioPlayer] durMin:', durMinutes, '| durSec:', durSeconds, '| durTot:', durSecondsTotal);
 
-      if (isSpeaker) {
-        song.socketId = __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__["a" /* default */].getSocketId();
-        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["k" /* endSongAndPlayNext */](song);
-      } else if (!isSynched) {
-        setTimeout(function () {
-          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this8.prevSongId);
-        }, 100);
+      var prematureSongEnd = false;
+      if (durSecondsTotal - curSecondsTotal >= 2) prematureSongEnd = true;
+
+      if (!prematureSongEnd) {
+        var _state11 = this.state,
+            isSynched = _state11.isSynched,
+            isSpeaker = _state11.isSpeaker;
+
+
+        console.log('-i- SONG ENDED -i-', song.general.id, song.general.title);
+
+        this.prevSongId = song.general.id;
+
+        if (isSpeaker) {
+          song.socketId = __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__["a" /* default */].getSocketId();
+          __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["k" /* endSongAndPlayNext */](song);
+        } else if (!isSynched) {
+          setTimeout(function () {
+            return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this9.prevSongId);
+          }, 100);
+        }
+
+        this.prevTimeString = '00:00';
+        currentTimeString = '00:00';
+        song = { general: '' };
+        pos = 0;
+        this.songHasStarted = false;
+        this.audioContextSet = false;
+
+        this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
+      } else {
+
+        console.log('[AudioPlayer] -!- Song ended prematurely -!-');
       }
-
-      this.prevTimeString = '00:00';
-      currentTimeString = '00:00';
-      song = { general: '' };
-      pos = 0;
-      this.songHasStarted = false;
-      this.audioContextSet = false;
-
-      this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
     }
   };
 
@@ -51097,15 +51194,8 @@ var AudioPlayer = function (_Component) {
     if (this.mouseDown) this.handleVideoSeek(evt, false);
   };
 
-  AudioPlayer.prototype.handleWaveFormDrawn = function handleWaveFormDrawn() {
-
-    console.log('[WaveformsDrawn]');
-
-    this.checkWaveformSaved();
-  };
-
   AudioPlayer.prototype.avoidAudioSeekError = function avoidAudioSeekError() {
-    var _this9 = this;
+    var _this10 = this;
 
     var playing = this.state.playing;
 
@@ -51113,23 +51203,23 @@ var AudioPlayer = function (_Component) {
     if (playing) {
       this.setPlaying(false);
       setTimeout(function () {
-        _this9.setPlaying(true);
+        _this10.setPlaying(true);
       }, 1);
       this.skipFrames = 60;
     }
   };
 
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this10 = this;
+    var _this11 = this;
 
-    var _state11 = this.state,
-        isSpeaker = _state11.isSpeaker,
-        isSynched = _state11.isSynched,
-        videoMode = _state11.videoMode;
     var _state12 = this.state,
-        song = _state12.song,
-        pos = _state12.pos,
-        currentTimeString = _state12.currentTimeString;
+        isSpeaker = _state12.isSpeaker,
+        isSynched = _state12.isSynched,
+        videoMode = _state12.videoMode;
+    var _state13 = this.state,
+        song = _state13.song,
+        pos = _state13.pos,
+        currentTimeString = _state13.currentTimeString;
 
 
     if (!isSpeaker) {
@@ -51149,7 +51239,7 @@ var AudioPlayer = function (_Component) {
       pos = 0;
       currentTimeString = '00:00';
       setTimeout(function () {
-        return _this10.updateSong(true);
+        return _this11.updateSong(true);
       }, 10);
       this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
     }
@@ -51161,53 +51251,43 @@ var AudioPlayer = function (_Component) {
 
     playing = playOrNot;
 
-    if (playing && !this.songHasStarted) {
-      this.songHasStarted = true;
-    }
+    if (playing && !this.songHasStarted) this.songHasStarted = true;
 
     this.setState({ playing: playing });
   };
 
   AudioPlayer.prototype.togglePlay = function togglePlay() {
-    var _state13 = this.state,
-        playing = _state13.playing,
-        isSynched = _state13.isSynched,
-        isSpeaker = _state13.isSpeaker,
-        videoMode = _state13.videoMode;
+    var _state14 = this.state,
+        playing = _state14.playing,
+        isSynched = _state14.isSynched,
+        isSpeaker = _state14.isSpeaker,
+        videoMode = _state14.videoMode;
 
 
     if (!isSpeaker) {
 
-      if (isSynched) {
-        this.toggleSynched();
-      }
+      if (isSynched) this.toggleSynched();
 
       var aboutToPlay = !playing;
 
-      if (videoMode && aboutToPlay) {
-        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* startPlay */]();
-      }
-      if (videoMode && !aboutToPlay) {
-        __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["b" /* pausePlay */]();
-      }
+      if (videoMode && aboutToPlay) __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["d" /* startPlay */]();
+      if (videoMode && !aboutToPlay) __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["b" /* pausePlay */]();
 
       this.setPlaying(aboutToPlay);
     }
   };
 
   AudioPlayer.prototype.toggleVideoMode = function toggleVideoMode() {
-    var _state14 = this.state,
-        videoMode = _state14.videoMode,
-        isSynched = _state14.isSynched,
-        isSpeaker = _state14.isSpeaker,
-        song = _state14.song;
+    var _state15 = this.state,
+        videoMode = _state15.videoMode,
+        isSynched = _state15.isSynched,
+        isSpeaker = _state15.isSpeaker,
+        song = _state15.song;
 
 
     if (!isSpeaker) {
 
-      if (isSynched) {
-        this.toggleSynched();
-      }
+      if (isSynched) this.toggleSynched();
 
       this.setPlaying(false);
 
@@ -51217,11 +51297,9 @@ var AudioPlayer = function (_Component) {
       this.setState({ currentTimeString: currentTimeString });
 
       //PlaylistActions.setVideoMode(!videoMode);
-      if (!videoMode) {
-        setTimeout(function () {
-          return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["i" /* setSong */](song);
-        }, 1);
-      }
+      if (!videoMode) setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["i" /* setSong */](song);
+      }, 1);
       setTimeout(function () {
         return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["c" /* setVideoMode */](!videoMode);
       }, 10);
@@ -51229,10 +51307,10 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.showNowPlaying = function showNowPlaying() {
-    var _state15 = this.state,
-        song = _state15.song,
-        playMode = _state15.playMode,
-        videoMode = _state15.videoMode;
+    var _state16 = this.state,
+        song = _state16.song,
+        playMode = _state16.playMode,
+        videoMode = _state16.videoMode;
 
 
     var notifAlreadyShowing = document.querySelector('.notification').className.indexOf('show') > -1;
@@ -51255,15 +51333,9 @@ var AudioPlayer = function (_Component) {
     }
     //let minFrequencyScale = minFrequency / 8;if (minFrequencyScale > 1.5) { minFrequencyScale = 1.3; }
 
-    if (maxFrequency > 250) {
-      maxFrequencyScale = medFrequency / 150;
-    }
-    if (maxFrequencyScale < 0.6) {
-      maxFrequencyScale = 1;
-    }
-    if (maxFrequencyScale > 1.4) {
-      maxFrequencyScale = 1.3;
-    }
+    if (maxFrequency > 250) maxFrequencyScale = medFrequency / 150;
+    if (maxFrequencyScale < 0.6) maxFrequencyScale = 1;
+    if (maxFrequencyScale > 1.4) maxFrequencyScale = 1.3;
 
     var largeCircleScale = 0.7 + 0.3 * maxFrequencyScale;
     //const mediumCircleScale = 0.9 + (0.1 * minFrequencyScale);
@@ -51312,7 +51384,7 @@ var AudioPlayer = function (_Component) {
           frequencies = [60, 170, 90];
         } // use standard values for button
       } else {
-        frequencies = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_11__util___["c" /* randomArray */])(maxBars, 0, 255);
+        frequencies = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_12__util___["c" /* randomArray */])(maxBars, 0, 255);
       }
 
       for (var i = 0; i < maxBars; i++) {
@@ -51323,9 +51395,7 @@ var AudioPlayer = function (_Component) {
           barScale -= scaleStep; // downscale bars until reaching the center of the screen
         } else if (i >= maxBars / 2) {
           barScale += scaleStep; // upscale bars again past the center of the screen
-          if (playMode === 'fullscreen') {
-            index = maxBars - i; // mirror the bars at the center of the screen
-          }
+          if (playMode === 'fullscreen') index = maxBars - i; // mirror the bars at the center of the screen
         }
 
         var minFrequency = Math.min.apply(Math, frequencies); // used for bar scaling
@@ -51341,7 +51411,7 @@ var AudioPlayer = function (_Component) {
           maxFrequency = 255;
         }
         if (playMode === 'normal') {
-          frequencies = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_11__util___["d" /* curveArrayAtRandom */])(frequencies); /*console.log(`FIXED?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`);*/
+          frequencies = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_12__util___["d" /* curveArrayAtRandom */])(frequencies); /*console.log(`FIXED?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`);*/
         } //else { console.log(`FREQS?`, frequencies[0], frequencies[1], frequencies[2], `(`, maxFrequency, `)`); } // make sure the middle bar is always the highest in button mode
         var frequencyScale = Math.round(frequencies[index] - minFrequency); // main influencer for bar height
 
@@ -51370,20 +51440,18 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this11 = this;
+    var _this12 = this;
 
-    var _state16 = this.state,
-        song = _state16.song,
-        playing = _state16.playing,
-        pos = _state16.pos,
-        playMode = _state16.playMode,
-        videoMode = _state16.videoMode;
+    var _state17 = this.state,
+        song = _state17.song,
+        playing = _state17.playing,
+        pos = _state17.pos,
+        playMode = _state17.playMode,
+        videoMode = _state17.videoMode;
 
 
     var waveOptions = this.waveOptionsNormal;
-    if (playMode === 'fullscreen') {
-      waveOptions = this.waveOptionsFullscreen;
-    }
+    if (playMode === 'fullscreen') waveOptions = this.waveOptionsFullscreen;
 
     if (song.general !== '' && !videoMode) {
       // render waveform progress bar
@@ -51393,26 +51461,23 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_react_wavesurfer___default.a, {
         audioFile: audioFile,
         pos: pos,
-        onReady: function onReady() {
-          return _this11.handleReadyToPlay();
-        },
-        onWaveFormReady: function onWaveFormReady() {
-          return _this11.handleWaveFormDrawn();
+        onReady: function onReady(args) {
+          return _this12.handleWavesurferReady(args);
         },
         onPosChange: function onPosChange(e) {
-          return _this11.handlePosChange(e);
+          return _this12.handlePosChange(e);
         },
         onSeek: function onSeek() {
-          return _this11.handleSeek();
+          return _this12.handleSeek();
         },
         onFinish: function onFinish() {
-          return _this11.handleSongEnd();
+          return _this12.handleSongEnd();
         },
         playing: playing,
         options: waveOptions,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 770
+          lineNumber: 832
         }
       });
     } else if (videoMode) {
@@ -51422,24 +51487,24 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'video-pos-wrapper',
           onMouseDown: function onMouseDown() {
-            _this11.mouseDown = true;
+            _this12.mouseDown = true;
           },
           onMouseMove: function onMouseMove(evt) {
-            return _this11.handleScrub(evt);
+            return _this12.handleScrub(evt);
           },
           onMouseUp: function onMouseUp(evt) {
-            return _this11.handleVideoSeek(evt);
+            return _this12.handleVideoSeek(evt);
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 786
+            lineNumber: 847
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'video-pos-progress', __source: {
               fileName: _jsxFileName,
-              lineNumber: 791
+              lineNumber: 852
             }
           },
           '\xA0'
@@ -51448,7 +51513,7 @@ var AudioPlayer = function (_Component) {
           'div',
           { className: 'video-pos-scrubber', __source: {
               fileName: _jsxFileName,
-              lineNumber: 792
+              lineNumber: 853
             }
           },
           '\xA0'
@@ -51458,27 +51523,25 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderVideoModeButton = function renderVideoModeButton() {
-    var _this12 = this;
+    var _this13 = this;
 
-    var _state17 = this.state,
-        playMode = _state17.playMode,
-        videoMode = _state17.videoMode;
+    var _state18 = this.state,
+        playMode = _state18.playMode,
+        videoMode = _state18.videoMode;
 
 
     if (playMode === 'normal') {
 
       var toggleVideoClasses = 'btn-video-mode off';
-      if (videoMode) {
-        toggleVideoClasses = 'btn-video-mode on';
-      }
+      if (videoMode) toggleVideoClasses = 'btn-video-mode on';
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleVideoClasses, onClick: function onClick() {
-            return _this12.toggleVideoMode();
+            return _this13.toggleVideoMode();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 812
+            lineNumber: 871
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51486,7 +51549,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 812
+              lineNumber: 871
             }
           },
           '\xA0'
@@ -51496,12 +51559,12 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderAudioVisualisation = function renderAudioVisualisation() {
-    var _this13 = this;
+    var _this14 = this;
 
-    var _state18 = this.state,
-        playMode = _state18.playMode,
-        playing = _state18.playing,
-        videoMode = _state18.videoMode;
+    var _state19 = this.state,
+        playMode = _state19.playMode,
+        playing = _state19.playing,
+        videoMode = _state19.videoMode;
 
 
     if (playMode === 'normal') {
@@ -51509,26 +51572,24 @@ var AudioPlayer = function (_Component) {
       var canvasWidth = 15;
       var canvasHeight = 15;
 
-      if (!playing) {
-        setTimeout(function () {
-          _this13.updateAudioVisualisation();
-        }, 10);
-      }
+      if (!playing) setTimeout(function () {
+        _this14.updateAudioVisualisation();
+      }, 10);
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'visualisation', onClick: function onClick() {
-            return _this13.setPlayMode('fullscreen');
+            return _this14.setPlayMode('fullscreen');
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 833
+            lineNumber: 890
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: canvasWidth, height: canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 834
+              lineNumber: 891
             }
           },
           '\xA0'
@@ -51543,14 +51604,14 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'visualisation', __source: {
             fileName: _jsxFileName,
-            lineNumber: 844
+            lineNumber: 901
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 845
+              lineNumber: 902
             }
           },
           '\xA0'
@@ -51559,7 +51620,7 @@ var AudioPlayer = function (_Component) {
           'canvas',
           { className: 'audio-visualisation-top', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 846
+              lineNumber: 903
             }
           },
           '\xA0'
@@ -51578,9 +51639,7 @@ var AudioPlayer = function (_Component) {
 
       var voteMode = __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__["a" /* default */].getVoteMode();
 
-      if (song.uservote === undefined) {
-        song.uservote = { hasVoted: false };
-      }
+      if (song.uservote === undefined) song.uservote = { hasVoted: false };
 
       var order = 1;
       var key = 'fsPreview';
@@ -51591,12 +51650,12 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-song-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 874
+            lineNumber: 929
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components__["j" /* SongSummary */], _extends({}, song, { order: order, key: key, fsPreview: fsPreview, voteMode: voteMode, disableButtons: disableButtons, __source: {
             fileName: _jsxFileName,
-            lineNumber: 875
+            lineNumber: 930
           }
         }))
       );
@@ -51604,12 +51663,12 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderFullscreenExtras = function renderFullscreenExtras() {
-    var _this14 = this;
+    var _this15 = this;
 
-    var _state19 = this.state,
-        playMode = _state19.playMode,
-        song = _state19.song,
-        videoMode = _state19.videoMode;
+    var _state20 = this.state,
+        playMode = _state20.playMode,
+        song = _state20.song,
+        videoMode = _state20.videoMode;
 
 
     if (playMode === 'fullscreen' && !videoMode) {
@@ -51621,21 +51680,21 @@ var AudioPlayer = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 892
+            lineNumber: 947
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'district-music-logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 893
+              lineNumber: 948
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'audiodisc-large-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 894
+                lineNumber: 949
               }
             },
             '\xA0'
@@ -51644,7 +51703,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-large-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 895
+                lineNumber: 950
               }
             },
             '\xA0'
@@ -51653,7 +51712,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 896
+                lineNumber: 951
               }
             },
             '\xA0'
@@ -51662,7 +51721,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-medium-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 897
+                lineNumber: 952
               }
             },
             '\xA0'
@@ -51671,7 +51730,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-left', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 898
+                lineNumber: 953
               }
             },
             '\xA0'
@@ -51680,7 +51739,7 @@ var AudioPlayer = function (_Component) {
             'div',
             { className: 'audiodisc-small-right', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 899
+                lineNumber: 954
               }
             },
             '\xA0'
@@ -51689,10 +51748,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-prev', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this14.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this15.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 901
+              lineNumber: 956
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51700,7 +51759,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 901
+                lineNumber: 956
               }
             },
             '\xA0'
@@ -51709,10 +51768,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return _this14.setPlayMode('normal');
+              return _this15.setPlayMode('normal');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 902
+              lineNumber: 957
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51720,7 +51779,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 902
+                lineNumber: 957
               }
             },
             '\xA0'
@@ -51729,10 +51788,10 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this14.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this15.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 903
+              lineNumber: 958
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51740,7 +51799,7 @@ var AudioPlayer = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 903
+                lineNumber: 958
               }
             },
             '\xA0'
@@ -51751,46 +51810,96 @@ var AudioPlayer = function (_Component) {
     }
   };
 
-  AudioPlayer.prototype.render = function render() {
-    var _this15 = this;
+  AudioPlayer.prototype.renderLoadingOverlay = function renderLoadingOverlay() {
+    var _state21 = this.state,
+        song = _state21.song,
+        drawFromImage = _state21.drawFromImage,
+        playMode = _state21.playMode;
 
-    var _state20 = this.state,
-        song = _state20.song,
-        playing = _state20.playing,
-        currentTimeString = _state20.currentTimeString,
-        isSynched = _state20.isSynched,
-        playMode = _state20.playMode;
+
+    if (drawFromImage) {
+
+      var imgPath = '/stream/audio/visuals/' + song.waveform.barsImage;
+      var prgPath = '/stream/audio/visuals/' + song.waveform.barsProgress;
+      if (playMode === 'fullscreen') {
+        imgPath = '/stream/audio/visuals/' + song.waveform.waveImage;
+        prgPath = '/stream/audio/visuals/' + song.waveform.waveProgress;
+      }
+      var imageStyle = { backgroundImage: 'url(' + imgPath + ')' };
+      var progressStyle = { backgroundImage: 'url(' + prgPath + ')' };
+
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'loading-overlay', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 983
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'progress-wrapper', __source: {
+              fileName: _jsxFileName,
+              lineNumber: 984
+            }
+          },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'div',
+            { className: 'progress-visualisation', style: progressStyle, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 985
+              }
+            },
+            '\xA0'
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'song-visualisation', style: imageStyle, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 987
+            }
+          },
+          '\xA0'
+        )
+      );
+    }
+  };
+
+  AudioPlayer.prototype.render = function render() {
+    var _this16 = this;
+
+    var _state22 = this.state,
+        song = _state22.song,
+        playing = _state22.playing,
+        currentTimeString = _state22.currentTimeString,
+        isSynched = _state22.isSynched,
+        playMode = _state22.playMode;
 
 
     var toggleSynchClasses = 'btn-toggle-synch unsynched';
-    if (isSynched) {
-      toggleSynchClasses = 'btn-toggle-synch synched';
-    }
+    if (isSynched) toggleSynchClasses = 'btn-toggle-synch synched';
 
     var togglePlayClasses = 'btn-toggle-play play';
-    if (playing) {
-      togglePlayClasses = 'btn-toggle-play pause';
-    }
+    if (playing) togglePlayClasses = 'btn-toggle-play pause';
 
     var audioPlayerClasses = 'audio-player-wrapper play-mode-normal';
-    if (playMode === 'fullscreen') {
-      audioPlayerClasses = 'audio-player-wrapper play-mode-fullscreen';
-    }
+    if (playMode === 'fullscreen') audioPlayerClasses = 'audio-player-wrapper play-mode-fullscreen';
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'article',
       { className: audioPlayerClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 932
+          lineNumber: 1009
         }
       },
+      this.renderLoadingOverlay(),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
-            return _this15.toggleSynched();
+            return _this16.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 933
+            lineNumber: 1011
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51798,7 +51907,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 933
+              lineNumber: 1011
             }
           },
           '\xA0'
@@ -51807,10 +51916,10 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: togglePlayClasses, onClick: function onClick() {
-            return _this15.togglePlay();
+            return _this16.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 934
+            lineNumber: 1012
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51818,7 +51927,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 934
+              lineNumber: 1012
             }
           },
           '\xA0'
@@ -51828,7 +51937,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-time', __source: {
             fileName: _jsxFileName,
-            lineNumber: 935
+            lineNumber: 1013
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51836,7 +51945,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 935
+              lineNumber: 1013
             }
           },
           currentTimeString
@@ -51845,10 +51954,10 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'pos-wrapper', onClick: function onClick() {
-            return _this15.avoidAudioSeekError();
+            return _this16.avoidAudioSeekError();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 936
+            lineNumber: 1014
           }
         },
         this.renderPlayer()
@@ -51857,7 +51966,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 939
+            lineNumber: 1017
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51865,7 +51974,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 939
+              lineNumber: 1017
             }
           },
           song.general.duration
@@ -51889,7 +51998,7 @@ var AudioPlayer = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__ = __webpack_require__(47);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/DownloadProgress.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52435,7 +52544,7 @@ var Notification = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_PlaylistActions__ = __webpack_require__(27);
@@ -53001,14 +53110,14 @@ var Profile = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_NotificationsStore__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__api_songs__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__api_songs__ = __webpack_require__(45);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/SearchModal.jsx';
@@ -53401,7 +53510,7 @@ var SearchModal = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__api_songs__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__api_songs__ = __webpack_require__(45);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/SongSummary.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -54067,7 +54176,7 @@ Suggestion.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api_songs__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api_songs__ = __webpack_require__(45);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/SuggestionDetail.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -54316,7 +54425,7 @@ SuggestionDetail.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_youtube__ = __webpack_require__(293);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_youtube___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_youtube__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(15);
@@ -55069,9 +55178,9 @@ var NoMatch = function NoMatch() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_SocketStore__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_SocketStore__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__api_users__ = __webpack_require__(120);
@@ -55460,7 +55569,7 @@ __webpack_require__(358);
 __webpack_require__(360);
 __webpack_require__(361);
 __webpack_require__(359);
-module.exports = __webpack_require__(47).Promise;
+module.exports = __webpack_require__(48).Promise;
 
 /***/ }),
 /* 330 */
@@ -55538,7 +55647,7 @@ exports.RETURN = RETURN;
 /* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(48) && !__webpack_require__(126)(function(){
+module.exports = !__webpack_require__(49) && !__webpack_require__(126)(function(){
   return Object.defineProperty(__webpack_require__(80)('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 
@@ -55578,7 +55687,7 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
 /***/ (function(module, exports, __webpack_require__) {
 
 // check on default Array iterator
-var Iterators  = __webpack_require__(49)
+var Iterators  = __webpack_require__(50)
   , ITERATOR   = __webpack_require__(13)('iterator')
   , ArrayProto = Array.prototype;
 
@@ -55784,7 +55893,7 @@ var dP       = __webpack_require__(65)
   , anObject = __webpack_require__(35)
   , getKeys  = __webpack_require__(347);
 
-module.exports = __webpack_require__(48) ? Object.defineProperties : function defineProperties(O, Properties){
+module.exports = __webpack_require__(49) ? Object.defineProperties : function defineProperties(O, Properties){
   anObject(O);
   var keys   = getKeys(Properties)
     , length = keys.length
@@ -55871,9 +55980,9 @@ module.exports = __webpack_require__(36);
 "use strict";
 
 var global      = __webpack_require__(16)
-  , core        = __webpack_require__(47)
+  , core        = __webpack_require__(48)
   , dP          = __webpack_require__(65)
-  , DESCRIPTORS = __webpack_require__(48)
+  , DESCRIPTORS = __webpack_require__(49)
   , SPECIES     = __webpack_require__(13)('species');
 
 module.exports = function(KEY){
@@ -55964,8 +56073,8 @@ module.exports = function(it, S){
 
 var classof   = __webpack_require__(123)
   , ITERATOR  = __webpack_require__(13)('iterator')
-  , Iterators = __webpack_require__(49);
-module.exports = __webpack_require__(47).getIteratorMethod = function(it){
+  , Iterators = __webpack_require__(50);
+module.exports = __webpack_require__(48).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
@@ -55979,7 +56088,7 @@ module.exports = __webpack_require__(47).getIteratorMethod = function(it){
 
 var addToUnscopables = __webpack_require__(330)
   , step             = __webpack_require__(341)
-  , Iterators        = __webpack_require__(49)
+  , Iterators        = __webpack_require__(50)
   , toIObject        = __webpack_require__(84);
 
 // 22.1.3.4 Array.prototype.entries()
@@ -56254,7 +56363,7 @@ if(!USE_NATIVE){
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 __webpack_require__(81)($Promise, PROMISE);
 __webpack_require__(350)(PROMISE);
-Wrapper = __webpack_require__(47)[PROMISE];
+Wrapper = __webpack_require__(48)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
@@ -56352,7 +56461,7 @@ __webpack_require__(128)(String, 'String', function(iterated){
 __webpack_require__(357);
 var global        = __webpack_require__(16)
   , hide          = __webpack_require__(36)
-  , Iterators     = __webpack_require__(49)
+  , Iterators     = __webpack_require__(50)
   , TO_STRING_TAG = __webpack_require__(13)('toStringTag');
 
 for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
@@ -57257,7 +57366,7 @@ module.exports.parser = __webpack_require__(37);
  */
 
 var transports = __webpack_require__(137);
-var Emitter = __webpack_require__(50);
+var Emitter = __webpack_require__(51);
 var debug = __webpack_require__(21)('engine.io-client:socket');
 var index = __webpack_require__(147);
 var parser = __webpack_require__(37);
@@ -58241,7 +58350,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 
 var XMLHttpRequest = __webpack_require__(86);
 var Polling = __webpack_require__(138);
-var Emitter = __webpack_require__(50);
+var Emitter = __webpack_require__(51);
 var inherit = __webpack_require__(66);
 var debug = __webpack_require__(21)('engine.io-client:polling-xhr');
 
@@ -63879,8 +63988,8 @@ module.exports = baseForOwn;
 /* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(52),
-    isObjectLike = __webpack_require__(53);
+var baseGetTag = __webpack_require__(53),
+    isObjectLike = __webpack_require__(54);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]';
@@ -63903,9 +64012,9 @@ module.exports = baseIsArguments;
 /* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(52),
+var baseGetTag = __webpack_require__(53),
     isLength = __webpack_require__(154),
-    isObjectLike = __webpack_require__(53);
+    isObjectLike = __webpack_require__(54);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]',
@@ -64622,7 +64731,7 @@ module.exports = identity;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsArguments = __webpack_require__(420),
-    isObjectLike = __webpack_require__(53);
+    isObjectLike = __webpack_require__(54);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -64708,7 +64817,7 @@ module.exports = isBuffer;
 /* 445 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(52),
+var baseGetTag = __webpack_require__(53),
     isObject = __webpack_require__(446);
 
 /** `Object#toString` result references. */
@@ -64788,9 +64897,9 @@ module.exports = isObject;
 /* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(52),
+var baseGetTag = __webpack_require__(53),
     isArray = __webpack_require__(70),
-    isObjectLike = __webpack_require__(53);
+    isObjectLike = __webpack_require__(54);
 
 /** `Object#toString` result references. */
 var stringTag = '[object String]';
@@ -64824,8 +64933,8 @@ module.exports = isString;
 /* 448 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(52),
-    isObjectLike = __webpack_require__(53);
+var baseGetTag = __webpack_require__(53),
+    isObjectLike = __webpack_require__(54);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -65835,7 +65944,7 @@ module.exports = AutoFocusUtils;
 
 
 
-var EventPropagators = __webpack_require__(55);
+var EventPropagators = __webpack_require__(56);
 var ExecutionEnvironment = __webpack_require__(9);
 var FallbackCompositionState = __webpack_require__(469);
 var SyntheticCompositionEvent = __webpack_require__(512);
@@ -66440,8 +66549,8 @@ module.exports = CSSPropertyOperations;
 
 
 
-var EventPluginHub = __webpack_require__(54);
-var EventPropagators = __webpack_require__(55);
+var EventPluginHub = __webpack_require__(55);
+var EventPropagators = __webpack_require__(56);
 var ExecutionEnvironment = __webpack_require__(9);
 var ReactDOMComponentTree = __webpack_require__(8);
 var ReactUpdates = __webpack_require__(17);
@@ -66851,7 +66960,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 
-var EventPropagators = __webpack_require__(55);
+var EventPropagators = __webpack_require__(56);
 var ReactDOMComponentTree = __webpack_require__(8);
 var SyntheticMouseEvent = __webpack_require__(73);
 
@@ -67475,7 +67584,7 @@ var React = __webpack_require__(44);
 var ReactComponentEnvironment = __webpack_require__(99);
 var ReactCurrentOwner = __webpack_require__(18);
 var ReactErrorUtils = __webpack_require__(100);
-var ReactInstanceMap = __webpack_require__(56);
+var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
 var ReactNodeTypes = __webpack_require__(274);
 var ReactReconciler = __webpack_require__(41);
@@ -67484,7 +67593,7 @@ if (process.env.NODE_ENV !== 'production') {
   var checkReactTypeSpec = __webpack_require__(521);
 }
 
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(52);
 var invariant = __webpack_require__(2);
 var shallowEqual = __webpack_require__(87);
 var shouldUpdateReactComponent = __webpack_require__(107);
@@ -68504,7 +68613,7 @@ var DOMLazyTree = __webpack_require__(40);
 var DOMNamespaces = __webpack_require__(95);
 var DOMProperty = __webpack_require__(23);
 var DOMPropertyOperations = __webpack_require__(266);
-var EventPluginHub = __webpack_require__(54);
+var EventPluginHub = __webpack_require__(55);
 var EventPluginRegistry = __webpack_require__(71);
 var ReactBrowserEventEmitter = __webpack_require__(72);
 var ReactDOMComponentFlags = __webpack_require__(267);
@@ -71597,7 +71706,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var EventPluginHub = __webpack_require__(54);
+var EventPluginHub = __webpack_require__(55);
 
 function runEventQueueInBatch(events) {
   EventPluginHub.enqueueEvents(events);
@@ -71835,7 +71944,7 @@ module.exports = ReactHostOperationHistoryHook;
 
 
 var DOMProperty = __webpack_require__(23);
-var EventPluginHub = __webpack_require__(54);
+var EventPluginHub = __webpack_require__(55);
 var EventPluginUtils = __webpack_require__(96);
 var ReactComponentEnvironment = __webpack_require__(99);
 var ReactEmptyComponent = __webpack_require__(269);
@@ -71974,7 +72083,7 @@ module.exports = ReactMarkupChecksum;
 var _prodInvariant = __webpack_require__(5);
 
 var ReactComponentEnvironment = __webpack_require__(99);
-var ReactInstanceMap = __webpack_require__(56);
+var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
 
 var ReactCurrentOwner = __webpack_require__(18);
@@ -73403,7 +73512,7 @@ module.exports = SVGDOMPropertyConfig;
 
 
 
-var EventPropagators = __webpack_require__(55);
+var EventPropagators = __webpack_require__(56);
 var ExecutionEnvironment = __webpack_require__(9);
 var ReactDOMComponentTree = __webpack_require__(8);
 var ReactInputSelection = __webpack_require__(272);
@@ -73603,7 +73712,7 @@ module.exports = SelectEventPlugin;
 var _prodInvariant = __webpack_require__(5);
 
 var EventListener = __webpack_require__(139);
-var EventPropagators = __webpack_require__(55);
+var EventPropagators = __webpack_require__(56);
 var ReactDOMComponentTree = __webpack_require__(8);
 var SyntheticAnimationEvent = __webpack_require__(510);
 var SyntheticClipboardEvent = __webpack_require__(511);
@@ -73614,7 +73723,7 @@ var SyntheticMouseEvent = __webpack_require__(73);
 var SyntheticDragEvent = __webpack_require__(513);
 var SyntheticTouchEvent = __webpack_require__(517);
 var SyntheticTransitionEvent = __webpack_require__(518);
-var SyntheticUIEvent = __webpack_require__(57);
+var SyntheticUIEvent = __webpack_require__(58);
 var SyntheticWheelEvent = __webpack_require__(519);
 
 var emptyFunction = __webpack_require__(14);
@@ -74002,7 +74111,7 @@ module.exports = SyntheticDragEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(57);
+var SyntheticUIEvent = __webpack_require__(58);
 
 /**
  * @interface FocusEvent
@@ -74085,7 +74194,7 @@ module.exports = SyntheticInputEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(57);
+var SyntheticUIEvent = __webpack_require__(58);
 
 var getEventCharCode = __webpack_require__(103);
 var getEventKey = __webpack_require__(525);
@@ -74174,7 +74283,7 @@ module.exports = SyntheticKeyboardEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(57);
+var SyntheticUIEvent = __webpack_require__(58);
 
 var getEventModifierState = __webpack_require__(104);
 
@@ -74558,7 +74667,7 @@ var _prodInvariant = __webpack_require__(5);
 
 var ReactCurrentOwner = __webpack_require__(18);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactInstanceMap = __webpack_require__(56);
+var ReactInstanceMap = __webpack_require__(57);
 
 var getHostComponentFromComposite = __webpack_require__(279);
 var invariant = __webpack_require__(2);
@@ -75137,7 +75246,7 @@ var IndexLink = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Redirect__ = __webpack_require__(287);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(59);
 
 
 
@@ -75196,7 +75305,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__RouteUtils__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__InternalPropTypes__ = __webpack_require__(59);
 
 
 
@@ -75253,7 +75362,7 @@ var IndexRoute = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RouteUtils__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(59);
 
 
 
@@ -75310,7 +75419,7 @@ var Route = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createTransitionManager__ = __webpack_require__(291);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InternalPropTypes__ = __webpack_require__(59);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RouterContext__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__RouteUtils__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RouterUtils__ = __webpack_require__(288);
@@ -76906,7 +77015,7 @@ var ReactElement = __webpack_require__(30);
 var ReactPropTypeLocationNames = __webpack_require__(115);
 var ReactNoopUpdateQueue = __webpack_require__(114);
 
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(52);
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
 
@@ -78242,7 +78351,7 @@ var _assign = __webpack_require__(6);
 var ReactComponent = __webpack_require__(113);
 var ReactNoopUpdateQueue = __webpack_require__(114);
 
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(52);
 
 /**
  * Base class helpers for the updating state of a component.
@@ -81683,4 +81792,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.d871eb84b2f3737e361d.js.map
+//# sourceMappingURL=main.8ca5e295256b00fa19fd.js.map

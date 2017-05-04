@@ -10,7 +10,8 @@ module.exports = (id) => {
 
     return new Promise((resolve, reject) => {
 
-        GridFS.gfs.findOne({ _id: ObjectId(id) }, (err, file) => {
+        //GridFS.gfs.findOne({ _id: ObjectId(id) }, (err, file) => {
+        GridFS.gfs.exist({ _id: ObjectId(id) }, (err, file) => {
 
             if (err || !file) {
 
@@ -18,7 +19,22 @@ module.exports = (id) => {
 
             } else {
 
-                resolve(file);
+                GridFS.gfs.files.findOne({ _id: ObjectId(id) }, (err, f) => {
+
+                  console.log('[Exists] File found...?');
+
+                  if (err || !f) {
+
+                    reject(err);
+
+                  } else {
+
+                    console.log('-i- Found File -i-', f._id);
+                    resolve(f);
+
+                  }
+
+                });
 
             }
 

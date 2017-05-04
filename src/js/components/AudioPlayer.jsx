@@ -72,6 +72,7 @@ export default class AudioPlayer extends Component {
     this.wavesurfer = {};
     this.barsSaved = false;
     this.waveSaved = false;
+    this.savingVisualisation = false;
 
     setTimeout(() => { this.checkWaveform(); }, 100);
 
@@ -139,38 +140,40 @@ export default class AudioPlayer extends Component {
 
   checkWaveform(waveformReady = false) {
 
-    const {song, playMode} = this.state;
+    const {song, playMode, videoMode} = this.state;
     let {drawFromImage} = this.state;
 
-    if (typeof (song.waveform) !== `undefined`) {
+    if (typeof (song.waveform) !== `undefined` && !videoMode) {
 
       const prevDrawFromImage = drawFromImage;
 
       this.barsSaved = song.waveform.barsSaved;
-      this.waveSaved = song.waveform.barsSaved;
+      this.waveSaved = song.waveform.waveSaved;
 
-      console.log(`[AudioPlayer] barsSaved:`, this.barsSaved, `| waveSaved:`, this.waveSaved);
+      console.log(`[AudioPlayer] barsSaved:`, this.barsSaved, `| waveSaved:`, this.waveSaved, `| savingVisualisation:`, this.savingVisualisation);
 
-      if (!this.songHasStarted && playMode === `normal` && this.barsSaved) {
+      if (!waveformReady && playMode === `normal` && this.barsSaved) {
         console.log(`[AudioPlayer] Drawing audiobars overlay...`);
         drawFromImage = true;
+      } else if (waveformReady && playMode === `normal` && !this.barsSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
+        console.log(`[AudioPlayer] Saving audiobars images...`);
+        this.saveAudioVisualisation(`bars`);
+        drawFromImage = false;
       } else if (waveformReady && playMode === `normal` && this.barsSaved) {
         console.log(`[AudioPlayer] Removing audiobars overlay...`);
         drawFromImage = false;
-      } else if (waveformReady && playMode === `normal` && !this.barsSaved && window.innerWidth >= 1200) {
-        console.log(`[AudioPlayer] Saving audiobars images...`);
-        this.saveAudioBars();
       }
 
-      if (!this.songHasStarted && playMode === `fullscreen` && this.waveSaved) {
+      if (!waveformReady && playMode === `fullscreen` && this.waveSaved) {
         console.log(`[AudioPlayer] Drawing audiowave overlay...`);
         drawFromImage = true;
+      } else if (waveformReady && playMode === `fullscreen` && !this.waveSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
+        console.log(`[AudioPlayer] Saving audiowave images...`);
+        this.saveAudioVisualisation(`wave`);
+        drawFromImage = false;
       } else if (waveformReady && playMode === `fullscreen` && this.waveSaved) {
         console.log(`[AudioPlayer] Removing audiowave overlay...`);
         drawFromImage = false;
-      } else if (waveformReady && playMode === `fullscreen` && !this.waveSaved && window.innerWidth >= 1200) {
-        console.log(`[AudioPlayer] Saving audiowave images...`);
-        this.saveAudioWaves();
       }
 
       if (drawFromImage !== prevDrawFromImage) this.setState({drawFromImage});
@@ -179,35 +182,37 @@ export default class AudioPlayer extends Component {
 
   }
 
-  saveAudioBars() {
+  saveAudioVisualisation(type) {
 
-    const {song} = this.state;
+    if (!this.savingVisualisation) {
 
-    const audiobars = document.querySelectorAll(`wave canvas`);
-    const barsProgressData = audiobars[0].toDataURL(`image/png`);
-    const barsImageData = audiobars[1].toDataURL(`image/png`);
+      const {song} = this.state;
 
-    songs.saveAudioVisualisation(song.general.id, barsProgressData, barsImageData, `bars`).then(() => {
-      song.waveform.barsSaved = true;
-      this.barsSaved = true;
-      this.setState({song});
-    });
+      this.savingVisualisation = true;
 
-  }
+      const audiovisuals = document.querySelectorAll(`wave canvas`);
+      const visualProgressData = audiovisuals[0].toDataURL(`image/png`);
+      const visualImageData = audiovisuals[1].toDataURL(`image/png`);
 
-  saveAudioWaves() {
+      songs.saveAudioVisualisation(song.general.id, visualProgressData, visualImageData, type).then(updatedSong => {
 
-    const {song} = this.state;
+        this.savingVisualisation = false;
 
-    const audiowaves = document.querySelectorAll(`wave canvas`);
-    const waveProgressData = audiowaves[0].toDataURL(`image/png`);
-    const waveImageData = audiowaves[1].toDataURL(`image/png`);
+        song.waveform = updatedSong.waveform;
 
-    songs.saveAudioVisualisation(song.general.id, waveProgressData, waveImageData, `wave`).then(() => {
-      song.waveform.waveSaved = true;
-      this.waveSaved = true;
-      this.setState({song});
-    });
+        this.barsSaved = song.waveform.barsSaved;
+        this.waveSaved = song.waveform.waveSaved;
+
+        this.setState({song});
+
+      }, failData => {
+
+        console.log(`[AudioPlayer] -!- Error while saving audio visualisation -!-`, failData);
+        this.savingVisualisation = false;
+
+      });
+
+    }
 
   }
 
@@ -292,9 +297,7 @@ export default class AudioPlayer extends Component {
 
     isSynched = UserStore.getSynched();
 
-    if (isSynched) {
-      this.synchPosToSpeakerAndPlay();
-    }
+    if (isSynched) this.synchPosToSpeakerAndPlay();
 
     this.setState({isSynched});
 
@@ -312,6 +315,7 @@ export default class AudioPlayer extends Component {
       let {song} = this.state;
       song = PlaylistStore.getSong(UserStore.getSynched());
       this.setState({song});
+      this.checkWaveform();
     }, 1);
 
     if (this.resetPlayingOnModeChanged) {
@@ -370,9 +374,7 @@ export default class AudioPlayer extends Component {
     if (this.audioContextSupported && !this.audioCtx) {
 
       const constructor = window.AudioContext || window.webkitAudioContext || AudioContext() || false;
-      if (constructor) {
-        this.audioCtx = new constructor();
-      }
+      if (constructor) this.audioCtx = new constructor();
 
       if (!constructor) {
         this.audioContextSupported = false;
@@ -464,23 +466,15 @@ export default class AudioPlayer extends Component {
     const currentSeconds = Math.round(pos % 60);
 
     currentTimeString = `0${currentMinutes}:${currentSeconds}`;
-    if (currentSeconds < 10) {
-      currentTimeString = `0${currentMinutes}:0${currentSeconds}`;
-    }
+    if (currentSeconds < 10) currentTimeString = `0${currentMinutes}:0${currentSeconds}`;
 
     let sendSocketEvent = false;
-    if (isSpeaker && currentTimeString !== this.prevTimeString) {
-      sendSocketEvent = true;
-    }
+    if (isSpeaker && currentTimeString !== this.prevTimeString) sendSocketEvent = true;
 
-    if (playing) {
-      this.speakerPosWorker.postMessage({pos: pos, sendSocketEvent: sendSocketEvent});
-    }
+    if (playing) this.speakerPosWorker.postMessage({pos: pos, sendSocketEvent: sendSocketEvent});
 
     let showAnimation = true;
-    if (this.isSpeaker && !this.isActive) {
-      showAnimation = false;
-    }
+    if (this.isSpeaker && !this.isActive) showAnimation = false;
 
     if (this.skipFrames > 0) {
       showAnimation = false;
@@ -539,28 +533,50 @@ export default class AudioPlayer extends Component {
 
     if (this.songHasStarted) {
 
-      const {isSynched, isSpeaker} = this.state;
       let {song, pos, currentTimeString} = this.state;
 
-      console.log(`-!- SONG ENDED -!-`, song.general.id, song.general.title);
+      const curMinutes = Math.floor(pos / 60);
+      const curSeconds = Math.round(pos % 60);
+      const curSecondsTotal = (curMinutes * 60) + curSeconds;
+      console.log(`[AudioPlayer] curMin:`, curMinutes, `| curSec:`, curSeconds, `| curTot:`, curSecondsTotal);
 
-      this.prevSongId = song.general.id;
+      const durMinutes = Number(song.general.duration.slice(1, 2));
+      const durSeconds = Number(song.general.duration.slice(3, 5));
+      const durSecondsTotal = (durMinutes * 60) + durSeconds;
+      console.log(`[AudioPlayer] durMin:`, durMinutes, `| durSec:`, durSeconds, `| durTot:`, durSecondsTotal);
 
-      if (isSpeaker) {
-        song.socketId = SocketStore.getSocketId();
-        PlaylistActions.endSongAndPlayNext(song);
-      } else if (!isSynched) {
-        setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
+      let prematureSongEnd = false;
+      if (durSecondsTotal - curSecondsTotal >= 2) prematureSongEnd = true;
+
+      if (!prematureSongEnd) {
+
+        const {isSynched, isSpeaker} = this.state;
+
+        console.log(`-i- SONG ENDED -i-`, song.general.id, song.general.title);
+
+        this.prevSongId = song.general.id;
+
+        if (isSpeaker) {
+          song.socketId = SocketStore.getSocketId();
+          PlaylistActions.endSongAndPlayNext(song);
+        } else if (!isSynched) {
+          setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
+        }
+
+        this.prevTimeString = `00:00`;
+        currentTimeString = `00:00`;
+        song = {general: ``};
+        pos = 0;
+        this.songHasStarted = false;
+        this.audioContextSet = false;
+
+        this.setState({song, pos, currentTimeString});
+
+      } else {
+
+        console.log(`[AudioPlayer] -!- Song ended prematurely -!-`);
+
       }
-
-      this.prevTimeString = `00:00`;
-      currentTimeString = `00:00`;
-      song = {general: ``};
-      pos = 0;
-      this.songHasStarted = false;
-      this.audioContextSet = false;
-
-      this.setState({song, pos, currentTimeString});
 
     }
 
@@ -638,9 +654,7 @@ export default class AudioPlayer extends Component {
 
     playing = playOrNot;
 
-    if (playing && !this.songHasStarted) {
-      this.songHasStarted = true;
-    }
+    if (playing && !this.songHasStarted) this.songHasStarted = true;
 
     this.setState({playing});
 
@@ -652,14 +666,12 @@ export default class AudioPlayer extends Component {
 
     if (!isSpeaker) {
 
-      if (isSynched) {
-        this.toggleSynched();
-      }
+      if (isSynched) this.toggleSynched();
 
       const aboutToPlay = !playing;
 
-      if (videoMode && aboutToPlay) { PlaylistActions.startPlay(); }
-      if (videoMode && !aboutToPlay) { PlaylistActions.pausePlay(); }
+      if (videoMode && aboutToPlay) PlaylistActions.startPlay();
+      if (videoMode && !aboutToPlay) PlaylistActions.pausePlay();
 
       this.setPlaying(aboutToPlay);
 
@@ -673,9 +685,7 @@ export default class AudioPlayer extends Component {
 
     if (!isSpeaker) {
 
-      if (isSynched) {
-        this.toggleSynched();
-      }
+      if (isSynched) this.toggleSynched();
 
       this.setPlaying(false);
 
@@ -684,7 +694,7 @@ export default class AudioPlayer extends Component {
       this.setState({currentTimeString});
 
       //PlaylistActions.setVideoMode(!videoMode);
-      if (!videoMode) { setTimeout(() => PlaylistActions.setSong(song), 1); }
+      if (!videoMode) setTimeout(() => PlaylistActions.setSong(song), 1);
       setTimeout(() => PlaylistActions.setVideoMode(!videoMode), 10);
 
     }
@@ -714,9 +724,9 @@ export default class AudioPlayer extends Component {
     let medFrequencyScale = medFrequency / 140;if (medFrequencyScale > 1.6) { medFrequencyScale = 1.3; }
     //let minFrequencyScale = minFrequency / 8;if (minFrequencyScale > 1.5) { minFrequencyScale = 1.3; }
 
-    if (maxFrequency > 250) { maxFrequencyScale = medFrequency / 150; }
-    if (maxFrequencyScale < 0.6) { maxFrequencyScale = 1; }
-    if (maxFrequencyScale > 1.4) { maxFrequencyScale = 1.3; }
+    if (maxFrequency > 250) maxFrequencyScale = medFrequency / 150;
+    if (maxFrequencyScale < 0.6) maxFrequencyScale = 1;
+    if (maxFrequencyScale > 1.4) maxFrequencyScale = 1.3;
 
     const largeCircleScale = 0.7 + (0.3 * maxFrequencyScale);
     //const mediumCircleScale = 0.9 + (0.1 * minFrequencyScale);
@@ -773,9 +783,7 @@ export default class AudioPlayer extends Component {
           barScale -= scaleStep; // downscale bars until reaching the center of the screen
         } else if (i >= maxBars / 2) {
           barScale += scaleStep; // upscale bars again past the center of the screen
-          if (playMode === `fullscreen`) {
-            index = maxBars - i; // mirror the bars at the center of the screen
-          }
+          if (playMode === `fullscreen`) index = maxBars - i; // mirror the bars at the center of the screen
         }
 
         let minFrequency = Math.min.apply(Math, frequencies); // used for bar scaling
@@ -814,9 +822,7 @@ export default class AudioPlayer extends Component {
     const {song, playing, pos, playMode, videoMode} = this.state;
 
     let waveOptions = this.waveOptionsNormal;
-    if (playMode === `fullscreen`) {
-      waveOptions = this.waveOptionsFullscreen;
-    }
+    if (playMode === `fullscreen`) waveOptions = this.waveOptionsFullscreen;
 
     if (song.general !== `` && !videoMode) { // render waveform progress bar
 
@@ -859,9 +865,7 @@ export default class AudioPlayer extends Component {
     if (playMode === `normal`) {
 
       let toggleVideoClasses = `btn-video-mode off`;
-      if (videoMode) {
-        toggleVideoClasses = `btn-video-mode on`;
-      }
+      if (videoMode) toggleVideoClasses = `btn-video-mode on`;
 
       return (
         <div className={toggleVideoClasses} onClick={() => this.toggleVideoMode()}><span>&nbsp;</span></div>
@@ -880,9 +884,7 @@ export default class AudioPlayer extends Component {
       const canvasWidth = 15;
       const canvasHeight = 15;
 
-      if (!playing) {
-        setTimeout(() => { this.updateAudioVisualisation(); }, 10);
-      }
+      if (!playing) setTimeout(() => { this.updateAudioVisualisation(); }, 10);
 
       return (
         <div className='visualisation' onClick={() => this.setPlayMode(`fullscreen`)}>
@@ -916,9 +918,7 @@ export default class AudioPlayer extends Component {
 
       const voteMode = UserStore.getVoteMode();
 
-      if (song.uservote === undefined) {
-        song.uservote = {hasVoted: false};
-      }
+      if (song.uservote === undefined) song.uservote = {hasVoted: false};
 
       const order = 1;
       const key = `fsPreview`;
@@ -964,27 +964,50 @@ export default class AudioPlayer extends Component {
 
   }
 
+  renderLoadingOverlay() {
+
+    const {song, drawFromImage, playMode} = this.state;
+
+    if (drawFromImage) {
+
+      let imgPath = `/stream/audio/visuals/${song.waveform.barsImage}`;
+      let prgPath = `/stream/audio/visuals/${song.waveform.barsProgress}`;
+      if (playMode === `fullscreen`) {
+        imgPath = `/stream/audio/visuals/${song.waveform.waveImage}`;
+        prgPath = `/stream/audio/visuals/${song.waveform.waveProgress}`;
+      }
+      const imageStyle = {backgroundImage: `url(${  imgPath  })`};
+      const progressStyle = {backgroundImage: `url(${  prgPath  })`};
+
+      return (
+        <div className='loading-overlay'>
+          <div className='progress-wrapper'>
+            <div className='progress-visualisation' style={progressStyle}>&nbsp;</div>
+          </div>
+          <div className='song-visualisation' style={imageStyle}>&nbsp;</div>
+        </div>
+      );
+
+    }
+
+  }
+
   render() {
 
     const {song, playing, currentTimeString, isSynched, playMode} = this.state;
 
     let toggleSynchClasses = `btn-toggle-synch unsynched`;
-    if (isSynched) {
-      toggleSynchClasses = `btn-toggle-synch synched`;
-    }
+    if (isSynched) toggleSynchClasses = `btn-toggle-synch synched`;
 
     let togglePlayClasses = `btn-toggle-play play`;
-    if (playing) {
-      togglePlayClasses = `btn-toggle-play pause`;
-    }
+    if (playing) togglePlayClasses = `btn-toggle-play pause`;
 
     let audioPlayerClasses = `audio-player-wrapper play-mode-normal`;
-    if (playMode === `fullscreen`) {
-      audioPlayerClasses = `audio-player-wrapper play-mode-fullscreen`;
-    }
+    if (playMode === `fullscreen`) audioPlayerClasses = `audio-player-wrapper play-mode-fullscreen`;
 
     return (
       <article className={audioPlayerClasses}>
+        {this.renderLoadingOverlay()}
         <div className={toggleSynchClasses} onClick={() => this.toggleSynched()}><span>&nbsp;</span></div>
         <div className={togglePlayClasses} onClick={() => this.togglePlay()}><span>&nbsp;</span></div>
         <div className='current-time'><span>{currentTimeString}</span></div>

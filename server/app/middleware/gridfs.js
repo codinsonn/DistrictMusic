@@ -1,7 +1,8 @@
 // Packages
 require("rootpath")();
 var mongoose = require("mongoose");
-var Grid = require("gridfs-stream");
+//var Grid = require("gridfs-stream");
+var Grid = require("gridfs-locking-stream");
 
 module.exports = {
     gfs: null,

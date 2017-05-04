@@ -52,7 +52,7 @@ app.use(morgan('dev'));
 app.use(errorHandler({dumpExceptions: true, showStack: true}));
 app.use(session);
 app.use(bodyParser.urlencoded({'extended':'true'}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '16mb'}));
 app.use(bodyParser.json({type:'application/vnd.api+json'}));
 app.use(passport.initialize());
 app.use(passport.session());

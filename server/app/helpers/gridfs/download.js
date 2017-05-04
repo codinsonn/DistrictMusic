@@ -55,8 +55,11 @@ module.exports = (req, res, id) => {
                 res.setHeader('Content-Length', len);
                 if (req.method === 'HEAD') return res.end();
 
-                stream = GridFS.gfs.createReadStream({
-                  _id: ObjectId(id)
+                //stream = GridFS.gfs.createReadStream({ _id: ObjectId(id) });
+                GridFS.gfs.createReadStream({ _id: ObjectId(id) }, (err, readStream) => {
+                  stream = readStream;
+                  stream.pipe(res);
+                  return stream;
                 });
 
               }
@@ -67,8 +70,11 @@ module.exports = (req, res, id) => {
 
               if (req.method === 'HEAD') return res.end();
 
-              stream = GridFS.gfs.createReadStream({
-                _id: ObjectId(id)
+              //stream = GridFS.gfs.createReadStream({ _id: ObjectId(id) });
+              GridFS.gfs.createReadStream({ _id: ObjectId(id) }, (err, readStream) => {
+                stream = readStream;
+                stream.pipe(res);
+                return stream;
               });
 
             }
@@ -77,10 +83,6 @@ module.exports = (req, res, id) => {
               console.log('-/- [Download] Stream ended and destroyed -/-');
               //if(stream) stream.destroy();
             });
-
-            stream.pipe(res);
-
-            return stream;
 
         }, onError = () => {
 
