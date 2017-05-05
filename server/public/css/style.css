@@ -572,10 +572,10 @@ body {
 .play-mode-fullscreen .district-music-logo {
   position: fixed;
   display: block;
-  width: 160px;
-  height: 160px;
-  top: calc(50vh - 190px);
-  left: calc(50vw - 80px);
+  width: 22.85vh; /*160px;*/
+  height: 22.85vh; /*160px;*/
+  bottom: 55vh; /*top: calc(50vh - 190px);*/
+  left: calc(50vw - 11.42vh); /*calc(50vw - 80px);*/
   background-image: url(/assets/img/districtMusicLogoFS.png);
   background-repeat: no-repeat;
   background-position: center;
@@ -595,50 +595,50 @@ body {
 
 .audiodisc-large-left,
 .audiodisc-large-right {
-  width: 30px;
-  height: 30px;
-  top: calc(50% + 26px);
+  width: 18.75%; /*30px;*/
+  height: 18.75%; /*30px;*/
+  top: 66.25%; /*calc(50% + 26px);*/
   background-color: white;
 }
 
 .audiodisc-large-left {
-  left: calc(50% - 70px);
+  left: 6.25%; /*calc(50% - 70px);*/
 }
 
 .audiodisc-large-right {
-  right: calc(50% - 70px);
+  right: 6.25%; /*calc(50% - 70px);*/
 }
 
 .audiodisc-medium-left,
 .audiodisc-medium-right {
-  width: 14px;
-  height: 14px;
-  top: calc(50% + 34px);
+  width: 8.75%; /*14px;*/
+  height: 8.75%; /*14px;*/
+  top: 71.25%; /*calc(50% + 34px);*/
   background-color: #1a1a1a;
 }
 
 .audiodisc-medium-left {
-  left: calc(50% - 62px);
+  left: 11.25%; /*calc(50% - 62px);*/
 }
 
 .audiodisc-medium-right {
-  right: calc(50% - 62px);
+  right: 11.25%; /*calc(50% - 62px);*/
 }
 
 .audiodisc-small-left,
 .audiodisc-small-right {
-  width: 14px;
-  height: 14px;
-  top: calc(50% + 8px);
+  width: 8.75%; /*14px;*/
+  height: 8.75%; /*14px;*/
+  top: 53.75%; /*calc(50% + 8px);*/
   background-color: white;
 }
 
 .audiodisc-small-left {
-  left: calc(50% - 65px);
+  left: 9.37%; /*calc(50% - 65px);*/
 }
 
 .audiodisc-small-right {
-  right: calc(50% - 65px);
+  right: 9.37%; /*calc(50% - 65px);*/
 }
 
 .play-mode-fullscreen .pos-wrapper,
