@@ -37,6 +37,7 @@ export default class SongSummary extends Component {
 
     // -- Non State Vars ----
     this.fsPreview = props.fsPreview;
+    this.isSafari = false;
 
     // -- Events ----
     this.evtCheckIndicatePlaying = () => this.checkIndicatePlaying();
@@ -96,6 +97,8 @@ export default class SongSummary extends Component {
     } else if (strMomentFromNow.indexOf(`minutes`) > - 1) {
       intervalTime = 60 * 1000; // once a minute
     }
+
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
     setInterval(() => this.updateTimeFromThen(), intervalTime);
 
@@ -199,7 +202,8 @@ export default class SongSummary extends Component {
       UserActions.setSynched(false);
 
       setTimeout(() => PlaylistActions.setSong(song), 10);
-      setTimeout(() => PlaylistActions.startPlay(), 500);
+      if (!this.isSafari) setTimeout(() => PlaylistActions.startPlay(), 500);
+      if (this.isSafari) setTimeout(() => PlaylistActions.setVideoMode(true), 10);
 
     } else {
       NotifActions.addError(`Cannot change song as speaker`);

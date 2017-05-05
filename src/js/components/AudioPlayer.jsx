@@ -74,7 +74,6 @@ export default class AudioPlayer extends Component {
     this.waveSaved = false;
     this.savingVisualisation = false;
     this.isSafari = false;
-    //this.isSafari = navigator.userAgent.toLowerCase().indexOf(`safari/`) > - 1;
 
     setTimeout(() => { this.checkWaveform(); }, 100);
 
