@@ -559,7 +559,7 @@ export default class AudioPlayer extends Component {
       console.log(`[AudioPlayer] durMin:`, durMinutes, `| durSec:`, durSeconds, `| durTot:`, durSecondsTotal);
 
       let prematureSongEnd = false;
-      if (durSecondsTotal - curSecondsTotal >= 2) prematureSongEnd = true;
+      if (durSecondsTotal - curSecondsTotal >= 10) prematureSongEnd = true;
 
       if (!prematureSongEnd) {
 
@@ -572,7 +572,6 @@ export default class AudioPlayer extends Component {
         if (isSpeaker) {
           song.socketId = SocketStore.getSocketId(); // user socketId
           PlaylistActions.endSongAndPlayNext(song);
-          this.endSongAndPlayNext;
         } else if (!isSynched) {
           //setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 1);
           PlaylistActions.startNextSongUnsynched(this.prevSongId);
