@@ -30,6 +30,7 @@ module.exports = (req, res, id) => {
               console.log('[Download] Requested range');
 
               var ranges = parseRange(len, req.headers.range, { combine: true });
+              console.log('[Download] Ranges:', ranges, '| Length:', len);
 
               if (ranges === -1) {
 
@@ -55,8 +56,16 @@ module.exports = (req, res, id) => {
                 res.setHeader('Content-Length', len);
                 if (req.method === 'HEAD') return res.end();
 
+                console.log('[Download] startRange:', ranges[0].start, '| endRange', ranges[0].end);
+
                 //stream = GridFS.gfs.createReadStream({ _id: ObjectId(id) });
-                GridFS.gfs.createReadStream({ _id: ObjectId(id) }, (err, readStream) => {
+                GridFS.gfs.createReadStream({
+                  _id: ObjectId(id)/*,
+                  range: {
+                    startPos: ranges[0].start + 1,
+                    endPos: ranges[0].end
+                  }*/
+                }, (err, readStream) => {
                   stream = readStream;
                   stream.pipe(res);
                   return stream;

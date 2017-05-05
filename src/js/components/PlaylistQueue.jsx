@@ -110,7 +110,6 @@ export default class PlaylistQueue extends Component {
       <article className='playlist-queue'>
         <section className='playlist-header'>
           <h2 className='active'>In Queue</h2>
-          <h2>Alltime best</h2>
         </section>
         <section className='current-queue'>
           {this.renderCurrentQueue(currentQueue)}
@@ -121,3 +120,5 @@ export default class PlaylistQueue extends Component {
   }
 
 }
+
+// <h2>Alltime best</h2>

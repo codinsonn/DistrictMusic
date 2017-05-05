@@ -457,6 +457,15 @@ body {
   background-image: url(../assets/svg/fullScreen.svg);
 }
 
+.play-mode-normal.is-safari .visualisation {
+  background-image: url(../assets/svg/fullScreenDisabled.svg);
+  cursor: not-allowed;
+}
+
+.is-safari .audio-visualisation {
+  cursor: not-allowed;
+}
+
 /* --- Audio Player : Fullscreen --------------------------------------------------------- */
 
 .audio-player-wrapper.play-mode-fullscreen {

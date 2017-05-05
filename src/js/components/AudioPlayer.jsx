@@ -73,6 +73,8 @@ export default class AudioPlayer extends Component {
     this.barsSaved = false;
     this.waveSaved = false;
     this.savingVisualisation = false;
+    this.isSafari = false;
+    //this.isSafari = navigator.userAgent.toLowerCase().indexOf(`safari/`) > - 1;
 
     setTimeout(() => { this.checkWaveform(); }, 100);
 
@@ -138,12 +140,16 @@ export default class AudioPlayer extends Component {
     PlaylistStore.removeListener(`QUEUE_CHANGED`, this.evtUpdateUservote);
   }
 
+  componentDidMount() {
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  }
+
   checkWaveform(waveformReady = false) {
 
     const {song, playMode, videoMode} = this.state;
     let {drawFromImage} = this.state;
 
-    if (typeof (song.waveform) !== `undefined` && !videoMode) {
+    if (typeof (song.waveform) !== `undefined` && !videoMode && !this.isSafari) {
 
       const prevDrawFromImage = drawFromImage;
 
@@ -184,9 +190,9 @@ export default class AudioPlayer extends Component {
 
   saveAudioVisualisation(type) {
 
-    if (!this.savingVisualisation) {
+    const {song} = this.state;
 
-      const {song} = this.state;
+    if (!this.savingVisualisation && typeof (song.waveform) !== `undefined`) {
 
       this.savingVisualisation = true;
 
@@ -198,12 +204,10 @@ export default class AudioPlayer extends Component {
 
         this.savingVisualisation = false;
 
-        song.waveform = updatedSong.waveform;
-
         this.barsSaved = song.waveform.barsSaved;
         this.waveSaved = song.waveform.waveSaved;
 
-        this.setState({song});
+        this.setState({song: updatedSong});
 
       }, failData => {
 
@@ -435,23 +439,31 @@ export default class AudioPlayer extends Component {
 
   setPlayMode(playMode) {
 
-    const {playing, pos, videoMode} = this.state;
+    if (!this.isSafari) {
 
-    this.changingPlayModes = true;
-    this.preChangedPlayModePos = pos;
+      const {playing, pos, videoMode} = this.state;
 
-    if (videoMode) {
-      this.setPlaying(false);
-      this.setState({currentTimeString: `00:00`});
-      PlaylistActions.setVideoMode(false);
+      this.changingPlayModes = true;
+      this.preChangedPlayModePos = pos;
+
+      if (videoMode) {
+        this.setPlaying(false);
+        this.setState({currentTimeString: `00:00`});
+        PlaylistActions.setVideoMode(false);
+      }
+
+      if (playing) {
+        this.setPlaying(false);
+        this.resetPlayingOnModeChanged = true;
+      }
+
+      PlaylistActions.setPlayMode(playMode);
+
+    } else {
+
+      NotifActions.addError(`Unavailable in this browser`);
+
     }
-
-    if (playing) {
-      this.setPlaying(false);
-      this.resetPlayingOnModeChanged = true;
-    }
-
-    PlaylistActions.setPlayMode(playMode);
 
   }
 
@@ -618,32 +630,40 @@ export default class AudioPlayer extends Component {
 
   toggleSynched() {
 
-    const {isSpeaker, isSynched, videoMode} = this.state;
-    let {song, pos, currentTimeString} = this.state;
+    if (!this.isSafari) {
 
-    if (!isSpeaker) {
+      const {isSpeaker, isSynched, videoMode} = this.state;
+      let {song, pos, currentTimeString} = this.state;
 
-      console.log(`[AudioPlayer:361] Attempting to synch... (toggleSynched)`);
-      UserActions.setSynched(!isSynched);
+      if (!isSpeaker) {
 
-      if (videoMode) {
-        this.setPlaying(false);
-        this.setState({currentTimeString: `00:00`});
-        PlaylistActions.setVideoMode(false);
+        console.log(`[AudioPlayer:361] Attempting to synch... (toggleSynched)`);
+        UserActions.setSynched(!isSynched);
+
+        if (videoMode) {
+          this.setPlaying(false);
+          this.setState({currentTimeString: `00:00`});
+          PlaylistActions.setVideoMode(false);
+        }
+
       }
 
-    }
+      if (
+        !isSynched &&
+        PlaylistStore.getSpeakerConnected() &&
+        song.general.id !== PlaylistStore.getSong(true).general.id
+      ) {
+        song = {general: ``};
+        pos = 0;
+        currentTimeString = `00:00`;
+        setTimeout(() => this.updateSong(true), 10);
+        this.setState({song, pos, currentTimeString});
+      }
 
-    if (
-      !isSynched &&
-      PlaylistStore.getSpeakerConnected() &&
-      song.general.id !== PlaylistStore.getSong(true).general.id
-    ) {
-      song = {general: ``};
-      pos = 0;
-      currentTimeString = `00:00`;
-      setTimeout(() => this.updateSong(true), 10);
-      this.setState({song, pos, currentTimeString});
+    } else {
+
+      NotifActions.addError(`Unavailable in this browser`);
+
     }
 
   }
@@ -670,8 +690,16 @@ export default class AudioPlayer extends Component {
 
       const aboutToPlay = !playing;
 
-      if (videoMode && aboutToPlay) PlaylistActions.startPlay();
-      if (videoMode && !aboutToPlay) PlaylistActions.pausePlay();
+      if (videoMode) {
+
+        if (aboutToPlay) PlaylistActions.startPlay();
+        if (!aboutToPlay) PlaylistActions.pausePlay();
+
+      } else if (this.isSafari) {
+
+        PlaylistActions.setVideoMode(true);
+
+      }
 
       this.setPlaying(aboutToPlay);
 
@@ -824,7 +852,7 @@ export default class AudioPlayer extends Component {
     let waveOptions = this.waveOptionsNormal;
     if (playMode === `fullscreen`) waveOptions = this.waveOptionsFullscreen;
 
-    if (song.general !== `` && !videoMode) { // render waveform progress bar
+    if (song.general !== `` && !videoMode && !this.isSafari) { // render waveform progress bar
 
       const audioFile = `stream/audio/${song.audio.filename}`;
 
@@ -841,7 +869,7 @@ export default class AudioPlayer extends Component {
         />
       );
 
-    } else if (videoMode) { // render normal progress bar
+    } else if (videoMode || this.isSafari) { // render normal progress bar
 
       return (
         <div className='video-pos-wrapper'
@@ -892,7 +920,7 @@ export default class AudioPlayer extends Component {
         </div>
       );
 
-    } else if (playMode === `fullscreen` && !videoMode) {
+    } else if (playMode === `fullscreen` && !videoMode && !this.isSafari) {
 
       const canvasWidth = window.innerWidth;
       const canvasHeight = MAX_BAR_HEIGHT;
@@ -939,7 +967,7 @@ export default class AudioPlayer extends Component {
 
     const {playMode, song, videoMode} = this.state;
 
-    if (playMode === `fullscreen` && !videoMode) {
+    if (playMode === `fullscreen` && !videoMode && !this.isSafari) {
 
       this.prevSongId = song.general.id;
 
@@ -968,7 +996,7 @@ export default class AudioPlayer extends Component {
 
     const {song, drawFromImage, playMode} = this.state;
 
-    if (drawFromImage) {
+    if (drawFromImage && !this.isSafari && song.general.id !== `` && typeof (song.waveform) !== `undefined`) {
 
       let imgPath = `/stream/audio/visuals/${song.waveform.barsImage}`;
       let prgPath = `/stream/audio/visuals/${song.waveform.barsProgress}`;
@@ -1004,6 +1032,7 @@ export default class AudioPlayer extends Component {
 
     let audioPlayerClasses = `audio-player-wrapper play-mode-normal`;
     if (playMode === `fullscreen`) audioPlayerClasses = `audio-player-wrapper play-mode-fullscreen`;
+    if (this.isSafari) audioPlayerClasses = `audio-player-wrapper play-mode-normal is-safari`;
 
     return (
       <article className={audioPlayerClasses}>
