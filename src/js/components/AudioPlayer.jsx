@@ -570,10 +570,12 @@ export default class AudioPlayer extends Component {
         this.prevSongId = song.general.id;
 
         if (isSpeaker) {
-          song.socketId = SocketStore.getSocketId();
+          song.socketId = SocketStore.getSocketId(); // user socketId
           PlaylistActions.endSongAndPlayNext(song);
+          this.endSongAndPlayNext;
         } else if (!isSynched) {
-          setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 100);
+          //setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 1);
+          PlaylistActions.startNextSongUnsynched(this.prevSongId);
         }
 
         this.prevTimeString = `00:00`;
