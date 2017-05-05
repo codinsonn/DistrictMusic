@@ -50599,7 +50599,6 @@ var AudioPlayer = function (_Component) {
     _this.waveSaved = false;
     _this.savingVisualisation = false;
     _this.isSafari = false;
-    //this.isSafari = navigator.userAgent.toLowerCase().indexOf(`safari/`) > - 1;
 
     setTimeout(function () {
       _this.checkWaveform();
@@ -51131,7 +51130,6 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.handleSongEnd = function handleSongEnd() {
-    var _this9 = this;
 
     if (this.songHasStarted) {
       var _state11 = this.state,
@@ -51151,7 +51149,7 @@ var AudioPlayer = function (_Component) {
       console.log('[AudioPlayer] durMin:', durMinutes, '| durSec:', durSeconds, '| durTot:', durSecondsTotal);
 
       var prematureSongEnd = false;
-      if (durSecondsTotal - curSecondsTotal >= 2) prematureSongEnd = true;
+      if (durSecondsTotal - curSecondsTotal >= 10) prematureSongEnd = true;
 
       if (!prematureSongEnd) {
         var _state12 = this.state,
@@ -51164,12 +51162,11 @@ var AudioPlayer = function (_Component) {
         this.prevSongId = song.general.id;
 
         if (isSpeaker) {
-          song.socketId = __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__["a" /* default */].getSocketId();
+          song.socketId = __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__["a" /* default */].getSocketId(); // user socketId
           __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["k" /* endSongAndPlayNext */](song);
         } else if (!isSynched) {
-          setTimeout(function () {
-            return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this9.prevSongId);
-          }, 100);
+          //setTimeout(() => PlaylistActions.startNextSongUnsynched(this.prevSongId), 1);
+          __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](this.prevSongId);
         }
 
         this.prevTimeString = '00:00';
@@ -51210,7 +51207,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.avoidAudioSeekError = function avoidAudioSeekError() {
-    var _this10 = this;
+    var _this9 = this;
 
     var playing = this.state.playing;
 
@@ -51218,14 +51215,14 @@ var AudioPlayer = function (_Component) {
     if (playing) {
       this.setPlaying(false);
       setTimeout(function () {
-        _this10.setPlaying(true);
+        _this9.setPlaying(true);
       }, 1);
       this.skipFrames = 60;
     }
   };
 
   AudioPlayer.prototype.toggleSynched = function toggleSynched() {
-    var _this11 = this;
+    var _this10 = this;
 
     if (!this.isSafari) {
       var _state13 = this.state,
@@ -51255,7 +51252,7 @@ var AudioPlayer = function (_Component) {
         pos = 0;
         currentTimeString = '00:00';
         setTimeout(function () {
-          return _this11.updateSong(true);
+          return _this10.updateSong(true);
         }, 10);
         this.setState({ song: song, pos: pos, currentTimeString: currentTimeString });
       }
@@ -51469,7 +51466,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
-    var _this12 = this;
+    var _this11 = this;
 
     var _state19 = this.state,
         song = _state19.song,
@@ -51491,16 +51488,16 @@ var AudioPlayer = function (_Component) {
         audioFile: audioFile,
         pos: pos,
         onReady: function onReady(args) {
-          return _this12.handleWavesurferReady(args);
+          return _this11.handleWavesurferReady(args);
         },
         onPosChange: function onPosChange(e) {
-          return _this12.handlePosChange(e);
+          return _this11.handlePosChange(e);
         },
         onSeek: function onSeek() {
-          return _this12.handleSeek();
+          return _this11.handleSeek();
         },
         onFinish: function onFinish() {
-          return _this12.handleSongEnd();
+          return _this11.handleSongEnd();
         },
         playing: playing,
         options: waveOptions,
@@ -51516,13 +51513,13 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'video-pos-wrapper',
           onMouseDown: function onMouseDown() {
-            _this12.mouseDown = true;
+            _this11.mouseDown = true;
           },
           onMouseMove: function onMouseMove(evt) {
-            return _this12.handleScrub(evt);
+            return _this11.handleScrub(evt);
           },
           onMouseUp: function onMouseUp(evt) {
-            return _this12.handleVideoSeek(evt);
+            return _this11.handleVideoSeek(evt);
           },
           __source: {
             fileName: _jsxFileName,
@@ -51552,7 +51549,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderVideoModeButton = function renderVideoModeButton() {
-    var _this13 = this;
+    var _this12 = this;
 
     var _state20 = this.state,
         playMode = _state20.playMode,
@@ -51567,7 +51564,7 @@ var AudioPlayer = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleVideoClasses, onClick: function onClick() {
-            return _this13.toggleVideoMode();
+            return _this12.toggleVideoMode();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 901
@@ -51588,7 +51585,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderAudioVisualisation = function renderAudioVisualisation() {
-    var _this14 = this;
+    var _this13 = this;
 
     var _state21 = this.state,
         playMode = _state21.playMode,
@@ -51602,13 +51599,13 @@ var AudioPlayer = function (_Component) {
       var canvasHeight = 15;
 
       if (!playing) setTimeout(function () {
-        _this14.updateAudioVisualisation();
+        _this13.updateAudioVisualisation();
       }, 10);
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'visualisation', onClick: function onClick() {
-            return _this14.setPlayMode('fullscreen');
+            return _this13.setPlayMode('fullscreen');
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 920
@@ -51692,7 +51689,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.renderFullscreenExtras = function renderFullscreenExtras() {
-    var _this15 = this;
+    var _this14 = this;
 
     var _state22 = this.state,
         playMode = _state22.playMode,
@@ -51777,7 +51774,7 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-prev', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this15.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this14.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 986
@@ -51797,7 +51794,7 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return _this15.setPlayMode('normal');
+              return _this14.setPlayMode('normal');
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 987
@@ -51817,7 +51814,7 @@ var AudioPlayer = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this15.prevSongId);
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this14.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 988
@@ -51895,7 +51892,7 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.render = function render() {
-    var _this16 = this;
+    var _this15 = this;
 
     var _state24 = this.state,
         song = _state24.song,
@@ -51926,7 +51923,7 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: toggleSynchClasses, onClick: function onClick() {
-            return _this16.toggleSynched();
+            return _this15.toggleSynched();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 1042
@@ -51946,7 +51943,7 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: togglePlayClasses, onClick: function onClick() {
-            return _this16.togglePlay();
+            return _this15.togglePlay();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 1043
@@ -51984,7 +51981,7 @@ var AudioPlayer = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'pos-wrapper', onClick: function onClick() {
-            return _this16.avoidAudioSeekError();
+            return _this15.avoidAudioSeekError();
           }, __source: {
             fileName: _jsxFileName,
             lineNumber: 1045
@@ -53603,6 +53600,7 @@ var SongSummary = function (_Component) {
 
     // -- Non State Vars ----
     _this.fsPreview = props.fsPreview;
+    _this.isSafari = false;
 
     // -- Events ----
     _this.evtCheckIndicatePlaying = function () {
@@ -53683,6 +53681,8 @@ var SongSummary = function (_Component) {
     } else if (strMomentFromNow.indexOf('minutes') > -1) {
       intervalTime = 60 * 1000; // once a minute
     }
+
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
     setInterval(function () {
       return _this2.updateTimeFromThen();
@@ -53785,9 +53785,12 @@ var SongSummary = function (_Component) {
         setTimeout(function () {
           return __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["i" /* setSong */](song);
         }, 10);
-        setTimeout(function () {
+        if (!_this4.isSafari) setTimeout(function () {
           return __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["d" /* startPlay */]();
         }, 500);
+        if (_this4.isSafari) setTimeout(function () {
+          return __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__["c" /* setVideoMode */](true);
+        }, 10);
       })();
     } else {
       __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Cannot change song as speaker');
@@ -53826,14 +53829,14 @@ var SongSummary = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 233
+            lineNumber: 237
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'play-video-button', __source: {
               fileName: _jsxFileName,
-              lineNumber: 234
+              lineNumber: 238
             }
           },
           '\xA0'
@@ -53842,7 +53845,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: 'song-duration', __source: {
               fileName: _jsxFileName,
-              lineNumber: 235
+              lineNumber: 239
             }
           },
           duration
@@ -53942,14 +53945,14 @@ var SongSummary = function (_Component) {
       'article',
       { className: playlistItemClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 315
+          lineNumber: 319
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'section',
         { className: scoreWrapperClasses, __source: {
             fileName: _jsxFileName,
-            lineNumber: 316
+            lineNumber: 320
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -53958,7 +53961,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'upvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 317
+              lineNumber: 321
             }
           },
           '\xA0'
@@ -53967,7 +53970,7 @@ var SongSummary = function (_Component) {
           'span',
           { className: scoreClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 318
+              lineNumber: 322
             }
           },
           currentQueueScore
@@ -53978,7 +53981,7 @@ var SongSummary = function (_Component) {
               return _this6.vote(e, 'downvote');
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 319
+              lineNumber: 323
             }
           },
           '\xA0'
@@ -53990,7 +53993,7 @@ var SongSummary = function (_Component) {
             return _this6.playVideoHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 321
+            lineNumber: 325
           }
         },
         this.renderThumbExtras(duration)
@@ -54001,14 +54004,14 @@ var SongSummary = function (_Component) {
             return _this6.playSongHandler();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 324
+            lineNumber: 328
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: titleClasses, __source: {
               fileName: _jsxFileName,
-              lineNumber: 325
+              lineNumber: 329
             }
           },
           tags,
@@ -54018,7 +54021,7 @@ var SongSummary = function (_Component) {
           'div',
           { className: 'submitter-info', __source: {
               fileName: _jsxFileName,
-              lineNumber: 326
+              lineNumber: 330
             }
           },
           'Submitted ',
@@ -54026,7 +54029,7 @@ var SongSummary = function (_Component) {
             'span',
             { className: 'from-then', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 326
+                lineNumber: 330
               }
             },
             fromNow
@@ -54037,7 +54040,7 @@ var SongSummary = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 326
+                lineNumber: 330
               }
             },
             lastAddedBy.userName
@@ -81835,4 +81838,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.c3566d4a131840bbb8f4.js.map
+//# sourceMappingURL=main.8cb564f542279025f991.js.map
