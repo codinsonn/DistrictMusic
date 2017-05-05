@@ -16,7 +16,7 @@ module.exports = (readStream, filename, mimetype, extension) => {
 
         var id = new ObjectId().toString();
 
-        var writeStream = GridFS.gfs.createWriteStream({
+        GridFS.gfs.createWriteStream({
             _id: id,
             filename: id,
             metadata: {
@@ -24,28 +24,35 @@ module.exports = (readStream, filename, mimetype, extension) => {
                 mimetype: mimetype,
                 extension: extension
             }
-        });
+        }, (err, writeStream) => {
 
-        writeStream.on('data', (chunk) => {
-            console.log('[Upload] Writing some data, just dont know what');
-        });
+          if (err) reject(err);
+          if (writeStream) {
 
-        writeStream.on('error', (err) => {
-           console.log('[Upload] -!- Got the following error:', err, '-!-');
-           reject(ObjectId);
-        });
+            writeStream.on('data', (chunk) => {
+              console.log('[Upload] Writing some data, just dont know what');
+            });
 
-        writeStream.on('finish', (filen) => {
-            if(filen) console.log('[Upload] Written file:', filen.name, '( id:', id, ')');
-            if(!finished) resolve(id);
-        });
+            writeStream.on('error', (err) => {
+              console.log('[Upload] -!- Got the following error:', err, '-!-');
+              reject(ObjectId);
+            });
 
-        writeStream.on('end', (filen) => {
-            if(filen) console.log('[Upload] Written file:', filen.name, '( id:', id, ')');
-            if(!finished) resolve(id);
-        });
+            writeStream.on('finish', (filen) => {
+              if(filen) console.log('[Upload] Written file:', filen.name, '( id:', id, ')');
+              if(!finished) resolve(id);
+            });
 
-        readStream.pipe(writeStream);
+            writeStream.on('end', (filen) => {
+              if(filen) console.log('[Upload] Written file:', filen.name, '( id:', id, ')');
+              if(!finished) resolve(id);
+            });
+
+            readStream.pipe(writeStream);
+
+          }
+
+        });
 
     });
 

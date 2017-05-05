@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import SocketStore from '../stores/SocketStore';
+import PlaylistStore from '../stores/PlaylistStore';
 
 export default class DownloadProgress extends Component {
 
@@ -18,20 +19,35 @@ export default class DownloadProgress extends Component {
     // -- Events ----
     this.evtSetAppearBusy = () => this.setAppearBusy();
     this.evtUpdateDownloadProgress = () => this.updateDownloadProgress();
+    this.evtResetProgress = () => this.resetProgress();
 
   }
 
   componentWillMount() {
     SocketStore.on(`APPEAR_BUSY_CHANGED`, this.evtSetAppearBusy);
     SocketStore.on(`DOWNLOAD_PROGRESS_UPDATED`, this.evtUpdateDownloadProgress);
+    PlaylistStore.on(`RESET_PROGRESS`, this.evtResetProgress);
   }
 
   componentWillUnmount() {
     SocketStore.removeListener(`APPEAR_BUSY_CHANGED`, this.evtSetAppearBusy);
     SocketStore.removeListener(`DOWNLOAD_PROGRESS_UPDATED`, this.evtUpdateDownloadProgress);
+    PlaylistStore.removeListener(`RESET_PROGRESS`, this.evtResetProgress);
   }
 
   componentDidMount() {
+
+  }
+
+  resetProgress() {
+
+    let {appearBusy, downloadProgress} = this.state;
+
+    appearBusy = false;
+    downloadProgress = 0;
+
+    this.setState({appearBusy, downloadProgress});
+    this.prevProgress = - 1;
 
   }
 

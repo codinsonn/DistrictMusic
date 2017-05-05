@@ -410,6 +410,7 @@ class PlaylistStore extends EventEmitter {
     this.currentSuggestion = this.defaultSuggestion;
 
     setTimeout(() => this.emit(`RESET_SEARCH_BAR`), 1);
+    setTimeout(() => this.emit(`RESET_PROGRESS`), 10);
 
   }
 

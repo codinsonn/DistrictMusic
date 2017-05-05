@@ -19,7 +19,99 @@ module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
   return new Promise((resolve, reject) => {
 
     var url = `https://www.youtube.com/watch?v=${songId}`;
-    var songTitleStripped = songTitle;
+
+
+    let audioFormat = {};
+    ytdl.getInfo(songId, (err, info) => {
+
+      if(err) throw err;
+
+      let i = info.formats.length;
+      _.forEach(info.formats, format => {
+
+        console.log('[YTDL] Checking format:', format.type);
+
+        if(format.type.indexOf('audio/webm') > -1){
+          audioFormat = format;
+          //console.log('[YTDL] Found compatible format!', audioFormat);
+        }
+
+        i--;
+        if (i === 0) {
+
+          var songTitleStripped = songTitle;
+          console.log('[DownloadSong] Assigned title:', songTitleStripped);
+          songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
+          console.log('[DownloadSong] Stripped title:', songTitleStripped);
+          var audioFilename = `${songId}_${songTitleStripped}.mp4`;
+          console.log('[DownloadSong] Setup file naming for file:', audioFilename);
+
+          console.log('[DownloadSong] Downloading song...');
+
+          /*var readStream = ytdl(url, { quality: 'lowest', filter: function(f) {
+            return f.container === 'mp4' && f.type.indexOf('audio/mp4') > -1;
+          } })*/
+          var readStream = ytdl(url, { quality: 'lowest', format: audioFormat })
+            .on('response', (res) => {
+
+              var totalSize = res.headers['content-length'];
+              var dataRead = 0;
+
+              res.on('data', (data) => {
+
+                dataRead += data.length;
+                var percent = dataRead / totalSize;
+                var strPercent = (percent * 100).toFixed(2) + '%';
+
+                if(emitProgress){
+                  EmitHelper.emit('DOWNLOAD_PROGRESS', socketIdsToEmitTo, {percent: percent, str: strPercent});
+                }
+
+                if(process.stdout){
+                  process.stdout.cursorTo(0);
+                  process.stdout.clearLine(1);
+                  process.stdout.write(strPercent);
+                }
+
+              });
+
+              res.on('end', () => {
+
+                if(process.stdout){ process.stdout.write('\n'); }
+
+                console.log('-f- Finished downloading song to db:', audioFilename);
+
+                if(emitProgress){
+                  EmitHelper.emit('DOWNLOAD_PROGRESS', socketIdsToEmitTo, {percent: 0, str: '100%'});
+                }
+
+              });
+
+            })
+          ;
+
+          //GridFsHelper.upload(readStream, audioFilename, 'audio/mp4', 'mp4').then((file_id) => {
+          GridFsHelper.upload(readStream, audioFilename, 'audio/webm', 'webm').then((file_id) => {
+
+            console.log('[DownloadSong] UPLOAD SUCCESSFULL:', file_id);
+
+            resolve({ filename: audioFilename, fileId: file_id });
+
+          }, (error) => {
+
+            console.log('[DownloadSong] -!- UPLOAD REJECTED:', error,' -!-');
+
+            reject(error);
+
+          });
+
+        }
+
+      });
+
+    });
+
+    /*var songTitleStripped = songTitle;
     console.log('[DownloadSong] Assigned title:', songTitleStripped);
     songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
     console.log('[DownloadSong] Stripped title:', songTitleStripped);
@@ -81,7 +173,7 @@ module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
 
       reject(error);
 
-    });
+    });*/
 
   });
 

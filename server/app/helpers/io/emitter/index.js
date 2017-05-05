@@ -69,7 +69,7 @@ module.exports.sendAll = sendAll;
 
 module.exports.emit = (type, tokens, data) => {
 
-  if(typeOf(data) === 'undefined') data = {};
+  if(typeof(data) === 'undefined') data = {};
 
   if(tokens.length > 0){
     sendAll(tokens, type, data);

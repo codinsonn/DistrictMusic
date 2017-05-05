@@ -7883,9 +7883,9 @@ function setAppearBusy(busy) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(28);
-/* harmony export (immutable) */ __webpack_exports__["q"] = showSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["r"] = showSearchModal;
 /* harmony export (immutable) */ __webpack_exports__["m"] = hideSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["p"] = showSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["q"] = showSuggestionDetail;
 /* harmony export (immutable) */ __webpack_exports__["n"] = hideSuggestionDetail;
 /* harmony export (immutable) */ __webpack_exports__["o"] = resetSearchbar;
 /* harmony export (immutable) */ __webpack_exports__["h"] = updateQueue;
@@ -52020,6 +52020,7 @@ var AudioPlayer = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/DownloadProgress.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52027,6 +52028,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -52054,6 +52056,9 @@ var DownloadProgress = function (_Component) {
     _this.evtUpdateDownloadProgress = function () {
       return _this.updateDownloadProgress();
     };
+    _this.evtResetProgress = function () {
+      return _this.resetProgress();
+    };
 
     return _this;
   }
@@ -52061,14 +52066,29 @@ var DownloadProgress = function (_Component) {
   DownloadProgress.prototype.componentWillMount = function componentWillMount() {
     __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].on('APPEAR_BUSY_CHANGED', this.evtSetAppearBusy);
     __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].on('DOWNLOAD_PROGRESS_UPDATED', this.evtUpdateDownloadProgress);
+    __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].on('RESET_PROGRESS', this.evtResetProgress);
   };
 
   DownloadProgress.prototype.componentWillUnmount = function componentWillUnmount() {
     __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].removeListener('APPEAR_BUSY_CHANGED', this.evtSetAppearBusy);
     __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__["a" /* default */].removeListener('DOWNLOAD_PROGRESS_UPDATED', this.evtUpdateDownloadProgress);
+    __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__["a" /* default */].removeListener('RESET_PROGRESS', this.evtResetProgress);
   };
 
   DownloadProgress.prototype.componentDidMount = function componentDidMount() {};
+
+  DownloadProgress.prototype.resetProgress = function resetProgress() {
+    var _state = this.state,
+        appearBusy = _state.appearBusy,
+        downloadProgress = _state.downloadProgress;
+
+
+    appearBusy = false;
+    downloadProgress = 0;
+
+    this.setState({ appearBusy: appearBusy, downloadProgress: downloadProgress });
+    this.prevProgress = -1;
+  };
 
   DownloadProgress.prototype.setAppearBusy = function setAppearBusy() {
     var appearBusy = this.state.appearBusy;
@@ -52091,9 +52111,9 @@ var DownloadProgress = function (_Component) {
   };
 
   DownloadProgress.prototype.render = function render() {
-    var _state = this.state,
-        appearBusy = _state.appearBusy,
-        downloadProgress = _state.downloadProgress;
+    var _state2 = this.state,
+        appearBusy = _state2.appearBusy,
+        downloadProgress = _state2.downloadProgress;
 
 
     var progressClasses = 'progress hidden';
@@ -52126,7 +52146,7 @@ var DownloadProgress = function (_Component) {
       'div',
       { className: progressClasses, style: progressStyle, __source: {
           fileName: _jsxFileName,
-          lineNumber: 92
+          lineNumber: 108
         }
       },
       '\xA0'
@@ -53297,7 +53317,7 @@ var SearchModal = function (_Component) {
     var showSuggestionDetail = __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
 
     if (isLoggedIn && !showSuggestionDetail) {
-      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["q" /* showSearchModal */]();
+      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["r" /* showSearchModal */]();
       this.onInputChanged(false);
     } else if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["c" /* showLoginModal */]();
@@ -54093,7 +54113,7 @@ var Suggestion = function (_Component) {
     var data = { id: id, title: title, channel: channel, thumbs: thumbs, duration: duration };
 
     __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["m" /* hideSearchModal */]();
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["p" /* showSuggestionDetail */](data);
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["q" /* showSuggestionDetail */](data);
   };
 
   Suggestion.prototype.render = function render() {
@@ -54273,6 +54293,9 @@ var SuggestionDetail = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */]('Submission added to queue!');
 
       __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["o" /* resetSearchbar */]();
+      setTimeout(function () {
+        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["resetProgress"]();
+      }, 1);
 
       console.log('Success!', res);
     }, function (failData) {
@@ -54319,7 +54342,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 106
+          lineNumber: 107
         }
       });
     }
@@ -54340,7 +54363,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 130
+          lineNumber: 131
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54349,7 +54372,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["n" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 131
+            lineNumber: 132
           }
         },
         '\xA0'
@@ -54358,14 +54381,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 132
+            lineNumber: 133
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 133
+              lineNumber: 134
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54373,7 +54396,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 133
+                lineNumber: 134
               }
             },
             'Add to queue?'
@@ -54384,7 +54407,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 135
+              lineNumber: 136
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54393,7 +54416,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["n" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 136
+                lineNumber: 137
               }
             },
             'Cancel'
@@ -54404,7 +54427,7 @@ var SuggestionDetail = function (_Component) {
                 return _this2.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 137
+                lineNumber: 138
               }
             },
             'Add song'
@@ -81806,4 +81829,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.dc8920bc08b2838d931b.js.map
+//# sourceMappingURL=main.2b1a5c3ca133cbf16b92.js.map
