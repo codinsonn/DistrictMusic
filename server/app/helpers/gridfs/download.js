@@ -58,7 +58,6 @@ module.exports = (req, res, id) => {
 
                 console.log('[Download] startRange:', ranges[0].start, '| endRange', ranges[0].end);
 
-                //stream = GridFS.gfs.createReadStream({ _id: ObjectId(id) });
                 GridFS.gfs.createReadStream({
                   _id: ObjectId(id)/*,
                   range: {
@@ -79,7 +78,6 @@ module.exports = (req, res, id) => {
 
               if (req.method === 'HEAD') return res.end();
 
-              //stream = GridFS.gfs.createReadStream({ _id: ObjectId(id) });
               GridFS.gfs.createReadStream({ _id: ObjectId(id) }, (err, readStream) => {
                 stream = readStream;
                 stream.pipe(res);
@@ -93,9 +91,11 @@ module.exports = (req, res, id) => {
               //if(stream) stream.destroy();
             });
 
-        }, onError = () => {
+        }, onError = (err) => {
 
             console.log('[Download] -!- File not found / in db -!-');
+            res.statusCode = 404;
+            res.end(err);
 
         })
     ;

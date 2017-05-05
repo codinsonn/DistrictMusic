@@ -5187,7 +5187,7 @@ module.exports = invariant;
 
 var _prodInvariant = __webpack_require__(31);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -5543,7 +5543,7 @@ module.exports = { debugTool: debugTool };
 
 var store      = __webpack_require__(131)('wks')
   , uid        = __webpack_require__(134)
-  , Symbol     = __webpack_require__(16).Symbol
+  , Symbol     = __webpack_require__(17).Symbol
   , USE_SYMBOL = typeof Symbol == 'function';
 
 var $exports = module.exports = function(name){
@@ -5604,646 +5604,11 @@ module.exports = emptyFunction;
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_events__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dispatcher__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SocketStore__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api___ = __webpack_require__(119);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-
-
-
-var UserStore = function (_EventEmitter) {
-  _inherits(UserStore, _EventEmitter);
-
-  function UserStore() {
-    _classCallCheck(this, UserStore);
-
-    var _this = _possibleConstructorReturn(this, _EventEmitter.call(this));
-
-    _this.isLoggedIn = false;
-    _this.showLoginModal = false;
-
-    _this.voteMode = 'normal';
-
-    _this.isSynched = false;
-    _this.isSpeaker = false;
-    _this.waitingForPosChange = false;
-
-    _this.userProfile = {};
-    _this.defaultProfile = {
-      general: {
-        profileImage: '/assets/img/defaultProfile.png'
-      }
-    };
-
-    _this.setMaxListeners(0);
-
-    return _this;
-  }
-
-  UserStore.prototype.updateSessionSocketId = function updateSessionSocketId(socketId) {
-    var _this2 = this;
-
-    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].updateSessionSocketId(socketId).then(function (res) {
-
-      //console.log(`Updated session socketId`, res.meta.socketIds);
-
-      _this2.isLoggedIn = true;
-      _this2.userProfile = res;
-    }, function (failData) {
-
-      console.log('-!- Could not update session -!- \n', failData, '\n-!-');
-    });
-  };
-
-  UserStore.prototype.updateUserProfile = function updateUserProfile(user) {
-
-    this.userProfile = user;
-
-    if (this.voteMode === 'veto' && user.permissions.vetosLeft <= 0) {
-      this.setVoteMode('normal');
-    } else if (this.voteMode === 'super' && user.permissions.superVotesLeft <= 0) {
-      this.setVoteMode('normal');
-    }
-
-    this.emit('USER_PROFILE_CHANGED');
-  };
-
-  UserStore.prototype.setProfileSession = function setProfileSession() {
-    var _this3 = this;
-
-    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].getSessionProfile().then(function (res) {
-
-      _this3.isLoggedIn = true;
-      _this3.userProfile = res;
-
-      console.log('[UserStore:73] Got userSession! (setProfileSession)');
-
-      __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].socketEmit('SET_SESSION_SOCKET_ID');
-
-      _this3.emit('USER_PROFILE_CHANGED');
-    }, function (failData) {
-
-      console.log('-!- Login failed: -!- \n', failData, '\n-!-');
-    });
-  };
-
-  UserStore.prototype.setSynched = function setSynched(synched) {
-    var _this4 = this;
-
-    console.log('[UserStore:89] Attempting to synch... (setSynched)');
-
-    if (synched !== this.isSynched) {
-
-      if (synched) {
-
-        var speakerConnected = __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].getSpeakerConnected();
-
-        if (this.isSpeaker) {
-
-          this.confirmSynched();
-        } else if (speakerConnected && !this.waitingForPosChange) {
-
-          __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateSpeakerSong(true);
-
-          console.log('[UserStore:109] Speaker connected...?! (setSynched)');
-          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
-
-          this.waitingForPosChange = true;
-        } else {
-
-          console.log('[UserStore:109] Speaker not connected...? (setSynched)');
-          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
-
-          setTimeout(function () {
-            return _this4.emit('SPEAKER_NOT_CONNECTED');
-          }, 10);
-        }
-      } else {
-
-        __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateUserChosenSong(__WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].getSong(true));
-
-        this.isSynched = false;
-        this.waitingForPosChange = false;
-        this.emit('SYNCHED_CHANGED');
-      }
-    }
-  };
-
-  UserStore.prototype.confirmSynched = function confirmSynched() {
-
-    if (this.waitingForPosChange || this.isSpeaker) {
-      this.waitingForPosChange = false;
-      this.isSynched = true;
-      this.emit('SYNCHED_CHANGED');
-    }
-  };
-
-  UserStore.prototype.setSpeaker = function setSpeaker(isSpeaker) {
-    var _this5 = this;
-
-    if (isSpeaker !== this.isSpeaker) {
-
-      if (isSpeaker) {
-
-        console.log('SET AS SPEAKER');
-
-        this.isSpeaker = isSpeaker;
-        this.setSynched(true);
-
-        this.emit('SET_AS_SPEAKER');
-      } else {
-        // disconnect speaker on server side
-
-        var socket = __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].getSocket();
-
-        __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].setSpeaker(false, socket.id).then(function (res) {
-
-          // Success!
-          console.log('[SPEAKER] UNSET AS SPEAKER', res);
-
-          _this5.isSpeaker = false;
-          _this5.emit('UNSET_AS_SPEAKER');
-        }, function (failData) {
-
-          // Failed!
-          console.log('[SPEAKER] COULD NOT UNSET AS SPEAKER!', failData);
-        });
-      }
-    }
-  };
-
-  UserStore.prototype.setVoteMode = function setVoteMode(voteMode) {
-
-    switch (voteMode) {
-
-      case 'veto':
-      case 'super':
-        if (voteMode !== this.voteMode) {
-
-          if (voteMode === 'veto' && this.userProfile.permissions.vetosLeft >= 1) {
-            this.voteMode = voteMode;
-          } else if (voteMode === 'veto') {
-            this.voteMode = 'normal';
-            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No vetos left');
-          }
-
-          if (voteMode === 'super' && this.userProfile.permissions.superVotesLeft >= 1) {
-            this.voteMode = voteMode;
-          } else if (voteMode === 'super') {
-            this.voteMode = 'normal';
-            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No super votes left');
-          }
-        } else {
-          this.voteMode = 'normal';
-        }
-        break;
-
-      default:
-        this.voteMode = 'normal';
-        break;
-
-    }
-
-    this.emit('VOTE_MODE_CHANGED');
-  };
-
-  UserStore.prototype.setShowLoginModal = function setShowLoginModal(visible) {
-
-    var blnShowModal = false;
-    if (!this.isLoggedIn) {
-      blnShowModal = visible;
-    }
-    this.showLoginModal = blnShowModal;
-
-    this.emit('SHOW_LOGIN_MODAL_CHANGED');
-  };
-
-  UserStore.prototype.logout = function logout() {
-    var _this6 = this;
-
-    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].logout().then(function (res) {
-
-      console.log('Succesfully logged out', res);
-
-      _this6.isLoggedIn = false;
-      _this6.userProfile = _this6.defaultProfile;
-      _this6.voteMode = 'normal';
-
-      _this6.emit('USER_PROFILE_CHANGED');
-    }, function (failData) {
-
-      console.log('-!- Logout failed: -!- \n', failData, '\n-!-');
-    });
-  };
-
-  UserStore.prototype.getLoggedIn = function getLoggedIn() {
-
-    return this.isLoggedIn;
-  };
-
-  UserStore.prototype.getProfile = function getProfile() {
-
-    if (this.isLoggedIn) {
-      return this.userProfile;
-    } else {
-      return this.defaultProfile;
-    }
-  };
-
-  UserStore.prototype.getVoteMode = function getVoteMode() {
-
-    return this.voteMode;
-  };
-
-  UserStore.prototype.getIsSpeaker = function getIsSpeaker() {
-
-    return this.isSpeaker;
-  };
-
-  UserStore.prototype.getSynched = function getSynched() {
-
-    return this.isSynched;
-  };
-
-  UserStore.prototype.getWaitingForPosChange = function getWaitingForPosChange() {
-
-    return this.waitingForPosChange;
-  };
-
-  UserStore.prototype.getShowLoginModal = function getShowLoginModal() {
-
-    return this.showLoginModal;
-  };
-
-  UserStore.prototype.handleActions = function handleActions(action) {
-
-    switch (action.type) {
-
-      case 'FETCH_USER_PROFILE':
-        this.setProfileSession();
-        break;
-
-      case 'SHOW_LOGIN_MODAL':
-        this.setShowLoginModal(true);
-        break;
-
-      case 'HIDE_LOGIN_MODAL':
-        this.setShowLoginModal(false);
-        break;
-
-      case 'SET_VOTE_MODE':
-        this.setVoteMode(action.data);
-        break;
-
-      case 'SET_SYNCHED':
-        this.setSynched(action.data);
-        break;
-
-      case 'SET_SPEAKER':
-        this.setSpeaker(action.data);
-        break;
-
-      case 'LOGOUT_USER':
-        this.logout();
-        break;
-
-    }
-  };
-
-  return UserStore;
-}(__WEBPACK_IMPORTED_MODULE_0_events__["EventEmitter"]);
-
-var userStore = new UserStore();
-__WEBPACK_IMPORTED_MODULE_1__dispatcher__["a" /* default */].register(userStore.handleActions.bind(userStore));
-window.dispatcher = __WEBPACK_IMPORTED_MODULE_1__dispatcher__["a" /* default */];
-
-/* harmony default export */ __webpack_exports__["a"] = userStore;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global = module.exports = typeof window != 'undefined' && window.Math == Math
-  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-
-
-var _prodInvariant = __webpack_require__(5),
-    _assign = __webpack_require__(6);
-
-var CallbackQueue = __webpack_require__(265);
-var PooledClass = __webpack_require__(29);
-var ReactFeatureFlags = __webpack_require__(270);
-var ReactReconciler = __webpack_require__(41);
-var Transaction = __webpack_require__(74);
-
-var invariant = __webpack_require__(2);
-
-var dirtyComponents = [];
-var updateBatchNumber = 0;
-var asapCallbackQueue = CallbackQueue.getPooled();
-var asapEnqueued = false;
-
-var batchingStrategy = null;
-
-function ensureInjected() {
-  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching strategy') : _prodInvariant('123') : void 0;
-}
-
-var NESTED_UPDATES = {
-  initialize: function () {
-    this.dirtyComponentsLength = dirtyComponents.length;
-  },
-  close: function () {
-    if (this.dirtyComponentsLength !== dirtyComponents.length) {
-      // Additional updates were enqueued by componentDidUpdate handlers or
-      // similar; before our own UPDATE_QUEUEING wrapper closes, we want to run
-      // these new updates so that if A's componentDidUpdate calls setState on
-      // B, B will update before the callback A's updater provided when calling
-      // setState.
-      dirtyComponents.splice(0, this.dirtyComponentsLength);
-      flushBatchedUpdates();
-    } else {
-      dirtyComponents.length = 0;
-    }
-  }
-};
-
-var UPDATE_QUEUEING = {
-  initialize: function () {
-    this.callbackQueue.reset();
-  },
-  close: function () {
-    this.callbackQueue.notifyAll();
-  }
-};
-
-var TRANSACTION_WRAPPERS = [NESTED_UPDATES, UPDATE_QUEUEING];
-
-function ReactUpdatesFlushTransaction() {
-  this.reinitializeTransaction();
-  this.dirtyComponentsLength = null;
-  this.callbackQueue = CallbackQueue.getPooled();
-  this.reconcileTransaction = ReactUpdates.ReactReconcileTransaction.getPooled(
-  /* useCreateElement */true);
-}
-
-_assign(ReactUpdatesFlushTransaction.prototype, Transaction, {
-  getTransactionWrappers: function () {
-    return TRANSACTION_WRAPPERS;
-  },
-
-  destructor: function () {
-    this.dirtyComponentsLength = null;
-    CallbackQueue.release(this.callbackQueue);
-    this.callbackQueue = null;
-    ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction);
-    this.reconcileTransaction = null;
-  },
-
-  perform: function (method, scope, a) {
-    // Essentially calls `this.reconcileTransaction.perform(method, scope, a)`
-    // with this transaction's wrappers around it.
-    return Transaction.perform.call(this, this.reconcileTransaction.perform, this.reconcileTransaction, method, scope, a);
-  }
-});
-
-PooledClass.addPoolingTo(ReactUpdatesFlushTransaction);
-
-function batchedUpdates(callback, a, b, c, d, e) {
-  ensureInjected();
-  return batchingStrategy.batchedUpdates(callback, a, b, c, d, e);
-}
-
-/**
- * Array comparator for ReactComponents by mount ordering.
- *
- * @param {ReactComponent} c1 first component you're comparing
- * @param {ReactComponent} c2 second component you're comparing
- * @return {number} Return value usable by Array.prototype.sort().
- */
-function mountOrderComparator(c1, c2) {
-  return c1._mountOrder - c2._mountOrder;
-}
-
-function runBatchedUpdates(transaction) {
-  var len = transaction.dirtyComponentsLength;
-  !(len === dirtyComponents.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to match dirty-components array length (%s).', len, dirtyComponents.length) : _prodInvariant('124', len, dirtyComponents.length) : void 0;
-
-  // Since reconciling a component higher in the owner hierarchy usually (not
-  // always -- see shouldComponentUpdate()) will reconcile children, reconcile
-  // them before their children by sorting the array.
-  dirtyComponents.sort(mountOrderComparator);
-
-  // Any updates enqueued while reconciling must be performed after this entire
-  // batch. Otherwise, if dirtyComponents is [A, B] where A has children B and
-  // C, B could update twice in a single batch if C's render enqueues an update
-  // to B (since B would have already updated, we should skip it, and the only
-  // way we can know to do so is by checking the batch counter).
-  updateBatchNumber++;
-
-  for (var i = 0; i < len; i++) {
-    // If a component is unmounted before pending changes apply, it will still
-    // be here, but we assume that it has cleared its _pendingCallbacks and
-    // that performUpdateIfNecessary is a noop.
-    var component = dirtyComponents[i];
-
-    // If performUpdateIfNecessary happens to enqueue any new updates, we
-    // shouldn't execute the callbacks until the next render happens, so
-    // stash the callbacks first
-    var callbacks = component._pendingCallbacks;
-    component._pendingCallbacks = null;
-
-    var markerName;
-    if (ReactFeatureFlags.logTopLevelRenders) {
-      var namedComponent = component;
-      // Duck type TopLevelWrapper. This is probably always true.
-      if (component._currentElement.type.isReactTopLevelWrapper) {
-        namedComponent = component._renderedComponent;
-      }
-      markerName = 'React update: ' + namedComponent.getName();
-      console.time(markerName);
-    }
-
-    ReactReconciler.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
-
-    if (markerName) {
-      console.timeEnd(markerName);
-    }
-
-    if (callbacks) {
-      for (var j = 0; j < callbacks.length; j++) {
-        transaction.callbackQueue.enqueue(callbacks[j], component.getPublicInstance());
-      }
-    }
-  }
-}
-
-var flushBatchedUpdates = function () {
-  // ReactUpdatesFlushTransaction's wrappers will clear the dirtyComponents
-  // array and perform any updates enqueued by mount-ready handlers (i.e.,
-  // componentDidUpdate) but we need to check here too in order to catch
-  // updates enqueued by setState callbacks and asap calls.
-  while (dirtyComponents.length || asapEnqueued) {
-    if (dirtyComponents.length) {
-      var transaction = ReactUpdatesFlushTransaction.getPooled();
-      transaction.perform(runBatchedUpdates, null, transaction);
-      ReactUpdatesFlushTransaction.release(transaction);
-    }
-
-    if (asapEnqueued) {
-      asapEnqueued = false;
-      var queue = asapCallbackQueue;
-      asapCallbackQueue = CallbackQueue.getPooled();
-      queue.notifyAll();
-      CallbackQueue.release(queue);
-    }
-  }
-};
-
-/**
- * Mark a component as needing a rerender, adding an optional callback to a
- * list of functions which will be executed once the rerender occurs.
- */
-function enqueueUpdate(component) {
-  ensureInjected();
-
-  // Various parts of our code (such as ReactCompositeComponent's
-  // _renderValidatedComponent) assume that calls to render aren't nested;
-  // verify that that's the case. (This is called by each top-level update
-  // function, like setState, forceUpdate, etc.; creation and
-  // destruction of top-level components is guarded in ReactMount.)
-
-  if (!batchingStrategy.isBatchingUpdates) {
-    batchingStrategy.batchedUpdates(enqueueUpdate, component);
-    return;
-  }
-
-  dirtyComponents.push(component);
-  if (component._updateBatchNumber == null) {
-    component._updateBatchNumber = updateBatchNumber + 1;
-  }
-}
-
-/**
- * Enqueue a callback to be run at the end of the current batching cycle. Throws
- * if no updates are currently being performed.
- */
-function asap(callback, context) {
-  !batchingStrategy.isBatchingUpdates ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context whereupdates are not being batched.') : _prodInvariant('125') : void 0;
-  asapCallbackQueue.enqueue(callback, context);
-  asapEnqueued = true;
-}
-
-var ReactUpdatesInjection = {
-  injectReconcileTransaction: function (ReconcileTransaction) {
-    !ReconcileTransaction ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : _prodInvariant('126') : void 0;
-    ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
-  },
-
-  injectBatchingStrategy: function (_batchingStrategy) {
-    !_batchingStrategy ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : _prodInvariant('127') : void 0;
-    !(typeof _batchingStrategy.batchedUpdates === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : _prodInvariant('128') : void 0;
-    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : _prodInvariant('129') : void 0;
-    batchingStrategy = _batchingStrategy;
-  }
-};
-
-var ReactUpdates = {
-  /**
-   * React references `ReactReconcileTransaction` using this property in order
-   * to allow dependency injection.
-   *
-   * @internal
-   */
-  ReactReconcileTransaction: null,
-
-  batchedUpdates: batchedUpdates,
-  enqueueUpdate: enqueueUpdate,
-  flushBatchedUpdates: flushBatchedUpdates,
-  injection: ReactUpdatesInjection,
-  asap: asap
-};
-
-module.exports = ReactUpdates;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-
-
-/**
- * Keeps track of the current owner.
- *
- * The current owner is the component who should own any components that are
- * currently being constructed.
- */
-var ReactCurrentOwner = {
-
-  /**
-   * @internal
-   * @type {ReactComponent}
-   */
-  current: null
-
-};
-
-module.exports = ReactCurrentOwner;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events__ = __webpack_require__(67);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_events__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dispatcher__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__api___ = __webpack_require__(119);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_SocketStore__ = __webpack_require__(47);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6668,6 +6033,9 @@ var PlaylistStore = function (_EventEmitter) {
     setTimeout(function () {
       return _this16.emit('RESET_SEARCH_BAR');
     }, 1);
+    setTimeout(function () {
+      return _this16.emit('RESET_PROGRESS');
+    }, 10);
   };
 
   PlaylistStore.prototype.showSongUpdate = function showSongUpdate(song) {
@@ -6873,6 +6241,641 @@ __WEBPACK_IMPORTED_MODULE_2__dispatcher__["a" /* default */].register(playlistSt
 window.dispatcher = __WEBPACK_IMPORTED_MODULE_2__dispatcher__["a" /* default */];
 
 /* harmony default export */ __webpack_exports__["a"] = playlistStore;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_events___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_events__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dispatcher__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SocketStore__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api___ = __webpack_require__(119);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+var UserStore = function (_EventEmitter) {
+  _inherits(UserStore, _EventEmitter);
+
+  function UserStore() {
+    _classCallCheck(this, UserStore);
+
+    var _this = _possibleConstructorReturn(this, _EventEmitter.call(this));
+
+    _this.isLoggedIn = false;
+    _this.showLoginModal = false;
+
+    _this.voteMode = 'normal';
+
+    _this.isSynched = false;
+    _this.isSpeaker = false;
+    _this.waitingForPosChange = false;
+
+    _this.userProfile = {};
+    _this.defaultProfile = {
+      general: {
+        profileImage: '/assets/img/defaultProfile.png'
+      }
+    };
+
+    _this.setMaxListeners(0);
+
+    return _this;
+  }
+
+  UserStore.prototype.updateSessionSocketId = function updateSessionSocketId(socketId) {
+    var _this2 = this;
+
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].updateSessionSocketId(socketId).then(function (res) {
+
+      //console.log(`Updated session socketId`, res.meta.socketIds);
+
+      _this2.isLoggedIn = true;
+      _this2.userProfile = res;
+    }, function (failData) {
+
+      console.log('-!- Could not update session -!- \n', failData, '\n-!-');
+    });
+  };
+
+  UserStore.prototype.updateUserProfile = function updateUserProfile(user) {
+
+    this.userProfile = user;
+
+    if (this.voteMode === 'veto' && user.permissions.vetosLeft <= 0) {
+      this.setVoteMode('normal');
+    } else if (this.voteMode === 'super' && user.permissions.superVotesLeft <= 0) {
+      this.setVoteMode('normal');
+    }
+
+    this.emit('USER_PROFILE_CHANGED');
+  };
+
+  UserStore.prototype.setProfileSession = function setProfileSession() {
+    var _this3 = this;
+
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].getSessionProfile().then(function (res) {
+
+      _this3.isLoggedIn = true;
+      _this3.userProfile = res;
+
+      console.log('[UserStore:73] Got userSession! (setProfileSession)');
+
+      __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].socketEmit('SET_SESSION_SOCKET_ID');
+
+      _this3.emit('USER_PROFILE_CHANGED');
+    }, function (failData) {
+
+      console.log('-!- Login failed: -!- \n', failData, '\n-!-');
+    });
+  };
+
+  UserStore.prototype.setSynched = function setSynched(synched) {
+    var _this4 = this;
+
+    console.log('[UserStore:89] Attempting to synch... (setSynched)');
+
+    if (synched !== this.isSynched) {
+
+      if (synched) {
+
+        var speakerConnected = __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].getSpeakerConnected();
+
+        if (this.isSpeaker) {
+
+          this.confirmSynched();
+        } else if (speakerConnected && !this.waitingForPosChange) {
+
+          __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateSpeakerSong(true);
+
+          console.log('[UserStore:109] Speaker connected...?! (setSynched)');
+          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
+
+          this.waitingForPosChange = true;
+        } else {
+
+          console.log('[UserStore:109] Speaker not connected...? (setSynched)');
+          console.log('[UserStore:110] Logs ( speakerConnected:', speakerConnected, '| waitingForPosChange:', this.waitingForPosChange, ')');
+
+          setTimeout(function () {
+            return _this4.emit('SPEAKER_NOT_CONNECTED');
+          }, 10);
+        }
+      } else {
+
+        __WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].updateUserChosenSong(__WEBPACK_IMPORTED_MODULE_3__PlaylistStore__["a" /* default */].getSong(true));
+
+        this.isSynched = false;
+        this.waitingForPosChange = false;
+        this.emit('SYNCHED_CHANGED');
+      }
+    }
+  };
+
+  UserStore.prototype.confirmSynched = function confirmSynched() {
+
+    if (this.waitingForPosChange || this.isSpeaker) {
+      this.waitingForPosChange = false;
+      this.isSynched = true;
+      this.emit('SYNCHED_CHANGED');
+    }
+  };
+
+  UserStore.prototype.setSpeaker = function setSpeaker(isSpeaker) {
+    var _this5 = this;
+
+    if (isSpeaker !== this.isSpeaker) {
+
+      if (isSpeaker) {
+
+        console.log('SET AS SPEAKER');
+
+        this.isSpeaker = isSpeaker;
+        this.setSynched(true);
+
+        this.emit('SET_AS_SPEAKER');
+      } else {
+        // disconnect speaker on server side
+
+        var socket = __WEBPACK_IMPORTED_MODULE_2__SocketStore__["a" /* default */].getSocket();
+
+        __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].setSpeaker(false, socket.id).then(function (res) {
+
+          // Success!
+          console.log('[SPEAKER] UNSET AS SPEAKER', res);
+
+          _this5.isSpeaker = false;
+          _this5.emit('UNSET_AS_SPEAKER');
+        }, function (failData) {
+
+          // Failed!
+          console.log('[SPEAKER] COULD NOT UNSET AS SPEAKER!', failData);
+        });
+      }
+    }
+  };
+
+  UserStore.prototype.setVoteMode = function setVoteMode(voteMode) {
+
+    switch (voteMode) {
+
+      case 'veto':
+      case 'super':
+        if (voteMode !== this.voteMode) {
+
+          if (voteMode === 'veto' && this.userProfile.permissions.vetosLeft >= 1) {
+            this.voteMode = voteMode;
+          } else if (voteMode === 'veto') {
+            this.voteMode = 'normal';
+            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No vetos left');
+          }
+
+          if (voteMode === 'super' && this.userProfile.permissions.superVotesLeft >= 1) {
+            this.voteMode = voteMode;
+          } else if (voteMode === 'super') {
+            this.voteMode = 'normal';
+            __WEBPACK_IMPORTED_MODULE_4__NotificationsStore__["a" /* default */].queueNotification('error', 'No super votes left');
+          }
+        } else {
+          this.voteMode = 'normal';
+        }
+        break;
+
+      default:
+        this.voteMode = 'normal';
+        break;
+
+    }
+
+    this.emit('VOTE_MODE_CHANGED');
+  };
+
+  UserStore.prototype.setShowLoginModal = function setShowLoginModal(visible) {
+
+    var blnShowModal = false;
+    if (!this.isLoggedIn) {
+      blnShowModal = visible;
+    }
+    this.showLoginModal = blnShowModal;
+
+    this.emit('SHOW_LOGIN_MODAL_CHANGED');
+  };
+
+  UserStore.prototype.logout = function logout() {
+    var _this6 = this;
+
+    __WEBPACK_IMPORTED_MODULE_5__api___["b" /* users */].logout().then(function (res) {
+
+      console.log('Succesfully logged out', res);
+
+      _this6.isLoggedIn = false;
+      _this6.userProfile = _this6.defaultProfile;
+      _this6.voteMode = 'normal';
+
+      _this6.emit('USER_PROFILE_CHANGED');
+    }, function (failData) {
+
+      console.log('-!- Logout failed: -!- \n', failData, '\n-!-');
+    });
+  };
+
+  UserStore.prototype.getLoggedIn = function getLoggedIn() {
+
+    return this.isLoggedIn;
+  };
+
+  UserStore.prototype.getProfile = function getProfile() {
+
+    if (this.isLoggedIn) {
+      return this.userProfile;
+    } else {
+      return this.defaultProfile;
+    }
+  };
+
+  UserStore.prototype.getVoteMode = function getVoteMode() {
+
+    return this.voteMode;
+  };
+
+  UserStore.prototype.getIsSpeaker = function getIsSpeaker() {
+
+    return this.isSpeaker;
+  };
+
+  UserStore.prototype.getSynched = function getSynched() {
+
+    return this.isSynched;
+  };
+
+  UserStore.prototype.getWaitingForPosChange = function getWaitingForPosChange() {
+
+    return this.waitingForPosChange;
+  };
+
+  UserStore.prototype.getShowLoginModal = function getShowLoginModal() {
+
+    return this.showLoginModal;
+  };
+
+  UserStore.prototype.handleActions = function handleActions(action) {
+
+    switch (action.type) {
+
+      case 'FETCH_USER_PROFILE':
+        this.setProfileSession();
+        break;
+
+      case 'SHOW_LOGIN_MODAL':
+        this.setShowLoginModal(true);
+        break;
+
+      case 'HIDE_LOGIN_MODAL':
+        this.setShowLoginModal(false);
+        break;
+
+      case 'SET_VOTE_MODE':
+        this.setVoteMode(action.data);
+        break;
+
+      case 'SET_SYNCHED':
+        this.setSynched(action.data);
+        break;
+
+      case 'SET_SPEAKER':
+        this.setSpeaker(action.data);
+        break;
+
+      case 'LOGOUT_USER':
+        this.logout();
+        break;
+
+    }
+  };
+
+  return UserStore;
+}(__WEBPACK_IMPORTED_MODULE_0_events__["EventEmitter"]);
+
+var userStore = new UserStore();
+__WEBPACK_IMPORTED_MODULE_1__dispatcher__["a" /* default */].register(userStore.handleActions.bind(userStore));
+window.dispatcher = __WEBPACK_IMPORTED_MODULE_1__dispatcher__["a" /* default */];
+
+/* harmony default export */ __webpack_exports__["a"] = userStore;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+
+
+var _prodInvariant = __webpack_require__(5),
+    _assign = __webpack_require__(6);
+
+var CallbackQueue = __webpack_require__(265);
+var PooledClass = __webpack_require__(29);
+var ReactFeatureFlags = __webpack_require__(270);
+var ReactReconciler = __webpack_require__(41);
+var Transaction = __webpack_require__(74);
+
+var invariant = __webpack_require__(2);
+
+var dirtyComponents = [];
+var updateBatchNumber = 0;
+var asapCallbackQueue = CallbackQueue.getPooled();
+var asapEnqueued = false;
+
+var batchingStrategy = null;
+
+function ensureInjected() {
+  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching strategy') : _prodInvariant('123') : void 0;
+}
+
+var NESTED_UPDATES = {
+  initialize: function () {
+    this.dirtyComponentsLength = dirtyComponents.length;
+  },
+  close: function () {
+    if (this.dirtyComponentsLength !== dirtyComponents.length) {
+      // Additional updates were enqueued by componentDidUpdate handlers or
+      // similar; before our own UPDATE_QUEUEING wrapper closes, we want to run
+      // these new updates so that if A's componentDidUpdate calls setState on
+      // B, B will update before the callback A's updater provided when calling
+      // setState.
+      dirtyComponents.splice(0, this.dirtyComponentsLength);
+      flushBatchedUpdates();
+    } else {
+      dirtyComponents.length = 0;
+    }
+  }
+};
+
+var UPDATE_QUEUEING = {
+  initialize: function () {
+    this.callbackQueue.reset();
+  },
+  close: function () {
+    this.callbackQueue.notifyAll();
+  }
+};
+
+var TRANSACTION_WRAPPERS = [NESTED_UPDATES, UPDATE_QUEUEING];
+
+function ReactUpdatesFlushTransaction() {
+  this.reinitializeTransaction();
+  this.dirtyComponentsLength = null;
+  this.callbackQueue = CallbackQueue.getPooled();
+  this.reconcileTransaction = ReactUpdates.ReactReconcileTransaction.getPooled(
+  /* useCreateElement */true);
+}
+
+_assign(ReactUpdatesFlushTransaction.prototype, Transaction, {
+  getTransactionWrappers: function () {
+    return TRANSACTION_WRAPPERS;
+  },
+
+  destructor: function () {
+    this.dirtyComponentsLength = null;
+    CallbackQueue.release(this.callbackQueue);
+    this.callbackQueue = null;
+    ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction);
+    this.reconcileTransaction = null;
+  },
+
+  perform: function (method, scope, a) {
+    // Essentially calls `this.reconcileTransaction.perform(method, scope, a)`
+    // with this transaction's wrappers around it.
+    return Transaction.perform.call(this, this.reconcileTransaction.perform, this.reconcileTransaction, method, scope, a);
+  }
+});
+
+PooledClass.addPoolingTo(ReactUpdatesFlushTransaction);
+
+function batchedUpdates(callback, a, b, c, d, e) {
+  ensureInjected();
+  return batchingStrategy.batchedUpdates(callback, a, b, c, d, e);
+}
+
+/**
+ * Array comparator for ReactComponents by mount ordering.
+ *
+ * @param {ReactComponent} c1 first component you're comparing
+ * @param {ReactComponent} c2 second component you're comparing
+ * @return {number} Return value usable by Array.prototype.sort().
+ */
+function mountOrderComparator(c1, c2) {
+  return c1._mountOrder - c2._mountOrder;
+}
+
+function runBatchedUpdates(transaction) {
+  var len = transaction.dirtyComponentsLength;
+  !(len === dirtyComponents.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to match dirty-components array length (%s).', len, dirtyComponents.length) : _prodInvariant('124', len, dirtyComponents.length) : void 0;
+
+  // Since reconciling a component higher in the owner hierarchy usually (not
+  // always -- see shouldComponentUpdate()) will reconcile children, reconcile
+  // them before their children by sorting the array.
+  dirtyComponents.sort(mountOrderComparator);
+
+  // Any updates enqueued while reconciling must be performed after this entire
+  // batch. Otherwise, if dirtyComponents is [A, B] where A has children B and
+  // C, B could update twice in a single batch if C's render enqueues an update
+  // to B (since B would have already updated, we should skip it, and the only
+  // way we can know to do so is by checking the batch counter).
+  updateBatchNumber++;
+
+  for (var i = 0; i < len; i++) {
+    // If a component is unmounted before pending changes apply, it will still
+    // be here, but we assume that it has cleared its _pendingCallbacks and
+    // that performUpdateIfNecessary is a noop.
+    var component = dirtyComponents[i];
+
+    // If performUpdateIfNecessary happens to enqueue any new updates, we
+    // shouldn't execute the callbacks until the next render happens, so
+    // stash the callbacks first
+    var callbacks = component._pendingCallbacks;
+    component._pendingCallbacks = null;
+
+    var markerName;
+    if (ReactFeatureFlags.logTopLevelRenders) {
+      var namedComponent = component;
+      // Duck type TopLevelWrapper. This is probably always true.
+      if (component._currentElement.type.isReactTopLevelWrapper) {
+        namedComponent = component._renderedComponent;
+      }
+      markerName = 'React update: ' + namedComponent.getName();
+      console.time(markerName);
+    }
+
+    ReactReconciler.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
+
+    if (markerName) {
+      console.timeEnd(markerName);
+    }
+
+    if (callbacks) {
+      for (var j = 0; j < callbacks.length; j++) {
+        transaction.callbackQueue.enqueue(callbacks[j], component.getPublicInstance());
+      }
+    }
+  }
+}
+
+var flushBatchedUpdates = function () {
+  // ReactUpdatesFlushTransaction's wrappers will clear the dirtyComponents
+  // array and perform any updates enqueued by mount-ready handlers (i.e.,
+  // componentDidUpdate) but we need to check here too in order to catch
+  // updates enqueued by setState callbacks and asap calls.
+  while (dirtyComponents.length || asapEnqueued) {
+    if (dirtyComponents.length) {
+      var transaction = ReactUpdatesFlushTransaction.getPooled();
+      transaction.perform(runBatchedUpdates, null, transaction);
+      ReactUpdatesFlushTransaction.release(transaction);
+    }
+
+    if (asapEnqueued) {
+      asapEnqueued = false;
+      var queue = asapCallbackQueue;
+      asapCallbackQueue = CallbackQueue.getPooled();
+      queue.notifyAll();
+      CallbackQueue.release(queue);
+    }
+  }
+};
+
+/**
+ * Mark a component as needing a rerender, adding an optional callback to a
+ * list of functions which will be executed once the rerender occurs.
+ */
+function enqueueUpdate(component) {
+  ensureInjected();
+
+  // Various parts of our code (such as ReactCompositeComponent's
+  // _renderValidatedComponent) assume that calls to render aren't nested;
+  // verify that that's the case. (This is called by each top-level update
+  // function, like setState, forceUpdate, etc.; creation and
+  // destruction of top-level components is guarded in ReactMount.)
+
+  if (!batchingStrategy.isBatchingUpdates) {
+    batchingStrategy.batchedUpdates(enqueueUpdate, component);
+    return;
+  }
+
+  dirtyComponents.push(component);
+  if (component._updateBatchNumber == null) {
+    component._updateBatchNumber = updateBatchNumber + 1;
+  }
+}
+
+/**
+ * Enqueue a callback to be run at the end of the current batching cycle. Throws
+ * if no updates are currently being performed.
+ */
+function asap(callback, context) {
+  !batchingStrategy.isBatchingUpdates ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context whereupdates are not being batched.') : _prodInvariant('125') : void 0;
+  asapCallbackQueue.enqueue(callback, context);
+  asapEnqueued = true;
+}
+
+var ReactUpdatesInjection = {
+  injectReconcileTransaction: function (ReconcileTransaction) {
+    !ReconcileTransaction ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : _prodInvariant('126') : void 0;
+    ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
+  },
+
+  injectBatchingStrategy: function (_batchingStrategy) {
+    !_batchingStrategy ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : _prodInvariant('127') : void 0;
+    !(typeof _batchingStrategy.batchedUpdates === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : _prodInvariant('128') : void 0;
+    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : _prodInvariant('129') : void 0;
+    batchingStrategy = _batchingStrategy;
+  }
+};
+
+var ReactUpdates = {
+  /**
+   * React references `ReactReconcileTransaction` using this property in order
+   * to allow dependency injection.
+   *
+   * @internal
+   */
+  ReactReconcileTransaction: null,
+
+  batchedUpdates: batchedUpdates,
+  enqueueUpdate: enqueueUpdate,
+  flushBatchedUpdates: flushBatchedUpdates,
+  injection: ReactUpdatesInjection,
+  asap: asap
+};
+
+module.exports = ReactUpdates;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
+
+
+
+/**
+ * Keeps track of the current owner.
+ *
+ * The current owner is the component who should own any components that are
+ * currently being constructed.
+ */
+var ReactCurrentOwner = {
+
+  /**
+   * @internal
+   * @type {ReactComponent}
+   */
+  current: null
+
+};
+
+module.exports = ReactCurrentOwner;
 
 /***/ }),
 /* 20 */
@@ -7883,9 +7886,9 @@ function setAppearBusy(busy) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(28);
-/* harmony export (immutable) */ __webpack_exports__["r"] = showSearchModal;
+/* harmony export (immutable) */ __webpack_exports__["q"] = showSearchModal;
 /* harmony export (immutable) */ __webpack_exports__["m"] = hideSearchModal;
-/* harmony export (immutable) */ __webpack_exports__["q"] = showSuggestionDetail;
+/* harmony export (immutable) */ __webpack_exports__["p"] = showSuggestionDetail;
 /* harmony export (immutable) */ __webpack_exports__["n"] = hideSuggestionDetail;
 /* harmony export (immutable) */ __webpack_exports__["o"] = resetSearchbar;
 /* harmony export (immutable) */ __webpack_exports__["h"] = updateQueue;
@@ -8172,7 +8175,7 @@ module.exports = PooledClass;
 
 var _assign = __webpack_require__(6);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 
 var warning = __webpack_require__(3);
 var canDefineProperty = __webpack_require__(116);
@@ -27329,8 +27332,8 @@ var endSongAndPlayNext = function endSongAndPlayNext(song) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_events__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_events___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_events__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dispatcher__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__UserStore__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(15);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -30133,7 +30136,7 @@ module.exports = function(it){
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(64)
-  , document = __webpack_require__(16).document
+  , document = __webpack_require__(17).document
   // in old IE typeof document.createElement is 'object'
   , is = isObject(document) && isObject(document.createElement);
 module.exports = function(it){
@@ -31692,10 +31695,10 @@ module.exports = ReactErrorUtils;
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -33917,7 +33920,7 @@ module.exports = (
 /* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global    = __webpack_require__(16)
+var global    = __webpack_require__(17)
   , core      = __webpack_require__(48)
   , ctx       = __webpack_require__(62)
   , hide      = __webpack_require__(36)
@@ -33995,7 +33998,7 @@ module.exports = function(exec){
 /* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(16).document && document.documentElement;
+module.exports = __webpack_require__(17).document && document.documentElement;
 
 /***/ }),
 /* 128 */
@@ -34096,7 +34099,7 @@ module.exports = function(bitmap, value){
 /* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(16)
+var global = __webpack_require__(17)
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
@@ -34111,7 +34114,7 @@ var ctx                = __webpack_require__(62)
   , invoke             = __webpack_require__(335)
   , html               = __webpack_require__(127)
   , cel                = __webpack_require__(80)
-  , global             = __webpack_require__(16)
+  , global             = __webpack_require__(17)
   , process            = global.process
   , setTask            = global.setImmediate
   , clearTask          = global.clearImmediate
@@ -46269,7 +46272,7 @@ var _assign = __webpack_require__(6);
 
 var LinkedValueUtils = __webpack_require__(98);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var warning = __webpack_require__(3);
 
@@ -46742,7 +46745,7 @@ var DOMLazyTree = __webpack_require__(40);
 var DOMProperty = __webpack_require__(23);
 var React = __webpack_require__(44);
 var ReactBrowserEventEmitter = __webpack_require__(72);
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactDOMComponentTree = __webpack_require__(8);
 var ReactDOMContainerInfo = __webpack_require__(476);
 var ReactDOMFeatureFlags = __webpack_require__(478);
@@ -46752,7 +46755,7 @@ var ReactInstrumentation = __webpack_require__(12);
 var ReactMarkupChecksum = __webpack_require__(498);
 var ReactReconciler = __webpack_require__(41);
 var ReactUpdateQueue = __webpack_require__(101);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var emptyObject = __webpack_require__(52);
 var instantiateReactComponent = __webpack_require__(281);
@@ -47802,7 +47805,7 @@ module.exports = setTextContent;
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var REACT_ELEMENT_TYPE = __webpack_require__(492);
 
 var getIteratorFn = __webpack_require__(526);
@@ -49012,7 +49015,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactComponentTreeHook = __webpack_require__(11);
 var ReactElement = __webpack_require__(30);
 
@@ -50500,8 +50503,8 @@ module.exports = function(arraybuffer, start, end) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_wavesurfer__ = __webpack_require__(549);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_wavesurfer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_wavesurfer__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_UserStore__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__stores_SocketStore__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__ = __webpack_require__(26);
@@ -50905,14 +50908,17 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.updateVideoMode = function updateVideoMode() {
-    var videoMode = this.state.videoMode;
+    var _state5 = this.state,
+        videoMode = _state5.videoMode,
+        drawFromImage = _state5.drawFromImage;
 
 
     videoMode = __WEBPACK_IMPORTED_MODULE_6__stores_PlaylistStore__["a" /* default */].getVideoMode();
 
+    if (!videoMode) drawFromImage = false;
     if (videoMode) this.setState({ currentTimeString: '00:00' });
 
-    this.setState({ videoMode: videoMode });
+    this.setState({ videoMode: videoMode, drawFromImage: drawFromImage });
   };
 
   AudioPlayer.prototype.updateCurrentTimeString = function updateCurrentTimeString() {
@@ -50940,10 +50946,10 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.handleWavesurferReady = function handleWavesurferReady(args) {
     var _this7 = this;
 
-    var _state5 = this.state,
-        playing = _state5.playing,
-        song = _state5.song,
-        isSpeaker = _state5.isSpeaker;
+    var _state6 = this.state,
+        playing = _state6.playing,
+        song = _state6.song,
+        isSpeaker = _state6.isSpeaker;
 
 
     this.wavesurfer = args.wavesurfer;
@@ -51014,10 +51020,10 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.setPlayMode = function setPlayMode(playMode) {
 
     if (!this.isSafari) {
-      var _state6 = this.state,
-          playing = _state6.playing,
-          pos = _state6.pos,
-          videoMode = _state6.videoMode;
+      var _state7 = this.state,
+          playing = _state7.playing,
+          pos = _state7.pos,
+          videoMode = _state7.videoMode;
 
 
       this.changingPlayModes = true;
@@ -51044,12 +51050,12 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.handlePosChange = function handlePosChange(e) {
     var _this8 = this;
 
-    var _state7 = this.state,
-        playing = _state7.playing,
-        isSpeaker = _state7.isSpeaker;
     var _state8 = this.state,
-        pos = _state8.pos,
-        currentTimeString = _state8.currentTimeString;
+        playing = _state8.playing,
+        isSpeaker = _state8.isSpeaker;
+    var _state9 = this.state,
+        pos = _state9.pos,
+        currentTimeString = _state9.currentTimeString;
 
 
     pos = e.originalArgs[0];
@@ -51107,9 +51113,9 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.unSynch = function unSynch() {
-    var _state9 = this.state,
-        isSynched = _state9.isSynched,
-        isSpeaker = _state9.isSpeaker;
+    var _state10 = this.state,
+        isSynched = _state10.isSynched,
+        isSpeaker = _state10.isSpeaker;
 
 
     if (isSynched) {
@@ -51128,10 +51134,10 @@ var AudioPlayer = function (_Component) {
     var _this9 = this;
 
     if (this.songHasStarted) {
-      var _state10 = this.state,
-          song = _state10.song,
-          pos = _state10.pos,
-          currentTimeString = _state10.currentTimeString;
+      var _state11 = this.state,
+          song = _state11.song,
+          pos = _state11.pos,
+          currentTimeString = _state11.currentTimeString;
 
 
       var curMinutes = Math.floor(pos / 60);
@@ -51148,9 +51154,9 @@ var AudioPlayer = function (_Component) {
       if (durSecondsTotal - curSecondsTotal >= 2) prematureSongEnd = true;
 
       if (!prematureSongEnd) {
-        var _state11 = this.state,
-            isSynched = _state11.isSynched,
-            isSpeaker = _state11.isSpeaker;
+        var _state12 = this.state,
+            isSynched = _state12.isSynched,
+            isSpeaker = _state12.isSpeaker;
 
 
         console.log('-i- SONG ENDED -i-', song.general.id, song.general.title);
@@ -51222,14 +51228,14 @@ var AudioPlayer = function (_Component) {
     var _this11 = this;
 
     if (!this.isSafari) {
-      var _state12 = this.state,
-          isSpeaker = _state12.isSpeaker,
-          isSynched = _state12.isSynched,
-          videoMode = _state12.videoMode;
       var _state13 = this.state,
-          song = _state13.song,
-          pos = _state13.pos,
-          currentTimeString = _state13.currentTimeString;
+          isSpeaker = _state13.isSpeaker,
+          isSynched = _state13.isSynched,
+          videoMode = _state13.videoMode;
+      var _state14 = this.state,
+          song = _state14.song,
+          pos = _state14.pos,
+          currentTimeString = _state14.currentTimeString;
 
 
       if (!isSpeaker) {
@@ -51271,11 +51277,11 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.togglePlay = function togglePlay() {
-    var _state14 = this.state,
-        playing = _state14.playing,
-        isSynched = _state14.isSynched,
-        isSpeaker = _state14.isSpeaker,
-        videoMode = _state14.videoMode;
+    var _state15 = this.state,
+        playing = _state15.playing,
+        isSynched = _state15.isSynched,
+        isSpeaker = _state15.isSpeaker,
+        videoMode = _state15.videoMode;
 
 
     if (!isSpeaker) {
@@ -51298,11 +51304,11 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.toggleVideoMode = function toggleVideoMode() {
-    var _state15 = this.state,
-        videoMode = _state15.videoMode,
-        isSynched = _state15.isSynched,
-        isSpeaker = _state15.isSpeaker,
-        song = _state15.song;
+    var _state16 = this.state,
+        videoMode = _state16.videoMode,
+        isSynched = _state16.isSynched,
+        isSpeaker = _state16.isSpeaker,
+        song = _state16.song;
 
 
     if (!isSpeaker) {
@@ -51311,10 +51317,13 @@ var AudioPlayer = function (_Component) {
 
       this.setPlaying(false);
 
-      var currentTimeString = this.state.currentTimeString;
+      var _state17 = this.state,
+          drawFromImage = _state17.drawFromImage,
+          currentTimeString = _state17.currentTimeString;
 
+      drawFromImage = false;
       currentTimeString = '00:00';
-      this.setState({ currentTimeString: currentTimeString });
+      this.setState({ drawFromImage: drawFromImage, currentTimeString: currentTimeString });
 
       //PlaylistActions.setVideoMode(!videoMode);
       if (!videoMode) setTimeout(function () {
@@ -51327,10 +51336,10 @@ var AudioPlayer = function (_Component) {
   };
 
   AudioPlayer.prototype.showNowPlaying = function showNowPlaying() {
-    var _state16 = this.state,
-        song = _state16.song,
-        playMode = _state16.playMode,
-        videoMode = _state16.videoMode;
+    var _state18 = this.state,
+        song = _state18.song,
+        playMode = _state18.playMode,
+        videoMode = _state18.videoMode;
 
 
     var notifAlreadyShowing = document.querySelector('.notification').className.indexOf('show') > -1;
@@ -51462,12 +51471,12 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.renderPlayer = function renderPlayer() {
     var _this12 = this;
 
-    var _state17 = this.state,
-        song = _state17.song,
-        playing = _state17.playing,
-        pos = _state17.pos,
-        playMode = _state17.playMode,
-        videoMode = _state17.videoMode;
+    var _state19 = this.state,
+        song = _state19.song,
+        playing = _state19.playing,
+        pos = _state19.pos,
+        playMode = _state19.playMode,
+        videoMode = _state19.videoMode;
 
 
     var waveOptions = this.waveOptionsNormal;
@@ -51497,7 +51506,7 @@ var AudioPlayer = function (_Component) {
         options: waveOptions,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 860
+          lineNumber: 862
         }
       });
     } else if (videoMode || this.isSafari) {
@@ -51517,14 +51526,14 @@ var AudioPlayer = function (_Component) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 875
+            lineNumber: 877
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'video-pos-progress', __source: {
               fileName: _jsxFileName,
-              lineNumber: 880
+              lineNumber: 882
             }
           },
           '\xA0'
@@ -51533,7 +51542,7 @@ var AudioPlayer = function (_Component) {
           'div',
           { className: 'video-pos-scrubber', __source: {
               fileName: _jsxFileName,
-              lineNumber: 881
+              lineNumber: 883
             }
           },
           '\xA0'
@@ -51545,9 +51554,9 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.renderVideoModeButton = function renderVideoModeButton() {
     var _this13 = this;
 
-    var _state18 = this.state,
-        playMode = _state18.playMode,
-        videoMode = _state18.videoMode;
+    var _state20 = this.state,
+        playMode = _state20.playMode,
+        videoMode = _state20.videoMode;
 
 
     if (playMode === 'normal') {
@@ -51561,7 +51570,7 @@ var AudioPlayer = function (_Component) {
             return _this13.toggleVideoMode();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 899
+            lineNumber: 901
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51569,7 +51578,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 899
+              lineNumber: 901
             }
           },
           '\xA0'
@@ -51581,10 +51590,10 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.renderAudioVisualisation = function renderAudioVisualisation() {
     var _this14 = this;
 
-    var _state19 = this.state,
-        playMode = _state19.playMode,
-        playing = _state19.playing,
-        videoMode = _state19.videoMode;
+    var _state21 = this.state,
+        playMode = _state21.playMode,
+        playing = _state21.playing,
+        videoMode = _state21.videoMode;
 
 
     if (playMode === 'normal') {
@@ -51602,14 +51611,14 @@ var AudioPlayer = function (_Component) {
             return _this14.setPlayMode('fullscreen');
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 918
+            lineNumber: 920
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: canvasWidth, height: canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 919
+              lineNumber: 921
             }
           },
           '\xA0'
@@ -51624,14 +51633,14 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'visualisation', __source: {
             fileName: _jsxFileName,
-            lineNumber: 929
+            lineNumber: 931
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'canvas',
           { className: 'audio-visualisation', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 930
+              lineNumber: 932
             }
           },
           '\xA0'
@@ -51640,7 +51649,7 @@ var AudioPlayer = function (_Component) {
           'canvas',
           { className: 'audio-visualisation-top', width: _canvasWidth, height: _canvasHeight, __source: {
               fileName: _jsxFileName,
-              lineNumber: 931
+              lineNumber: 933
             }
           },
           '\xA0'
@@ -51670,12 +51679,12 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'current-song-wrapper', __source: {
             fileName: _jsxFileName,
-            lineNumber: 957
+            lineNumber: 959
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components__["j" /* SongSummary */], _extends({}, song, { order: order, key: key, fsPreview: fsPreview, voteMode: voteMode, disableButtons: disableButtons, __source: {
             fileName: _jsxFileName,
-            lineNumber: 958
+            lineNumber: 960
           }
         }))
       );
@@ -51685,10 +51694,10 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.renderFullscreenExtras = function renderFullscreenExtras() {
     var _this15 = this;
 
-    var _state20 = this.state,
-        playMode = _state20.playMode,
-        song = _state20.song,
-        videoMode = _state20.videoMode;
+    var _state22 = this.state,
+        playMode = _state22.playMode,
+        song = _state22.song,
+        videoMode = _state22.videoMode;
 
 
     if (playMode === 'fullscreen' && !videoMode && !this.isSafari) {
@@ -51700,37 +51709,19 @@ var AudioPlayer = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 975
+            lineNumber: 977
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'district-music-logo', __source: {
               fileName: _jsxFileName,
-              lineNumber: 976
+              lineNumber: 978
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'audiodisc-large-left', __source: {
-                fileName: _jsxFileName,
-                lineNumber: 977
-              }
-            },
-            '\xA0'
-          ),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'div',
-            { className: 'audiodisc-large-right', __source: {
-                fileName: _jsxFileName,
-                lineNumber: 978
-              }
-            },
-            '\xA0'
-          ),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'div',
-            { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 979
               }
@@ -51739,7 +51730,7 @@ var AudioPlayer = function (_Component) {
           ),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
-            { className: 'audiodisc-medium-right', __source: {
+            { className: 'audiodisc-large-right', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 980
               }
@@ -51748,7 +51739,7 @@ var AudioPlayer = function (_Component) {
           ),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
-            { className: 'audiodisc-small-left', __source: {
+            { className: 'audiodisc-medium-left', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 981
               }
@@ -51757,27 +51748,25 @@ var AudioPlayer = function (_Component) {
           ),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
-            { className: 'audiodisc-small-right', __source: {
+            { className: 'audiodisc-medium-right', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 982
               }
             },
             '\xA0'
-          )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'div',
-          { className: 'btn-play-prev', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this15.prevSongId);
-            }, __source: {
-              fileName: _jsxFileName,
-              lineNumber: 984
-            }
-          },
+          ),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'span',
-            {
-              __source: {
+            'div',
+            { className: 'audiodisc-small-left', __source: {
+                fileName: _jsxFileName,
+                lineNumber: 983
+              }
+            },
+            '\xA0'
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'div',
+            { className: 'audiodisc-small-right', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 984
               }
@@ -51787,28 +51776,8 @@ var AudioPlayer = function (_Component) {
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
-          { className: 'btn-exit-fullscreen', onClick: function onClick() {
-              return _this15.setPlayMode('normal');
-            }, __source: {
-              fileName: _jsxFileName,
-              lineNumber: 985
-            }
-          },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'span',
-            {
-              __source: {
-                fileName: _jsxFileName,
-                lineNumber: 985
-              }
-            },
-            '\xA0'
-          )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'div',
-          { className: 'btn-play-next', onClick: function onClick() {
-              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this15.prevSongId);
+          { className: 'btn-play-prev', onClick: function onClick() {
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["f" /* startPrevSongUnsynched */](_this15.prevSongId);
             }, __source: {
               fileName: _jsxFileName,
               lineNumber: 986
@@ -51825,16 +51794,56 @@ var AudioPlayer = function (_Component) {
             '\xA0'
           )
         ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'btn-exit-fullscreen', onClick: function onClick() {
+              return _this15.setPlayMode('normal');
+            }, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 987
+            }
+          },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 987
+              }
+            },
+            '\xA0'
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'btn-play-next', onClick: function onClick() {
+              return __WEBPACK_IMPORTED_MODULE_10__actions_PlaylistActions__["e" /* startNextSongUnsynched */](_this15.prevSongId);
+            }, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 988
+            }
+          },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 988
+              }
+            },
+            '\xA0'
+          )
+        ),
         this.renderCurrentSongIndicator()
       );
     }
   };
 
   AudioPlayer.prototype.renderLoadingOverlay = function renderLoadingOverlay() {
-    var _state21 = this.state,
-        song = _state21.song,
-        drawFromImage = _state21.drawFromImage,
-        playMode = _state21.playMode;
+    var _state23 = this.state,
+        song = _state23.song,
+        drawFromImage = _state23.drawFromImage,
+        playMode = _state23.playMode;
 
 
     if (drawFromImage && !this.isSafari && song.general.id !== '' && typeof song.waveform !== 'undefined') {
@@ -51852,21 +51861,21 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'loading-overlay', __source: {
             fileName: _jsxFileName,
-            lineNumber: 1011
+            lineNumber: 1013
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'progress-wrapper', __source: {
               fileName: _jsxFileName,
-              lineNumber: 1012
+              lineNumber: 1014
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'progress-visualisation', style: progressStyle, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 1013
+                lineNumber: 1015
               }
             },
             '\xA0'
@@ -51876,7 +51885,7 @@ var AudioPlayer = function (_Component) {
           'div',
           { className: 'song-visualisation', style: imageStyle, __source: {
               fileName: _jsxFileName,
-              lineNumber: 1015
+              lineNumber: 1017
             }
           },
           '\xA0'
@@ -51888,12 +51897,12 @@ var AudioPlayer = function (_Component) {
   AudioPlayer.prototype.render = function render() {
     var _this16 = this;
 
-    var _state22 = this.state,
-        song = _state22.song,
-        playing = _state22.playing,
-        currentTimeString = _state22.currentTimeString,
-        isSynched = _state22.isSynched,
-        playMode = _state22.playMode;
+    var _state24 = this.state,
+        song = _state24.song,
+        playing = _state24.playing,
+        currentTimeString = _state24.currentTimeString,
+        isSynched = _state24.isSynched,
+        playMode = _state24.playMode;
 
 
     var toggleSynchClasses = 'btn-toggle-synch unsynched';
@@ -51910,7 +51919,7 @@ var AudioPlayer = function (_Component) {
       'article',
       { className: audioPlayerClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 1038
+          lineNumber: 1040
         }
       },
       this.renderLoadingOverlay(),
@@ -51919,44 +51928,6 @@ var AudioPlayer = function (_Component) {
         { className: toggleSynchClasses, onClick: function onClick() {
             return _this16.toggleSynched();
           }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 1040
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 1040
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: togglePlayClasses, onClick: function onClick() {
-            return _this16.togglePlay();
-          }, __source: {
-            fileName: _jsxFileName,
-            lineNumber: 1041
-          }
-        },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'span',
-          {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 1041
-            }
-          },
-          '\xA0'
-        )
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'current-time', __source: {
             fileName: _jsxFileName,
             lineNumber: 1042
           }
@@ -51969,6 +51940,44 @@ var AudioPlayer = function (_Component) {
               lineNumber: 1042
             }
           },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: togglePlayClasses, onClick: function onClick() {
+            return _this16.togglePlay();
+          }, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 1043
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 1043
+            }
+          },
+          '\xA0'
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'current-time', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 1044
+          }
+        },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 1044
+            }
+          },
           currentTimeString
         )
       ),
@@ -51978,7 +51987,7 @@ var AudioPlayer = function (_Component) {
             return _this16.avoidAudioSeekError();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 1043
+            lineNumber: 1045
           }
         },
         this.renderPlayer()
@@ -51987,7 +51996,7 @@ var AudioPlayer = function (_Component) {
         'div',
         { className: 'total-duration', __source: {
             fileName: _jsxFileName,
-            lineNumber: 1046
+            lineNumber: 1048
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -51995,7 +52004,7 @@ var AudioPlayer = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 1046
+              lineNumber: 1048
             }
           },
           song.general.duration
@@ -52020,7 +52029,7 @@ var AudioPlayer = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_SocketStore__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(15);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/DownloadProgress.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52165,7 +52174,7 @@ var DownloadProgress = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util___ = __webpack_require__(34);
@@ -52359,7 +52368,7 @@ var LoginModal = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(15);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/Notification.jsx';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52586,8 +52595,8 @@ var Notification = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_PlaylistActions__ = __webpack_require__(27);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -52771,7 +52780,7 @@ var PlaylistQueue = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__ = __webpack_require__(26);
 var _jsxFileName = '/Users/ThorrStevens/Documents/Howest/S10/STAGE/DistrictMusic/DistrictMusic_Remote/src/js/components/Profile.jsx';
@@ -53145,9 +53154,9 @@ var Profile = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_NotificationsStore__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__ = __webpack_require__(26);
@@ -53317,7 +53326,7 @@ var SearchModal = function (_Component) {
     var showSuggestionDetail = __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__["a" /* default */].getShowSuggestionDetail();
 
     if (isLoggedIn && !showSuggestionDetail) {
-      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["r" /* showSearchModal */]();
+      __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__["q" /* showSearchModal */]();
       this.onInputChanged(false);
     } else if (!__WEBPACK_IMPORTED_MODULE_2__stores_UserStore__["a" /* default */].getIsSpeaker()) {
       __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["c" /* showLoginModal */]();
@@ -53539,8 +53548,8 @@ var SearchModal = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_moment__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_UserStore__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_PlaylistStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__actions_PlaylistActions__ = __webpack_require__(27);
@@ -54113,7 +54122,7 @@ var Suggestion = function (_Component) {
     var data = { id: id, title: title, channel: channel, thumbs: thumbs, duration: duration };
 
     __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["m" /* hideSearchModal */]();
-    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["q" /* showSuggestionDetail */](data);
+    __WEBPACK_IMPORTED_MODULE_1__actions_PlaylistActions__["p" /* showSuggestionDetail */](data);
   };
 
   Suggestion.prototype.render = function render() {
@@ -54207,7 +54216,7 @@ Suggestion.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_youtube__ = __webpack_require__(293);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_youtube___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_youtube__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_PlaylistStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__api_songs__ = __webpack_require__(45);
@@ -54293,9 +54302,6 @@ var SuggestionDetail = function (_Component) {
       __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */]('Submission added to queue!');
 
       __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["o" /* resetSearchbar */]();
-      setTimeout(function () {
-        return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["resetProgress"]();
-      }, 1);
 
       console.log('Success!', res);
     }, function (failData) {
@@ -54342,7 +54348,7 @@ var SuggestionDetail = function (_Component) {
         onReady: this.handleOnVideoReady,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 107
+          lineNumber: 106
         }
       });
     }
@@ -54363,7 +54369,7 @@ var SuggestionDetail = function (_Component) {
       'article',
       { className: suggestionModalClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 131
+          lineNumber: 130
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54372,7 +54378,7 @@ var SuggestionDetail = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["n" /* hideSuggestionDetail */]();
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 132
+            lineNumber: 131
           }
         },
         '\xA0'
@@ -54381,14 +54387,14 @@ var SuggestionDetail = function (_Component) {
         'section',
         { className: 'suggestion-detail-modal', __source: {
             fileName: _jsxFileName,
-            lineNumber: 133
+            lineNumber: 132
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'div',
           { className: 'confirm-header', __source: {
               fileName: _jsxFileName,
-              lineNumber: 134
+              lineNumber: 133
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54396,7 +54402,7 @@ var SuggestionDetail = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 134
+                lineNumber: 133
               }
             },
             'Add to queue?'
@@ -54407,7 +54413,7 @@ var SuggestionDetail = function (_Component) {
           'div',
           { className: 'confirm-buttons', __source: {
               fileName: _jsxFileName,
-              lineNumber: 136
+              lineNumber: 135
             }
           },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -54416,7 +54422,7 @@ var SuggestionDetail = function (_Component) {
                 return __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["n" /* hideSuggestionDetail */]();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 137
+                lineNumber: 136
               }
             },
             'Cancel'
@@ -54427,7 +54433,7 @@ var SuggestionDetail = function (_Component) {
                 return _this2.addSongToQueue();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 138
+                lineNumber: 137
               }
             },
             'Add song'
@@ -54465,8 +54471,8 @@ SuggestionDetail.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_youtube__ = __webpack_require__(293);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_youtube___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_youtube__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_PlaylistStore__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_UserStore__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_PlaylistStore__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__actions_PlaylistActions__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__util___ = __webpack_require__(34);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -54840,7 +54846,7 @@ var YoutubeVideo = function (_Component) {
       height: vidHeight,
       width: vidWidth,
       playerVars: { // https://developers.google.com/youtube/player_parameters
-        autoplay: 0,
+        autoplay: 1,
         loop: 1,
         playlist: id,
         origin: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__util___["a" /* getBaseURL */])(),
@@ -55216,7 +55222,7 @@ var NoMatch = function NoMatch() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_UserStore__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_SocketStore__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__ = __webpack_require__(26);
@@ -55806,7 +55812,7 @@ module.exports = function(done, value){
 /* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global    = __webpack_require__(16)
+var global    = __webpack_require__(17)
   , macrotask = __webpack_require__(132).set
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
   , process   = global.process
@@ -56016,7 +56022,7 @@ module.exports = __webpack_require__(36);
 
 "use strict";
 
-var global      = __webpack_require__(16)
+var global      = __webpack_require__(17)
   , core        = __webpack_require__(48)
   , dP          = __webpack_require__(65)
   , DESCRIPTORS = __webpack_require__(49)
@@ -56170,7 +56176,7 @@ addToUnscopables('entries');
 "use strict";
 
 var LIBRARY            = __webpack_require__(129)
-  , global             = __webpack_require__(16)
+  , global             = __webpack_require__(17)
   , ctx                = __webpack_require__(62)
   , classof            = __webpack_require__(123)
   , $export            = __webpack_require__(125)
@@ -56496,7 +56502,7 @@ __webpack_require__(128)(String, 'String', function(iterated){
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(357);
-var global        = __webpack_require__(16)
+var global        = __webpack_require__(17)
   , hide          = __webpack_require__(36)
   , Iterators     = __webpack_require__(50)
   , TO_STRING_TAG = __webpack_require__(13)('toStringTag');
@@ -66590,7 +66596,7 @@ var EventPluginHub = __webpack_require__(55);
 var EventPropagators = __webpack_require__(56);
 var ExecutionEnvironment = __webpack_require__(9);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var SyntheticEvent = __webpack_require__(20);
 
 var getEventTarget = __webpack_require__(105);
@@ -67619,7 +67625,7 @@ var _prodInvariant = __webpack_require__(5),
 
 var React = __webpack_require__(44);
 var ReactComponentEnvironment = __webpack_require__(99);
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactErrorUtils = __webpack_require__(100);
 var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
@@ -68528,7 +68534,7 @@ var ReactDOMComponentTree = __webpack_require__(8);
 var ReactDefaultInjection = __webpack_require__(491);
 var ReactMount = __webpack_require__(273);
 var ReactReconciler = __webpack_require__(41);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var ReactVersion = __webpack_require__(506);
 
 var findDOMNode = __webpack_require__(523);
@@ -69819,7 +69825,7 @@ var _prodInvariant = __webpack_require__(5),
 var DOMPropertyOperations = __webpack_require__(266);
 var LinkedValueUtils = __webpack_require__(98);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -70766,7 +70772,7 @@ var _prodInvariant = __webpack_require__(5),
 
 var LinkedValueUtils = __webpack_require__(98);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -71556,7 +71562,7 @@ module.exports = ReactDebugTool;
 
 var _assign = __webpack_require__(6);
 
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var Transaction = __webpack_require__(74);
 
 var emptyFunction = __webpack_require__(14);
@@ -71787,7 +71793,7 @@ var EventListener = __webpack_require__(139);
 var ExecutionEnvironment = __webpack_require__(9);
 var PooledClass = __webpack_require__(29);
 var ReactDOMComponentTree = __webpack_require__(8);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var getEventTarget = __webpack_require__(105);
 var getUnboundedScrollPosition = __webpack_require__(389);
@@ -71987,7 +71993,7 @@ var ReactComponentEnvironment = __webpack_require__(99);
 var ReactEmptyComponent = __webpack_require__(269);
 var ReactBrowserEventEmitter = __webpack_require__(72);
 var ReactHostComponent = __webpack_require__(271);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var ReactInjection = {
   Component: ReactComponentEnvironment.injection,
@@ -72123,7 +72129,7 @@ var ReactComponentEnvironment = __webpack_require__(99);
 var ReactInstanceMap = __webpack_require__(57);
 var ReactInstrumentation = __webpack_require__(12);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactReconciler = __webpack_require__(41);
 var ReactChildReconciler = __webpack_require__(471);
 
@@ -74702,7 +74708,7 @@ module.exports = dangerousStyleValue;
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var ReactDOMComponentTree = __webpack_require__(8);
 var ReactInstanceMap = __webpack_require__(57);
 
@@ -78588,7 +78594,7 @@ module.exports = onlyChild;
 
 var _prodInvariant = __webpack_require__(31);
 
-var ReactCurrentOwner = __webpack_require__(18);
+var ReactCurrentOwner = __webpack_require__(19);
 var REACT_ELEMENT_TYPE = __webpack_require__(294);
 
 var getIteratorFn = __webpack_require__(117);
@@ -81829,4 +81835,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.2b1a5c3ca133cbf16b92.js.map
+//# sourceMappingURL=main.c3566d4a131840bbb8f4.js.map

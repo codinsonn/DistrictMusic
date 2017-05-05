@@ -334,13 +334,14 @@ export default class AudioPlayer extends Component {
 
   updateVideoMode() {
 
-    let {videoMode} = this.state;
+    let {videoMode, drawFromImage} = this.state;
 
     videoMode = PlaylistStore.getVideoMode();
 
+    if (!videoMode) drawFromImage = false;
     if (videoMode) this.setState({currentTimeString: `00:00`});
 
-    this.setState({videoMode});
+    this.setState({videoMode, drawFromImage});
 
   }
 
@@ -717,9 +718,10 @@ export default class AudioPlayer extends Component {
 
       this.setPlaying(false);
 
-      let {currentTimeString} = this.state;
+      let {drawFromImage, currentTimeString} = this.state;
+      drawFromImage = false;
       currentTimeString = `00:00`;
-      this.setState({currentTimeString});
+      this.setState({drawFromImage, currentTimeString});
 
       //PlaylistActions.setVideoMode(!videoMode);
       if (!videoMode) setTimeout(() => PlaylistActions.setSong(song), 1);

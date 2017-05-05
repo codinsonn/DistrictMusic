@@ -312,7 +312,7 @@ export default class YoutubeVideo extends Component {
       height: vidHeight,
       width: vidWidth,
       playerVars: { // https://developers.google.com/youtube/player_parameters
-        autoplay: 0,
+        autoplay: 1,
         loop: 1,
         playlist: id,
         origin: getBaseURL(),
