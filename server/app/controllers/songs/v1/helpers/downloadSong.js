@@ -20,7 +20,6 @@ module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
 
     var url = `https://www.youtube.com/watch?v=${songId}`;
 
-
     let audioFormat = {};
     ytdl.getInfo(songId, (err, info) => {
 

@@ -32,7 +32,8 @@ module.exports = {
     'whitelistedEmails': [
       'thorrstevens@gmail.com',
       'shaunie1993@msn.com',
-      'niels.bril@gmail.com'
+      'niels.bril@gmail.com',
+      'jasper.van.damme@hotmail.com'
     ],
     auto: {
       resetVetos: 1, // amount of 'vetos left' to reset to every week
