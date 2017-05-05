@@ -404,8 +404,8 @@ body {
   top: 0;
   left: 0;
   background-repeat: repeat-x;
-  background-position: center;
-  background-size: contain;
+  background-size: cover;
+  background-position: bottom center;
   cursor: wait;
   z-index: 120;
 }
