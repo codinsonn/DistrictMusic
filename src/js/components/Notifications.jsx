@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import NotificationsStore from '../stores/NotificationsStore';
 import PlaylistStore from '../stores/PlaylistStore';
 
-export default class Notification extends Component {
+export default class Notifications extends Component {
 
   constructor(props, context) {
 
@@ -41,7 +41,11 @@ export default class Notification extends Component {
     const notif = NotificationsStore.getNext();
     if (notifications.length === 0) {
       setTimeout(() => { this.setNext(); }, 1);
+    } else {
+      this.hideNotifications();
+      setTimeout(() => { this.setNext(); }, 700);
     }
+    console.log(`[Notifications] Adding notification:`, notif.message);
     notifications.push(notif);
 
     this.setState({currentNotifType, currentNotifMessage, notifications});
@@ -51,9 +55,7 @@ export default class Notification extends Component {
   updatePlayMode() {
 
     let {playMode} = this.state;
-
     playMode = PlaylistStore.getPlayMode();
-
     this.setState({playMode});
 
   }

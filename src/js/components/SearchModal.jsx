@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Suggestion} from '../components';
 import UserStore from '../stores/UserStore';
-import NotificationsStore from '../stores/NotificationsStore';
 import PlaylistStore from '../stores/PlaylistStore';
 import * as UserActions from '../actions/UserActions';
 import * as PlaylistActions from '../actions/PlaylistActions';
@@ -131,7 +130,6 @@ export default class SearchModal extends Component {
     let {currentSuggestions} = this.state;
 
     currentSuggestions = [];
-    //document.querySelector(`.search-query`).value = ``;
     setTimeout(() => PlaylistActions.hideSearchModal(), 10);
 
     this.setState({currentSuggestions});
@@ -189,7 +187,7 @@ export default class SearchModal extends Component {
 
               NotifActions.setAppearBusy(false);
               if (currentSuggestions.length === 0) {
-                NotifActions.addNotification(`No results were found`);
+                setTimeout(() => NotifActions.addError(`No results were found`), 10);
               }
 
               this.setState({currentSuggestions});
@@ -199,6 +197,8 @@ export default class SearchModal extends Component {
               NotifActions.setAppearBusy(false);
 
               console.log(`-!- Search error -!- \n`, failData, `\n-!-`);
+
+              setTimeout(() => NotifActions.addError(`No results found...`), 10);
 
               if (failData.errors && failData.errors.length > 0) {
                 failData.errors.forEach(error => {
@@ -218,7 +218,7 @@ export default class SearchModal extends Component {
             currentSuggestions = [];
             this.setState({currentSuggestions});
 
-            NotifActions.addError(`Please enter 3 or more characters`);
+            setTimeout(() => NotifActions.addError(`Please enter 3 or more characters`), 15);
 
           }
 
@@ -235,12 +235,6 @@ export default class SearchModal extends Component {
   onInputChanged(delay) {
 
     const {isLoggedIn} = this.state;
-
-    // hide any lingering notifications
-    const notif = NotificationsStore.getNext();
-    if (notif) {
-      NotifActions.hideNotification();
-    }
 
     if (document.querySelector(`.search-query`).value.length >= 3) {
       NotifActions.setAppearBusy(true);

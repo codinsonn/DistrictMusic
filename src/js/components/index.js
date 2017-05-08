@@ -1,6 +1,6 @@
 export LoginModal from './LoginModal';
 export Profile from './Profile';
-export Notification from './Notification';
+export Notifications from './Notifications';
 export SearchModal from './SearchModal';
 export Suggestion from './Suggestion';
 export SuggestionDetail from './SuggestionDetail';

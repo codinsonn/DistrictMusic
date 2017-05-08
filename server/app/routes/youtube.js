@@ -85,7 +85,6 @@ module.exports = (app) => {
           if(body.items) { this.loopsLeft = body.items.length; }
 
           _.forEach(body.items, (vid) => {
-          //body.items.forEach((vid) => {
 
             if(this.searchSuggestions[i]){
 
@@ -93,7 +92,6 @@ module.exports = (app) => {
 
               if(duration < '00:08:00'){
                 duration = duration.substring(3, 8);
-                //console.log('TEST:', i, ' | ', this.searchSuggestions[i]);
                 this.searchSuggestions[i].duration = duration;
                 this.suggestions.push(this.searchSuggestions[i]);
               }
@@ -117,11 +115,18 @@ module.exports = (app) => {
 
     this.respondSuggestions = () => {
 
-      //console.log('Suggestions', this.suggestions);
-      res.statusCode = 200;
-      //return res.json(this.suggestions);
-      res.json(this.suggestions);
-      //next();
+      if (this.suggestions.length >= 1) {
+
+        res.statusCode = 200;
+        //return res.json(this.suggestions);
+        res.json(this.suggestions);
+        //next();
+
+      } else {
+
+        this.respondError('-!- [Youtube] -!- No results found -!-');
+
+      }
 
     }
 
@@ -144,7 +149,6 @@ module.exports = (app) => {
         this.loopsLeft = results.length;
 
         _.forEach(results, (suggestion) => {
-        //results.forEach((suggestion) => {
 
           if(suggestion.kind === 'youtube#video'){
             this.addSuggestion(suggestion);
