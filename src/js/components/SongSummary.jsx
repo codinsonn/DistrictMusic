@@ -149,10 +149,12 @@ export default class SongSummary extends Component {
 
     if (!UserStore.getIsSpeaker()) {
 
+      const {isPlaying, isVetoed} = this.state;
+
       const $target = e.currentTarget;
       const enabled = $target.getAttribute(`data-enabled`);
 
-      if (enabled === `enabled`) {
+      if (enabled === `enabled` && !isPlaying && !isVetoed) {
 
         const isLoggedIn = UserStore.getLoggedIn();
 
@@ -185,6 +187,10 @@ export default class SongSummary extends Component {
           UserActions.showLoginModal();
         }
 
+      } else if (isPlaying) {
+        NotifActions.addError(`Cannot vote on current song`);
+      } else if (isVetoed) {
+        NotifActions.addError(`Cannot vote on vetoed songs`);
       }
 
     } else {

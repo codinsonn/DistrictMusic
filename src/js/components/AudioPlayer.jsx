@@ -155,29 +155,21 @@ export default class AudioPlayer extends Component {
       this.barsSaved = song.waveform.barsSaved;
       this.waveSaved = song.waveform.waveSaved;
 
-      console.log(`[AudioPlayer] barsSaved:`, this.barsSaved, `| waveSaved:`, this.waveSaved, `| savingVisualisation:`, this.savingVisualisation);
-
       if (!waveformReady && playMode === `normal` && this.barsSaved) {
-        console.log(`[AudioPlayer] Drawing audiobars overlay...`);
         drawFromImage = true;
       } else if (waveformReady && playMode === `normal` && !this.barsSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
-        console.log(`[AudioPlayer] Saving audiobars images...`);
         this.saveAudioVisualisation(`bars`);
         drawFromImage = false;
       } else if (waveformReady && playMode === `normal` && this.barsSaved) {
-        console.log(`[AudioPlayer] Removing audiobars overlay...`);
         drawFromImage = false;
       }
 
       if (!waveformReady && playMode === `fullscreen` && this.waveSaved) {
-        console.log(`[AudioPlayer] Drawing audiowave overlay...`);
         drawFromImage = true;
       } else if (waveformReady && playMode === `fullscreen` && !this.waveSaved && window.innerWidth >= 1200 && !this.savingVisualisation) {
-        console.log(`[AudioPlayer] Saving audiowave images...`);
         this.saveAudioVisualisation(`wave`);
         drawFromImage = false;
       } else if (waveformReady && playMode === `fullscreen` && this.waveSaved) {
-        console.log(`[AudioPlayer] Removing audiowave overlay...`);
         drawFromImage = false;
       }
 
@@ -437,6 +429,20 @@ export default class AudioPlayer extends Component {
 
   }
 
+  setVideoMode(videoMode) {
+
+    console.log(`[AudioPlayer] Setting video mode to`, videoMode);
+
+    if (videoMode) {
+      this.setState({drawFromImage: false});
+    } else {
+      this.checkWaveform();
+    }
+
+    PlaylistActions.setVideoMode(videoMode);
+
+  }
+
   setPlayMode(playMode) {
 
     if (!this.isSafari) {
@@ -449,7 +455,7 @@ export default class AudioPlayer extends Component {
       if (videoMode) {
         this.setPlaying(false);
         this.setState({currentTimeString: `00:00`});
-        PlaylistActions.setVideoMode(false);
+
       }
 
       if (playing) {
@@ -475,9 +481,10 @@ export default class AudioPlayer extends Component {
     pos = e.originalArgs[0];
 
     if (drawFromImage) {
+      const $progressWrapper = document.querySelector(`.progress-wrapper`);
       const durSecondsTotal = (Number(song.general.duration.slice(1, 2)) * 60) + Number(song.general.duration.slice(3, 5));
       const progressWidth = (pos / durSecondsTotal) * (window.innerWidth - 250);
-      document.querySelector(`.progress-wrapper`).style.width = `${progressWidth}px`;
+      if ($progressWrapper) $progressWrapper.style.width = `${progressWidth}px`;
     }
 
     const currentMinutes = Math.floor(pos / 60);
@@ -647,7 +654,7 @@ export default class AudioPlayer extends Component {
         if (videoMode) {
           this.setPlaying(false);
           this.setState({currentTimeString: `00:00`});
-          PlaylistActions.setVideoMode(false);
+          this.setVideoMode(false);
         }
 
       }
@@ -701,7 +708,7 @@ export default class AudioPlayer extends Component {
 
       } else if (this.isSafari) {
 
-        PlaylistActions.setVideoMode(true);
+        this.setVideoMode(true);
 
       }
 
@@ -726,9 +733,11 @@ export default class AudioPlayer extends Component {
       currentTimeString = `00:00`;
       this.setState({drawFromImage, currentTimeString});
 
-      //PlaylistActions.setVideoMode(!videoMode);
+      console.log(`SET VIDEO MODE:`, videoMode, !videoMode);
+
+      //this.setVideoMode(!videoMode);
       if (!videoMode) setTimeout(() => PlaylistActions.setSong(song), 1);
-      setTimeout(() => PlaylistActions.setVideoMode(!videoMode), 10);
+      setTimeout(() => this.setVideoMode(!videoMode), 10);
 
     }
 

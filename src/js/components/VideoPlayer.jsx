@@ -143,8 +143,8 @@ export default class YoutubeVideo extends Component {
         $progressScrubber.style.left = `${barWidth}px`;
       }
 
-      if (duration - currentTime <= 0.4) {
-        this.handleOnVideoEnd();
+      if (duration - currentTime <= 1) {
+        setTimeout(() => this.handleOnVideoEnd(), 1000);
       }
 
       if (this.skipFrames <= 0) {
