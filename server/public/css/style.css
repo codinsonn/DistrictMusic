@@ -393,7 +393,7 @@ body {
   left: 0;
   overflow: hidden;
   cursor: wait;
-  z-index: 120;
+  z-index: 125;
 }
 
 .play-mode-normal .progress-visualisation,

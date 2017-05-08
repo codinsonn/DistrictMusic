@@ -469,10 +469,16 @@ export default class AudioPlayer extends Component {
 
   handlePosChange(e) {
 
-    const {playing, isSpeaker} = this.state;
+    const {song, playing, isSpeaker, drawFromImage} = this.state;
     let {pos, currentTimeString} = this.state;
 
     pos = e.originalArgs[0];
+
+    if (drawFromImage) {
+      const durSecondsTotal = (Number(song.general.duration.slice(1, 2)) * 60) + Number(song.general.duration.slice(3, 5));
+      const progressWidth = (pos / durSecondsTotal) * (window.innerWidth - 250);
+      document.querySelector(`.progress-wrapper`).style.width = `${progressWidth}px`;
+    }
 
     const currentMinutes = Math.floor(pos / 60);
     const currentSeconds = Math.round(pos % 60);
@@ -482,7 +488,6 @@ export default class AudioPlayer extends Component {
 
     let sendSocketEvent = false;
     if (isSpeaker && currentTimeString !== this.prevTimeString) sendSocketEvent = true;
-
     if (playing) this.speakerPosWorker.postMessage({pos: pos, sendSocketEvent: sendSocketEvent});
 
     let showAnimation = true;
@@ -550,12 +555,10 @@ export default class AudioPlayer extends Component {
       const curMinutes = Math.floor(pos / 60);
       const curSeconds = Math.round(pos % 60);
       const curSecondsTotal = (curMinutes * 60) + curSeconds;
-      console.log(`[AudioPlayer] curMin:`, curMinutes, `| curSec:`, curSeconds, `| curTot:`, curSecondsTotal);
 
       const durMinutes = Number(song.general.duration.slice(1, 2));
       const durSeconds = Number(song.general.duration.slice(3, 5));
       const durSecondsTotal = (durMinutes * 60) + durSeconds;
-      console.log(`[AudioPlayer] durMin:`, durMinutes, `| durSec:`, durSeconds, `| durTot:`, durSecondsTotal);
 
       let prematureSongEnd = false;
       if (durSecondsTotal - curSecondsTotal >= 10) prematureSongEnd = true;

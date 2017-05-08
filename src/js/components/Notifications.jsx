@@ -41,7 +41,7 @@ export default class Notifications extends Component {
     const notif = NotificationsStore.getNext();
     if (notifications.length === 0) {
       setTimeout(() => { this.setNext(); }, 1);
-    } else {
+    } else if (notifications[0].type !== `error`) { // Don't remove error notifications till done
       this.hideNotifications();
       setTimeout(() => { this.setNext(); }, 700);
     }
