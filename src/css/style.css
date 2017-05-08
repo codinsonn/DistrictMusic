@@ -1590,6 +1590,7 @@ body {
   box-shadow: 1px 1px 2px rgb(125, 125, 125, .5);
   white-space: nowrap;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .icon {

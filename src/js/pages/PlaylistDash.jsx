@@ -86,7 +86,7 @@ export default class PlaylistDash extends Component {
 
     if (isLoggedIn) {
       if (this.props.status && this.props.status === `loginSuccess`) {
-        NotifActions.addSuccess(`Welcome back, ${userProfile.general.firstName}`);
+        //NotifActions.addSuccess(`Welcome back, ${userProfile.general.firstName}`);
       }
     } else {
       NotifActions.addNotification(`Till next time!`);

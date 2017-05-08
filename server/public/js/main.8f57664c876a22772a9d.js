@@ -7826,8 +7826,8 @@ module.exports = warning;
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dispatcher__ = __webpack_require__(28);
 /* unused harmony export gapiClientLoaded */
-/* harmony export (immutable) */ __webpack_exports__["b"] = addSuccess;
-/* harmony export (immutable) */ __webpack_exports__["c"] = addNotification;
+/* harmony export (immutable) */ __webpack_exports__["c"] = addSuccess;
+/* harmony export (immutable) */ __webpack_exports__["b"] = addNotification;
 /* harmony export (immutable) */ __webpack_exports__["a"] = addError;
 /* unused harmony export removeNotification */
 /* harmony export (immutable) */ __webpack_exports__["e"] = hideNotification;
@@ -51343,7 +51343,7 @@ var AudioPlayer = function (_Component) {
     console.log('[AudioPlayer] Notif showing?', notifAlreadyShowing);
 
     if (playMode === 'normal' && !notifAlreadyShowing && !videoMode) {
-      __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__["c" /* addNotification */]('Now playing: ' + song.general.title);
+      __WEBPACK_IMPORTED_MODULE_9__actions_NotifActions__["b" /* addNotification */]('Now playing: ' + song.general.title);
     }
   };
 
@@ -52247,7 +52247,7 @@ var LoginModal = function (_Component) {
     }
 
     if (visible) {
-      __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["c" /* addNotification */]('Please login with District01 account');
+      __WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["b" /* addNotification */]('Please login with District01 account');
     }
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52345,7 +52345,7 @@ var LoginModal = function (_Component) {
                 lineNumber: 75
               }
             },
-            'Cancel or just listen'
+            'Cancel sign in'
           )
         )
       )
@@ -53101,9 +53101,9 @@ var Profile = function (_Component) {
 
 
       if (voteMode === 'veto' || voteMode === 'super') {
-        setTimeout(__WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["c" /* addNotification */]('Entered ' + voteMode + ' mode'), 0);
+        setTimeout(__WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["b" /* addNotification */]('Entered ' + voteMode + ' mode'), 0);
       } else if (voteMode === 'normal' && prevVoteMode !== 'normal') {
-        setTimeout(__WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["c" /* addNotification */]('Exited ' + prevVoteMode + ' mode'), 0);
+        setTimeout(__WEBPACK_IMPORTED_MODULE_3__actions_NotifActions__["b" /* addNotification */]('Exited ' + prevVoteMode + ' mode'), 0);
       }
 
       this.hasChangedVoteMode = false;
@@ -53368,7 +53368,7 @@ var SearchModal = function (_Component) {
 
             __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__["d" /* setAppearBusy */](false);
             if (currentSuggestions.length === 0) {
-              __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__["c" /* addNotification */]('No results were found');
+              __WEBPACK_IMPORTED_MODULE_7__actions_NotifActions__["b" /* addNotification */]('No results were found');
             }
 
             _this2.setState({ currentSuggestions: currentSuggestions });
@@ -54297,12 +54297,12 @@ var SuggestionDetail = function (_Component) {
     var suggestion = this.state.suggestion;
 
 
-    __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["c" /* addNotification */]('Uploading song to queue...');
+    __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addNotification */]('Uploading song to queue...');
     __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["n" /* hideSuggestionDetail */]();
 
     __WEBPACK_IMPORTED_MODULE_5__api_songs__["a" /* default */].addToQueue(suggestion).then(function (res) {
 
-      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["b" /* addSuccess */]('Submission added to queue!');
+      __WEBPACK_IMPORTED_MODULE_4__actions_NotifActions__["c" /* addSuccess */]('Submission added to queue!');
 
       __WEBPACK_IMPORTED_MODULE_3__actions_PlaylistActions__["o" /* resetSearchbar */]();
 
@@ -55339,10 +55339,10 @@ var PlaylistDash = function (_Component) {
 
     if (isLoggedIn) {
       if (this.props.status && this.props.status === 'loginSuccess') {
-        __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__["b" /* addSuccess */]('Welcome back, ' + userProfile.general.firstName);
+        //NotifActions.addSuccess(`Welcome back, ${userProfile.general.firstName}`);
       }
     } else {
-      __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__["c" /* addNotification */]('Till next time!');
+      __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__["b" /* addNotification */]('Till next time!');
     }
   };
 
@@ -55361,7 +55361,7 @@ var PlaylistDash = function (_Component) {
         // Success!
         console.log('[SPEAKER] SET AS SPEAKER!', res);
         __WEBPACK_IMPORTED_MODULE_4__actions_UserActions__["b" /* setSpeaker */](true);
-        __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__["b" /* addSuccess */]('Connected as speaker');
+        __WEBPACK_IMPORTED_MODULE_5__actions_NotifActions__["c" /* addSuccess */]('Connected as speaker');
       }, function (failData) {
 
         // Failed!
@@ -81838,4 +81838,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.bb33a7a7e2f9cc0aa732.js.map
+//# sourceMappingURL=main.8f57664c876a22772a9d.js.map

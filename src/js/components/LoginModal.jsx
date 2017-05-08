@@ -72,7 +72,7 @@ export default class LoginModal extends Component {
           </div>
           <div className='login-modal--btn-cancel' onClick={() => UserActions.hideLoginModal()}>
             <span className='icon'>&nbsp;</span>
-            <span className='buttonText'>Cancel or just listen</span>
+            <span className='buttonText'>Cancel sign in</span>
           </div>
         </section>
       </article>

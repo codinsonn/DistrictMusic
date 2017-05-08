@@ -119,9 +119,9 @@ module.exports = (app) => {
 
       //console.log('Suggestions', this.suggestions);
       res.statusCode = 200;
-      return res.json(this.suggestions);
-      //res.json(this.suggestions);
-      next();
+      //return res.json(this.suggestions);
+      res.json(this.suggestions);
+      //next();
 
     }
 
@@ -129,9 +129,9 @@ module.exports = (app) => {
 
       console.log(err);
       res.statusCode = 400;
-      return res.json({ errors: [ 'No results, try again later' ] });
-      //res.json({ errors: [ 'No results, try again later' ] });
-      next();
+      //return res.json({ errors: [ 'No results, try again later' ] });
+      res.json({ errors: [ 'No results, try again later' ] });
+      //next();
 
     }
 
