@@ -37,7 +37,7 @@ module.exports = {
       "sam.buydens@gmail.com"
     ],
     chatbot: {
-      slackToken: 'xoxb-179607659089-VUL0dPIgpsAyhNfhstg7pJi4',
+      slackToken: 'xoxb-179607659089-qxAfGzZqtT85YkAA35XiqLDT',
       slackLogLevel: 'verbose'
     },
     auto: {
