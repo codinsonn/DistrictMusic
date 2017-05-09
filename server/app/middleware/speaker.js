@@ -7,6 +7,7 @@ var SpeakerModel = require(__base + "app/models/speaker");
 
 module.exports = function() {
 
+  // Reset the speaker
   SpeakerModel.findOne().exec((err, speaker) => {
 
     if(err){

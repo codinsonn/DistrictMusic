@@ -23,15 +23,19 @@ module.exports = {
       saveUninitialized: true,
       cookieExpiration: 604800000 // 1000 * 60 * 60 * 24 * 7
     },
-    'googleAuth' : {
+    googleAuth : {
       'clientID': "988274792144-8f4hj5jj2qja2fagh9stkfe5f8dpfbau.apps.googleusercontent.com",
       'clientSecret': "6RoBvh-aw5nUE4iOnNDHB2TE",
       'callbackURL': 'http://localhost:3020/auth/google/callback',
       'apiKey': 'AIzaSyAh0pqBXb_-QLX92f3WOCiBffHVyYIaMJU'
     },
-    'whitelistedEmails': [
+    whitelistedEmails: [
       'thorrstevens@gmail.com'
     ],
+    chatbot: {
+      slackToken: 'xoxb-179607659089-Ije24Kx4UjzbuJuac62auQgJ',
+      slackLogLevel: 'verbose'
+    },
     auto: {
       resetVetos: 2, // amount of 'vetos left' to reset to every week
       resetSuperVotes: 5, // amount of 'super votes left' to reset to every week
@@ -42,7 +46,7 @@ module.exports = {
       cronPatternCheckSpeakerQueueUpdate: '00 * * * * 1-60/10', // every 10 seconds
       cronPatternCheckQueueEmpty: '00 * * * * 1-60', // every minute
       cronPatternAddRandomSong: '00 00 09 * * 1-5', // every weekday in the morning at 9:00
-      cronPatternResetVotes: '00 00 * * * 1-24', // every hour
+      cronPatternResetVotes: '00 00 07 * * 1', // every monday morning at 7:00
       cronPatternScheduleFilesToBeRemoved: '00 01 * * * 1-24', // every hour at the first minute
       cronPatternCheckAudioRemovable: '00 58 * * * 1-24', // every hour at the 58'th minute
       cronPatternRemoveScheduledFiles: '00 59 * * * 1-24', // every hour at the last minute

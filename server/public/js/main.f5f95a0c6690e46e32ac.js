@@ -53788,7 +53788,11 @@ var SongSummary = function (_Component) {
         } else {
           __WEBPACK_IMPORTED_MODULE_5__actions_UserActions__["c" /* showLoginModal */]();
         }
-      } else {}
+      } else if (isPlaying) {
+        __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Cannot vote on current song');
+      } else if (isVetoed) {
+        __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Cannot vote on vetoed songs');
+      }
     } else {
       __WEBPACK_IMPORTED_MODULE_6__actions_NotifActions__["a" /* addError */]('Cannot vote as speaker');
     }
@@ -81862,4 +81866,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.4ec5368a8ca348bc72d4.js.map
+//# sourceMappingURL=main.f5f95a0c6690e46e32ac.js.map

@@ -15,6 +15,13 @@ export default class Notifications extends Component {
       notifications: []
     };
 
+    // -- Non State Vars ----
+    this.nextTimer;
+    this.showTimer;
+    this.hideTimer;
+    this.hideAllTimer;
+    this.deleteTimer;
+
     // -- Events ----
     this.evtAddNotification = () => this.addNotification();
     this.evtHideNotifications = () => this.hideNotifications();
@@ -40,10 +47,10 @@ export default class Notifications extends Component {
 
     const notif = NotificationsStore.getNext();
     if (notifications.length === 0) {
-      setTimeout(() => { this.setNext(); }, 1);
+      this.nextTimer = setTimeout(() => { this.setNext(); }, 1);
     } else if (notifications[0].type !== `error`) { // Don't remove error notifications till done
-      this.hideNotifications();
-      setTimeout(() => { this.setNext(); }, 700);
+      this.hideAllTimer = this.hideNotifications();
+      this.nextTimer = setTimeout(() => { this.setNext(); }, 700);
     }
     console.log(`[Notifications] Adding notification:`, notif.message);
     notifications.push(notif);
@@ -66,11 +73,12 @@ export default class Notifications extends Component {
     const {notifications} = this.state;
 
     if (notifications.length > 0) {
+      setTimeout(() => { clearTimeout(this.hideTimer); }, 600);
       currentNotifType = notifications[0].type;
       currentNotifMessage = notifications[0].message;
-      setTimeout(() => this.showNotification(), 600);
-      setTimeout(() => this.hideNotification(), 5400);
-      setTimeout(() => this.deleteNotifAndPlayNext(), 6000);
+      this.showTimer = setTimeout(() => this.showNotification(), 600);
+      this.hideTimer = setTimeout(() => this.hideNotification(), 5400);
+      this.deleteTimer = setTimeout(() => this.deleteNotifAndPlayNext(), 6000);
     } else {
       currentNotifType = ``;
       currentNotifMessage = ``;
@@ -91,7 +99,7 @@ export default class Notifications extends Component {
 
     const {currentNotifType} = this.state;
     document.querySelector(`.notification`).className = `notification ${currentNotifType} hide`;
-    if (triggerDelete) { setTimeout(() => this.deleteNotifAndPlayNext(), 600); }
+    if (triggerDelete) { this.deleteTimer = setTimeout(() => this.deleteNotifAndPlayNext(), 600); }
 
   }
 
@@ -106,8 +114,9 @@ export default class Notifications extends Component {
 
   hideNotifications() {
 
+    clearTimeout(this.showTimer);
     this.hideNotification();
-    setTimeout(() => this.deleteNotifications(), 600);
+    this.deleteTimer = setTimeout(() => this.deleteNotifications(), 600);
 
   }
 

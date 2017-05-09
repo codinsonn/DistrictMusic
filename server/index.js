@@ -63,7 +63,7 @@ var server = require("http").Server(app);
 var io = require("socket.io")(server);
 var port = process.env.PORT || config.server.port;
 
-/* --- Start Loading... -------------------------------------------------------------------- */
+/* --- Start Loading Middleware... -------------------------------------------------------------------- */
 
 // Load DB config
 require("./app/middleware/db");
@@ -77,11 +77,17 @@ require("./app/helpers/io")(io);
 // Load all routes
 require("./app/routes")(app);
 
+// Load slackbot service
+var slackClient = require("./app/middleware/slackclient").init(config.chatbot.slackToken, config.chatbot.slackLogLevel); // 'debug'
+
+// Start slackbot helpers
+require("./app/helpers/slack")(app, slackClient);
+
 // Load all cron jobs
 require("./app/middleware/cron")(process.env.TZ);
 
 // Reset speaker
-require("./app/middleware/resetspeaker")();
+require("./app/middleware/speaker")();
 
 /* --- Start server ------------------------------------------------------------------------ */
 
