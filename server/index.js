@@ -77,11 +77,14 @@ require("./app/helpers/io")(io);
 // Load all routes
 require("./app/routes")(app);
 
+// Load wit.ai service
+var witClient = require("./app/middleware/witclient").witClient(config.chatbot.witToken);
+
 // Load slackbot service
 var slackClient = require("./app/middleware/slackclient").init(config.chatbot.slackToken, config.chatbot.slackLogLevel); // 'debug'
 
-// Start slackbot helpers
-require("./app/helpers/slack")(app, slackClient);
+// Start chatbot helpers
+require("./app/helpers/chatbot")(app, slackClient, witClient);
 
 // Load all cron jobs
 require("./app/middleware/cron")(process.env.TZ);

@@ -789,7 +789,7 @@ export default class AudioPlayer extends Component {
       this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // - Button Settings -
-      let barWidth = 3; // use smaller bars for button mode
+      let barWidth = 3; // smaller bars for button mode
       let maxBars = 3; // for normal mode ( => becomes button to enter fullscreen )
       let horizontalPadding = 0; // no padding in normal mode
       let verticalDivision = 2; // makes bars align vetically centered
@@ -800,7 +800,7 @@ export default class AudioPlayer extends Component {
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
-        barWidth = 5; // use larger bars for fullscreen mode
+        barWidth = Math.round(window.innerWidth / 256);if (barWidth < 3) barWidth = 3; // larger bars for fullscreen mode
         maxBars = Math.round(this.canvas.width / barWidth / 2); // fill the entire width of screen with bars
         horizontalPadding = Math.round(barWidth / 2); // use some padding in fullscreen mode
         verticalDivision = 1; // makes bars align to bottom
