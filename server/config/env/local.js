@@ -33,7 +33,7 @@ module.exports = {
       'thorrstevens@gmail.com'
     ],
     chatbot: {
-      slackToken: 'xoxb-179607659089-Ije24Kx4UjzbuJuac62auQgJ',
+      slackToken: 'xoxb-179607659089-hsVK2nIbGqJnLzIK6K57YReS',
       slackLogLevel: 'verbose'
     },
     auto: {

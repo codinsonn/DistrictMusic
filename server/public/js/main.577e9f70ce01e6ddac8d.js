@@ -52143,7 +52143,7 @@ var DownloadProgress = function (_Component) {
 
       console.log('Appearing busy...');
       progressClasses = 'progress blue show';
-      this.notifTimer = setTimeout(function () {
+      setTimeout(function () {
         document.querySelector('.progress').className = 'progress blue show appear-busy';
       }, 1);
     } else if (downloadProgress > 0 && downloadProgress < .99) {
@@ -52407,6 +52407,13 @@ var Notifications = function (_Component) {
       notifications: []
     };
 
+    // -- Non State Vars ----
+    _this.nextTimer;
+    _this.showTimer;
+    _this.hideTimer;
+    _this.hideAllTimer;
+    _this.deleteTimer;
+
     // -- Events ----
     _this.evtAddNotification = function () {
       return _this.addNotification();
@@ -52444,13 +52451,13 @@ var Notifications = function (_Component) {
 
     var notif = __WEBPACK_IMPORTED_MODULE_1__stores_NotificationsStore__["a" /* default */].getNext();
     if (notifications.length === 0) {
-      setTimeout(function () {
+      this.nextTimer = setTimeout(function () {
         _this2.setNext();
       }, 1);
     } else if (notifications[0].type !== 'error') {
       // Don't remove error notifications till done
-      this.hideNotifications();
-      setTimeout(function () {
+      this.hideAllTimer = this.hideNotifications();
+      this.nextTimer = setTimeout(function () {
         _this2.setNext();
       }, 700);
     }
@@ -52477,15 +52484,18 @@ var Notifications = function (_Component) {
 
 
     if (notifications.length > 0) {
+      setTimeout(function () {
+        clearTimeout(_this3.hideTimer);
+      }, 600);
       currentNotifType = notifications[0].type;
       currentNotifMessage = notifications[0].message;
-      setTimeout(function () {
+      this.showTimer = setTimeout(function () {
         return _this3.showNotification();
       }, 600);
-      setTimeout(function () {
+      this.hideTimer = setTimeout(function () {
         return _this3.hideNotification();
       }, 5400);
-      setTimeout(function () {
+      this.deleteTimer = setTimeout(function () {
         return _this3.deleteNotifAndPlayNext();
       }, 6000);
     } else {
@@ -52510,7 +52520,7 @@ var Notifications = function (_Component) {
 
     document.querySelector('.notification').className = 'notification ' + currentNotifType + ' hide';
     if (triggerDelete) {
-      setTimeout(function () {
+      this.deleteTimer = setTimeout(function () {
         return _this4.deleteNotifAndPlayNext();
       }, 600);
     }
@@ -52527,8 +52537,9 @@ var Notifications = function (_Component) {
   Notifications.prototype.hideNotifications = function hideNotifications() {
     var _this5 = this;
 
+    clearTimeout(this.showTimer);
     this.hideNotification();
-    setTimeout(function () {
+    this.deleteTimer = setTimeout(function () {
       return _this5.deleteNotifications();
     }, 600);
   };
@@ -52562,7 +52573,7 @@ var Notifications = function (_Component) {
       'article',
       { className: notificationsClasses, __source: {
           fileName: _jsxFileName,
-          lineNumber: 133
+          lineNumber: 142
         }
       },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52571,7 +52582,7 @@ var Notifications = function (_Component) {
             return _this6.hideNotification(true);
           }, __source: {
             fileName: _jsxFileName,
-            lineNumber: 134
+            lineNumber: 143
           }
         },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -52580,7 +52591,7 @@ var Notifications = function (_Component) {
               return _this6.hideNotification(true);
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 135
+              lineNumber: 144
             }
           },
           '\xA0'
@@ -52589,7 +52600,7 @@ var Notifications = function (_Component) {
           'span',
           { className: 'notifText', __source: {
               fileName: _jsxFileName,
-              lineNumber: 136
+              lineNumber: 145
             }
           },
           currentNotifMessage
@@ -81866,4 +81877,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.bb3e3629f65cacc850e2.js.map
+//# sourceMappingURL=main.577e9f70ce01e6ddac8d.js.map
