@@ -11,7 +11,7 @@ var ytdl = require('ytdl-core');
 var EmitHelper = require(__base + "app/helpers/io/emitter");
 var GridFsHelper = require(__base + "app/helpers/gridfs");
 
-module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
+module.exports = (songId, audioFilename, /*songTitle,*/ emitProgress, socketIdsToEmitTo) => {
 
   if(typeof(emitProgress) === 'undefined') emitProgress = false;
   if(typeof(socketIdsToEmitTo) === 'undefined') socketIdsToEmitTo = [];
@@ -35,13 +35,6 @@ module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
         i--;
         if (i === 0) {
 
-          var songTitleStripped = songTitle;
-          console.log('[DownloadSong] Assigned title:', songTitleStripped);
-          songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
-          console.log('[DownloadSong] Stripped title:', songTitleStripped);
-          var audioFilename = `${songId}_${songTitleStripped}.mp4`;
-          console.log('[DownloadSong] Setup file naming for file:', audioFilename);
-
           console.log('[DownloadSong] Downloading song...');
 
           var readStream = ytdl(url, { quality: 'lowest', format: audioFormat })
@@ -60,17 +53,9 @@ module.exports = (songId, songTitle, emitProgress, socketIdsToEmitTo) => {
                   EmitHelper.emit('DOWNLOAD_PROGRESS', socketIdsToEmitTo, {percent: percent, str: strPercent});
                 }
 
-                /*if(process.stdout){
-                  process.stdout.cursorTo(0);
-                  process.stdout.clearLine(1);
-                  process.stdout.write(strPercent);
-                }*/
-
               });
 
               res.on('end', () => {
-
-                //if(process.stdout){ process.stdout.write('\n'); }
 
                 console.log('-f- Finished downloading song to db:', audioFilename);
 

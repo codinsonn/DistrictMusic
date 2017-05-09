@@ -56,7 +56,7 @@ module.exports = (req, res, done) => {
 
         console.log('[AddSongToQueue:62] About to download song');
 
-        this.downloadSong(true, req.body); // songIsNew => true => song not yet in db
+        this.preDownloadSong(true, req.body); // songIsNew => true => song not yet in db
 
       }
 
@@ -70,6 +70,73 @@ module.exports = (req, res, done) => {
 
   }
 
+  this.getAudioFilename = (songId, songTitle) => {
+
+    var songTitleStripped = songTitle;
+    songTitleStripped = songTitleStripped.replace(/[^a-zA-Z0-9]/g, '');
+    var audioFilename = `${songId}_${songTitleStripped}.mp4`;
+
+    console.log('[AddSongToQueue] Setup file naming for file:', audioFilename);
+    return audioFilename;
+
+  }
+
+  this.preDownloadSong = (songIsNew, suggestion) => {
+
+    var newSong = new SongModel();
+
+    // -- file settings --------
+    newSong.audio.filename = this.getAudioFilename(suggestion.id, suggestion.title);
+    newSong.audio.fileId = ''; // placeholder till real download is done
+    newSong.audio.isDownloaded = true; // pretend it's already downloaded to avoid double additions while still downloading
+    newSong.audio.scheduledForRemoval = false;
+
+    // -- wave settings --------
+    newSong.waveform.barsSaved = false;
+    newSong.waveform.waveSaved = false;
+
+    // -- general info ---------
+    newSong.general.id = suggestion.id;
+    newSong.general.title = suggestion.title;
+    newSong.general.channel = suggestion.channel;
+    newSong.general.duration = suggestion.duration;
+
+    // -- queue info ------------
+    newSong.queue.originallyAddedBy.googleId = this.profile.meta.googleId;
+    newSong.queue.originallyAddedBy.userName = this.profile.general.fullName;
+    newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
+    newSong.queue.originallyAddedBy.added = (new Date()).getTime();
+    newSong.queue.lastAddedBy = newSong.queue.originallyAddedBy;
+    newSong.votes.legacyScore = 0;
+    newSong.votes.currentQueueScore = 0;
+
+    // -- thumbs info ---------
+    newSong.thumbs = suggestion.thumbs;
+
+    // -- Save to queue / db --
+    newSong.queue.isPlaying = false;
+    newSong.queue.isVetoed = false;
+    newSong.queue.inQueue = false;
+
+    // Save the song to put back in queue
+    return newSong.save((err) => {
+
+      if (err) {
+
+        console.log('-!- [AddSongToQueue:115] -!- Error occured while saving new song:\n', err, '\n-!-');
+        res.statusCode = 400;
+        return res.json({ errors: [ 'Could not save song' ] });
+
+      }
+
+      this.downloadSong(false, suggestion, newSong);
+
+    });
+
+
+
+  }
+
   this.downloadSong = (songIsNew, suggestion, song) => {
 
     if(typeof(song) === 'undefined') song = {};
@@ -80,7 +147,7 @@ module.exports = (req, res, done) => {
 
     UserModel.findOne({ 'general.email': this.profile.general.email, 'meta.googleId': this.profile.meta.googleId, 'meta.googleAuthToken': this.profile.meta.googleAuthToken }, (err, user) => {
 
-      SongHelper.downloadSong(suggestion.id, suggestion.title, true, user.meta.socketIds).then((fileData) => {
+      SongHelper.downloadSong(suggestion.id, song.audio.filename, true, user.meta.socketIds).then((fileData) => {
 
         console.log('[AddSongToQueue] Song Downloaded:', fileData.fileId, fileData.filename);
 
@@ -155,63 +222,6 @@ module.exports = (req, res, done) => {
       }
 
       this.checkSong(song);
-
-    });
-
-  }
-
-  this.saveToDb = (suggestion) => {
-
-    console.log('[AddSongToQueue:242] Saving song to queue');
-
-    var newSong = new SongModel();
-
-    // -- file settings --------
-    newSong.audio.filename = suggestion.filename;
-    newSong.audio.fileId = suggestion.fileId;
-    newSong.audio.isDownloaded = true;
-    newSong.audio.scheduledForRemoval = false;
-
-    // -- wave settings --------
-    newSong.waveform.barsSaved = false;
-    newSong.waveform.waveSaved = false;
-
-    // -- general info ---------
-    newSong.general.id = suggestion.id;
-    newSong.general.title = suggestion.title;
-    newSong.general.channel = suggestion.channel;
-    newSong.general.duration = suggestion.duration;
-
-    // -- queue info ------------
-    newSong.queue.originallyAddedBy.googleId = this.profile.meta.googleId;
-    newSong.queue.originallyAddedBy.userName = this.profile.general.fullName;
-    newSong.queue.originallyAddedBy.profileImage = this.profile.general.profileImage;
-    newSong.queue.originallyAddedBy.added = (new Date()).getTime();
-    newSong.queue.lastAddedBy = newSong.queue.originallyAddedBy;
-    newSong.votes.legacyScore = 0;
-    newSong.votes.currentQueueScore = 0;
-
-    // -- thumbs info ---------
-    newSong.thumbs = suggestion.thumbs;
-
-    // -- Save to queue / db --
-    newSong.queue.isPlaying = false;
-    newSong.queue.isVetoed = false;
-    newSong.queue.inQueue = true;
-
-    // Save the song to put back in queue
-    return newSong.save((err) => {
-
-      if (err) {
-
-        console.log('-!- [AddSongToQueue:279] -!- Error occured while saving new song:\n', err, '\n-!-');
-        res.statusCode = 400;
-        return res.json({ errors: [ 'Could not save song' ] });
-
-      }
-
-      console.log('[AddSongToQueue:289] Returning newly added song:', newSong.general.title);
-      this.checkSong(newSong);
 
     });
 

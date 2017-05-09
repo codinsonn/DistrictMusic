@@ -30,7 +30,7 @@ var SongSchema = new Schema({
       fileId: {
         type: String,
         index: true,
-        required: true
+        required: false
       },
       filename: {
         type: String,
