@@ -51396,7 +51396,7 @@ var AudioPlayer = function (_Component) {
       this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // - Button Settings -
-      var barWidth = 3; // use smaller bars for button mode
+      var barWidth = 3; // smaller bars for button mode
       var maxBars = 3; // for normal mode ( => becomes button to enter fullscreen )
       var horizontalPadding = 0; // no padding in normal mode
       var verticalDivision = 2; // makes bars align vetically centered
@@ -51407,7 +51407,7 @@ var AudioPlayer = function (_Component) {
 
       // - Fullscreen Settings -
       if (playMode === 'fullscreen') {
-        barWidth = 5; // use larger bars for fullscreen mode
+        barWidth = Math.round(window.innerWidth / 280);if (barWidth < 3) barWidth = 3; // larger bars for fullscreen mode
         maxBars = Math.round(this.canvas.width / barWidth / 2); // fill the entire width of screen with bars
         horizontalPadding = Math.round(barWidth / 2); // use some padding in fullscreen mode
         verticalDivision = 1; // makes bars align to bottom
@@ -81877,4 +81877,4 @@ module.exports = __webpack_require__(302);
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.577e9f70ce01e6ddac8d.js.map
+//# sourceMappingURL=main.7e2ebf58e0691996c63b.js.map

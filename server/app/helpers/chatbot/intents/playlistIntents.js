@@ -1,6 +1,6 @@
 
 
-module.exports.process = (intentData) => {
+module.exports.process = (intentData, intentList) => {
 
   return new Promise((resolve, reject) => {
 

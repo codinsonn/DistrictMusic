@@ -800,7 +800,7 @@ export default class AudioPlayer extends Component {
 
       // - Fullscreen Settings -
       if (playMode === `fullscreen`) {
-        barWidth = Math.round(window.innerWidth / 256);if (barWidth < 3) barWidth = 3; // larger bars for fullscreen mode
+        barWidth = Math.round(window.innerWidth / 280);if (barWidth < 3) barWidth = 3; // larger bars for fullscreen mode
         maxBars = Math.round(this.canvas.width / barWidth / 2); // fill the entire width of screen with bars
         horizontalPadding = Math.round(barWidth / 2); // use some padding in fullscreen mode
         verticalDivision = 1; // makes bars align to bottom

@@ -31,19 +31,19 @@ module.exports = (app, rtmClient, nlpClient) => {
 
           } else {
 
-            var intents = [];
-            for (var i = 0; i < intentData.intent; i++) {
-              intents.push(intentData.intent.value);
+            var intentList = [];
+            for (var i = 0; i < res.intent; i++) {
+              intentList.push(intentData.intent.value.toLowerCase());
             }
 
             let intentToUse = '';
-            if (intents.includes('playlist')) intentToUse = 'playlist';
-            if (intents.includes('speaker')) intentToUse = 'speaker';
+            if (intentList.includes('playlist')) intentToUse = 'playlist';
+            if (intentList.includes('speaker')) intentToUse = 'speaker';
 
             if (intentToUse !== '') {
 
               let intent = require(__base + 'app/helpers/chatbot/intents/' + intentToUse + 'Intent');
-              intent.process(res).then(responseMessage => {
+              intent.process(res, intentList).then(responseMessage => {
 
                 return this.districtMusicBot.sendMessage(responseMessage, message.channel);
 
